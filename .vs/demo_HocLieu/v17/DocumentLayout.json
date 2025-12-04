@@ -1,0 +1,428 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{9028118A-CAB5-4DE5-B17E-75F95ADE9C56}|MVC_STUDENT\\MVC_STUDENT.csproj|c:\\users\\admin\\source\\repos\\ltwnc\\mvc_student\\controllers\\profilecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9028118A-CAB5-4DE5-B17E-75F95ADE9C56}|MVC_STUDENT\\MVC_STUDENT.csproj|solutionrelative:mvc_student\\controllers\\profilecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9028118A-CAB5-4DE5-B17E-75F95ADE9C56}|MVC_STUDENT\\MVC_STUDENT.csproj|c:\\users\\admin\\source\\repos\\ltwnc\\mvc_student\\controllers\\quizcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9028118A-CAB5-4DE5-B17E-75F95ADE9C56}|MVC_STUDENT\\MVC_STUDENT.csproj|solutionrelative:mvc_student\\controllers\\quizcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B26D26E8-A98F-43BA-9CCC-94D50A054A72}|MVC_ADMIN\\MVC_ADMIN.csproj|c:\\users\\admin\\source\\repos\\ltwnc\\mvc_admin\\controllers\\materialapprovalcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B26D26E8-A98F-43BA-9CCC-94D50A054A72}|MVC_ADMIN\\MVC_ADMIN.csproj|solutionrelative:mvc_admin\\controllers\\materialapprovalcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B26D26E8-A98F-43BA-9CCC-94D50A054A72}|MVC_ADMIN\\MVC_ADMIN.csproj|C:\\Users\\ADMIN\\source\\repos\\LTWNC\\mvc_admin\\controllers\\categorycontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B26D26E8-A98F-43BA-9CCC-94D50A054A72}|MVC_ADMIN\\MVC_ADMIN.csproj|solutionrelative:mvc_admin\\controllers\\categorycontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B26D26E8-A98F-43BA-9CCC-94D50A054A72}|MVC_ADMIN\\MVC_ADMIN.csproj|C:\\Users\\ADMIN\\source\\repos\\LTWNC\\mvc_admin\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{B26D26E8-A98F-43BA-9CCC-94D50A054A72}|MVC_ADMIN\\MVC_ADMIN.csproj|solutionrelative:mvc_admin\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9028118A-CAB5-4DE5-B17E-75F95ADE9C56}|MVC_STUDENT\\MVC_STUDENT.csproj|C:\\Users\\ADMIN\\source\\repos\\LTWNC\\mvc_student\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{9028118A-CAB5-4DE5-B17E-75F95ADE9C56}|MVC_STUDENT\\MVC_STUDENT.csproj|solutionrelative:mvc_student\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DFB3777C-FF6C-41E1-9FAB-260D445CEF76}|MVC_Teacher\\MVC_Teacher.csproj|C:\\Users\\ADMIN\\source\\repos\\LTWNC\\mvc_teacher\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{DFB3777C-FF6C-41E1-9FAB-260D445CEF76}|MVC_Teacher\\MVC_Teacher.csproj|solutionrelative:mvc_teacher\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B26D26E8-A98F-43BA-9CCC-94D50A054A72}|MVC_ADMIN\\MVC_ADMIN.csproj|c:\\users\\admin\\source\\repos\\ltwnc\\mvc_admin\\views\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{B26D26E8-A98F-43BA-9CCC-94D50A054A72}|MVC_ADMIN\\MVC_ADMIN.csproj|solutionrelative:mvc_admin\\views\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B26D26E8-A98F-43BA-9CCC-94D50A054A72}|MVC_ADMIN\\MVC_ADMIN.csproj|c:\\users\\admin\\source\\repos\\ltwnc\\mvc_admin\\models\\nguoidung.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B26D26E8-A98F-43BA-9CCC-94D50A054A72}|MVC_ADMIN\\MVC_ADMIN.csproj|solutionrelative:mvc_admin\\models\\nguoidung.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B26D26E8-A98F-43BA-9CCC-94D50A054A72}|MVC_ADMIN\\MVC_ADMIN.csproj|c:\\users\\admin\\source\\repos\\ltwnc\\mvc_admin\\models\\nentanghoclieucontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B26D26E8-A98F-43BA-9CCC-94D50A054A72}|MVC_ADMIN\\MVC_ADMIN.csproj|solutionrelative:mvc_admin\\models\\nentanghoclieucontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B26D26E8-A98F-43BA-9CCC-94D50A054A72}|MVC_ADMIN\\MVC_ADMIN.csproj|c:\\users\\admin\\source\\repos\\ltwnc\\mvc_admin\\models\\monhoc.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B26D26E8-A98F-43BA-9CCC-94D50A054A72}|MVC_ADMIN\\MVC_ADMIN.csproj|solutionrelative:mvc_admin\\models\\monhoc.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B26D26E8-A98F-43BA-9CCC-94D50A054A72}|MVC_ADMIN\\MVC_ADMIN.csproj|c:\\users\\admin\\source\\repos\\ltwnc\\mvc_admin\\models\\lophoc.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B26D26E8-A98F-43BA-9CCC-94D50A054A72}|MVC_ADMIN\\MVC_ADMIN.csproj|solutionrelative:mvc_admin\\models\\lophoc.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B26D26E8-A98F-43BA-9CCC-94D50A054A72}|MVC_ADMIN\\MVC_ADMIN.csproj|c:\\users\\admin\\source\\repos\\ltwnc\\mvc_admin\\models\\hoclieu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B26D26E8-A98F-43BA-9CCC-94D50A054A72}|MVC_ADMIN\\MVC_ADMIN.csproj|solutionrelative:mvc_admin\\models\\hoclieu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B26D26E8-A98F-43BA-9CCC-94D50A054A72}|MVC_ADMIN\\MVC_ADMIN.csproj|c:\\users\\admin\\source\\repos\\ltwnc\\mvc_admin\\models\\chude.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B26D26E8-A98F-43BA-9CCC-94D50A054A72}|MVC_ADMIN\\MVC_ADMIN.csproj|solutionrelative:mvc_admin\\models\\chude.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DFB3777C-FF6C-41E1-9FAB-260D445CEF76}|MVC_Teacher\\MVC_Teacher.csproj|c:\\users\\admin\\source\\repos\\ltwnc\\mvc_teacher\\models\\lophoc.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DFB3777C-FF6C-41E1-9FAB-260D445CEF76}|MVC_Teacher\\MVC_Teacher.csproj|solutionrelative:mvc_teacher\\models\\lophoc.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DFB3777C-FF6C-41E1-9FAB-260D445CEF76}|MVC_Teacher\\MVC_Teacher.csproj|c:\\users\\admin\\source\\repos\\ltwnc\\mvc_teacher\\models\\nentanghoclieucontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DFB3777C-FF6C-41E1-9FAB-260D445CEF76}|MVC_Teacher\\MVC_Teacher.csproj|solutionrelative:mvc_teacher\\models\\nentanghoclieucontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DFB3777C-FF6C-41E1-9FAB-260D445CEF76}|MVC_Teacher\\MVC_Teacher.csproj|C:\\Users\\ADMIN\\source\\repos\\LTWNC\\mvc_teacher\\controllers\\materialcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DFB3777C-FF6C-41E1-9FAB-260D445CEF76}|MVC_Teacher\\MVC_Teacher.csproj|solutionrelative:mvc_teacher\\controllers\\materialcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DFB3777C-FF6C-41E1-9FAB-260D445CEF76}|MVC_Teacher\\MVC_Teacher.csproj|c:\\users\\admin\\source\\repos\\ltwnc\\mvc_teacher\\models\\nguoidung.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DFB3777C-FF6C-41E1-9FAB-260D445CEF76}|MVC_Teacher\\MVC_Teacher.csproj|solutionrelative:mvc_teacher\\models\\nguoidung.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DFB3777C-FF6C-41E1-9FAB-260D445CEF76}|MVC_Teacher\\MVC_Teacher.csproj|c:\\users\\admin\\source\\repos\\ltwnc\\mvc_teacher\\models\\monhoc.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DFB3777C-FF6C-41E1-9FAB-260D445CEF76}|MVC_Teacher\\MVC_Teacher.csproj|solutionrelative:mvc_teacher\\models\\monhoc.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DFB3777C-FF6C-41E1-9FAB-260D445CEF76}|MVC_Teacher\\MVC_Teacher.csproj|c:\\users\\admin\\source\\repos\\ltwnc\\mvc_teacher\\models\\hoclieu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DFB3777C-FF6C-41E1-9FAB-260D445CEF76}|MVC_Teacher\\MVC_Teacher.csproj|solutionrelative:mvc_teacher\\models\\hoclieu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DFB3777C-FF6C-41E1-9FAB-260D445CEF76}|MVC_Teacher\\MVC_Teacher.csproj|c:\\users\\admin\\source\\repos\\ltwnc\\mvc_teacher\\models\\chude.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DFB3777C-FF6C-41E1-9FAB-260D445CEF76}|MVC_Teacher\\MVC_Teacher.csproj|solutionrelative:mvc_teacher\\models\\chude.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DFB3777C-FF6C-41E1-9FAB-260D445CEF76}|MVC_Teacher\\MVC_Teacher.csproj|c:\\users\\admin\\source\\repos\\ltwnc\\mvc_teacher\\controllers\\profilecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DFB3777C-FF6C-41E1-9FAB-260D445CEF76}|MVC_Teacher\\MVC_Teacher.csproj|solutionrelative:mvc_teacher\\controllers\\profilecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C008D989-F8E2-4A60-B7DA-A6B0DD027A4F}|demo_HocLieu\\demo_HocLieu.csproj|C:\\Users\\ADMIN\\source\\repos\\LTWNC\\demo_hoclieu\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{C008D989-F8E2-4A60-B7DA-A6B0DD027A4F}|demo_HocLieu\\demo_HocLieu.csproj|solutionrelative:demo_hoclieu\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{08FD682A-62B7-4BDC-BC46-6C3D234C7AD8}|RESTAPI_NenTangHocLieu\\RESTAPI_NenTangHocLieu.csproj|C:\\Users\\ADMIN\\source\\repos\\LTWNC\\restapi_nentanghoclieu\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{08FD682A-62B7-4BDC-BC46-6C3D234C7AD8}|RESTAPI_NenTangHocLieu\\RESTAPI_NenTangHocLieu.csproj|solutionrelative:restapi_nentanghoclieu\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "ProfileController.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\MVC_STUDENT\\Controllers\\ProfileController.cs",
+              "RelativeDocumentMoniker": "MVC_STUDENT\\Controllers\\ProfileController.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\MVC_STUDENT\\Controllers\\ProfileController.cs",
+              "RelativeToolTip": "MVC_STUDENT\\Controllers\\ProfileController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-02T14:53:50.947Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "QuizController.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\MVC_STUDENT\\Controllers\\QuizController.cs",
+              "RelativeDocumentMoniker": "MVC_STUDENT\\Controllers\\QuizController.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\MVC_STUDENT\\Controllers\\QuizController.cs",
+              "RelativeToolTip": "MVC_STUDENT\\Controllers\\QuizController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-02T14:53:50.289Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "Web.config",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\MVC_ADMIN\\Views\\Web.config",
+              "RelativeDocumentMoniker": "MVC_ADMIN\\Views\\Web.config",
+              "ToolTip": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\MVC_ADMIN\\Views\\Web.config",
+              "RelativeToolTip": "MVC_ADMIN\\Views\\Web.config",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000601|",
+              "WhenOpened": "2025-12-02T14:45:54.423Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Web.config",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\MVC_ADMIN\\Web.config",
+              "RelativeDocumentMoniker": "MVC_ADMIN\\Web.config",
+              "ToolTip": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\MVC_ADMIN\\Web.config",
+              "RelativeToolTip": "MVC_ADMIN\\Web.config",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000601|",
+              "WhenOpened": "2025-12-02T14:00:54.412Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Web.config",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\MVC_Teacher\\Web.config",
+              "RelativeDocumentMoniker": "MVC_Teacher\\Web.config",
+              "ToolTip": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\MVC_Teacher\\Web.config",
+              "RelativeToolTip": "MVC_Teacher\\Web.config",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000601|",
+              "WhenOpened": "2025-12-02T14:00:44.056Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "CategoryController.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\MVC_ADMIN\\Controllers\\CategoryController.cs",
+              "RelativeDocumentMoniker": "MVC_ADMIN\\Controllers\\CategoryController.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\MVC_ADMIN\\Controllers\\CategoryController.cs",
+              "RelativeToolTip": "MVC_ADMIN\\Controllers\\CategoryController.cs",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAwwCsAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-02T13:01:18.93Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "MaterialApprovalController.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\MVC_ADMIN\\Controllers\\MaterialApprovalController.cs",
+              "RelativeDocumentMoniker": "MVC_ADMIN\\Controllers\\MaterialApprovalController.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\MVC_ADMIN\\Controllers\\MaterialApprovalController.cs",
+              "RelativeToolTip": "MVC_ADMIN\\Controllers\\MaterialApprovalController.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAAEkAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-02T13:01:06.338Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "NguoiDung.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\MVC_ADMIN\\Models\\NguoiDung.cs",
+              "RelativeDocumentMoniker": "MVC_ADMIN\\Models\\NguoiDung.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\MVC_ADMIN\\Models\\NguoiDung.cs",
+              "RelativeToolTip": "MVC_ADMIN\\Models\\NguoiDung.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-02T14:44:12.868Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "NenTangHocLieuContext.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\MVC_ADMIN\\Models\\NenTangHocLieuContext.cs",
+              "RelativeDocumentMoniker": "MVC_ADMIN\\Models\\NenTangHocLieuContext.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\MVC_ADMIN\\Models\\NenTangHocLieuContext.cs",
+              "RelativeToolTip": "MVC_ADMIN\\Models\\NenTangHocLieuContext.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-02T14:42:20.062Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Web.config",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\MVC_STUDENT\\Web.config",
+              "RelativeDocumentMoniker": "MVC_STUDENT\\Web.config",
+              "ToolTip": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\MVC_STUDENT\\Web.config",
+              "RelativeToolTip": "MVC_STUDENT\\Web.config",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000601|",
+              "WhenOpened": "2025-12-02T14:00:49.128Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "MonHoc.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\MVC_ADMIN\\Models\\MonHoc.cs",
+              "RelativeDocumentMoniker": "MVC_ADMIN\\Models\\MonHoc.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\MVC_ADMIN\\Models\\MonHoc.cs",
+              "RelativeToolTip": "MVC_ADMIN\\Models\\MonHoc.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-02T14:44:06.621Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "LopHoc.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\MVC_ADMIN\\Models\\LopHoc.cs",
+              "RelativeDocumentMoniker": "MVC_ADMIN\\Models\\LopHoc.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\MVC_ADMIN\\Models\\LopHoc.cs",
+              "RelativeToolTip": "MVC_ADMIN\\Models\\LopHoc.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-02T14:44:02.918Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "HocLieu.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\MVC_ADMIN\\Models\\HocLieu.cs",
+              "RelativeDocumentMoniker": "MVC_ADMIN\\Models\\HocLieu.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\MVC_ADMIN\\Models\\HocLieu.cs",
+              "RelativeToolTip": "MVC_ADMIN\\Models\\HocLieu.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB0AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-02T14:42:42.918Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "ChuDe.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\MVC_ADMIN\\Models\\ChuDe.cs",
+              "RelativeDocumentMoniker": "MVC_ADMIN\\Models\\ChuDe.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\MVC_ADMIN\\Models\\ChuDe.cs",
+              "RelativeToolTip": "MVC_ADMIN\\Models\\ChuDe.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-02T14:43:50.186Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "NenTangHocLieuContext.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\MVC_Teacher\\Models\\NenTangHocLieuContext.cs",
+              "RelativeDocumentMoniker": "MVC_Teacher\\Models\\NenTangHocLieuContext.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\MVC_Teacher\\Models\\NenTangHocLieuContext.cs",
+              "RelativeToolTip": "MVC_Teacher\\Models\\NenTangHocLieuContext.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-02T14:12:03.219Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "LopHoc.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\MVC_Teacher\\Models\\LopHoc.cs",
+              "RelativeDocumentMoniker": "MVC_Teacher\\Models\\LopHoc.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\MVC_Teacher\\Models\\LopHoc.cs",
+              "RelativeToolTip": "MVC_Teacher\\Models\\LopHoc.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-02T14:12:23.575Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "NguoiDung.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\MVC_Teacher\\Models\\NguoiDung.cs",
+              "RelativeDocumentMoniker": "MVC_Teacher\\Models\\NguoiDung.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\MVC_Teacher\\Models\\NguoiDung.cs",
+              "RelativeToolTip": "MVC_Teacher\\Models\\NguoiDung.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-02T14:12:31.286Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "MaterialController.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\MVC_Teacher\\Controllers\\MaterialController.cs",
+              "RelativeDocumentMoniker": "MVC_Teacher\\Controllers\\MaterialController.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\MVC_Teacher\\Controllers\\MaterialController.cs",
+              "RelativeToolTip": "MVC_Teacher\\Controllers\\MaterialController.cs",
+              "ViewState": "AgIAADcAAAAAAAAAAAAwwFMAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-02T13:00:46.283Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "MonHoc.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\MVC_Teacher\\Models\\MonHoc.cs",
+              "RelativeDocumentMoniker": "MVC_Teacher\\Models\\MonHoc.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\MVC_Teacher\\Models\\MonHoc.cs",
+              "RelativeToolTip": "MVC_Teacher\\Models\\MonHoc.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-02T14:12:15.824Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "HocLieu.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\MVC_Teacher\\Models\\HocLieu.cs",
+              "RelativeDocumentMoniker": "MVC_Teacher\\Models\\HocLieu.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\MVC_Teacher\\Models\\HocLieu.cs",
+              "RelativeToolTip": "MVC_Teacher\\Models\\HocLieu.cs",
+              "ViewState": "AgIAAAEAAAAAAAAAAAA5wB4AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-02T14:11:30.909Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "ChuDe.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\MVC_Teacher\\Models\\ChuDe.cs",
+              "RelativeDocumentMoniker": "MVC_Teacher\\Models\\ChuDe.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\MVC_Teacher\\Models\\ChuDe.cs",
+              "RelativeToolTip": "MVC_Teacher\\Models\\ChuDe.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-02T14:11:47.84Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "ProfileController.cs",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\MVC_Teacher\\Controllers\\ProfileController.cs",
+              "RelativeDocumentMoniker": "MVC_Teacher\\Controllers\\ProfileController.cs",
+              "ToolTip": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\MVC_Teacher\\Controllers\\ProfileController.cs",
+              "RelativeToolTip": "MVC_Teacher\\Controllers\\ProfileController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-02T14:14:38.215Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "Web.config",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\demo_HocLieu\\Web.config",
+              "RelativeDocumentMoniker": "demo_HocLieu\\Web.config",
+              "ToolTip": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\demo_HocLieu\\Web.config",
+              "RelativeToolTip": "demo_HocLieu\\Web.config",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000601|",
+              "WhenOpened": "2025-12-02T14:01:00.124Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
+              "Title": "Web.config",
+              "DocumentMoniker": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\RESTAPI_NenTangHocLieu\\Web.config",
+              "RelativeDocumentMoniker": "RESTAPI_NenTangHocLieu\\Web.config",
+              "ToolTip": "C:\\Users\\ADMIN\\source\\repos\\LTWNC\\RESTAPI_NenTangHocLieu\\Web.config",
+              "RelativeToolTip": "RESTAPI_NenTangHocLieu\\Web.config",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000601|",
+              "WhenOpened": "2025-12-02T14:00:31.448Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

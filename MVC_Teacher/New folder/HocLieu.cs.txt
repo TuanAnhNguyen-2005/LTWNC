@@ -1,0 +1,28 @@
+using System;
+
+namespace MVC_Teacher.Models
+{
+    public class HocLieu
+    {
+        public int MaHocLieu { get; set; }
+        public string TieuDe { get; set; }
+        public string MoTa { get; set; }
+        public string DuongDanTep { get; set; }
+        public string LoaiTep { get; set; }
+        public long? KichThuocTep { get; set; }
+        public string DoKho { get; set; }
+        public DateTime? NgayDang { get; set; }
+        public int? MaChuDe { get; set; }
+        public int? MaNguoiDung { get; set; }
+        public int? MaMonHoc { get; set; }
+        public int? MaLopHoc { get; set; }
+        public bool? DaDuyet { get; set; }
+        public string TrangThaiDuyet { get; set; }
+        public int? NguoiDuyet { get; set; }
+        public DateTime? NgayDuyet { get; set; }
+        public string LyDoTuChoi { get; set; }
+        public int? LuotXem { get; set; }
+        public int? SoLuotTai { get; set; }
+        public double? DiemTrungBinh { get; set; }
+    }
+}
