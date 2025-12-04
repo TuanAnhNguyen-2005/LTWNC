@@ -8,9 +8,9 @@ namespace MVC_ADMIN.Controllers
 {
     public class StatisticalController : Controller
     {
-        // GET: Statistical
         public ActionResult Index()
         {
+            ViewBag.Title = "Dashboard Admin";
             return View();
         }
     }
