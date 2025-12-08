@@ -53,12 +53,16 @@ namespace MVC_ADMIN.Filters
             {
                 // Đã đăng nhập nhưng không có quyền → redirect về trang chủ
                 string role = filterContext.HttpContext.Session["Role"]?.ToString();
-                if (role == "Admin")
-                    filterContext.Result = new RedirectResult("~/Admin");
-                else if (role == "Teacher")
-                    filterContext.Result = new RedirectResult("~/Teacher/Dashboard");
+                if (string.Equals(role, "Admin", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Trang dashboard admin
+                    filterContext.Result = new RedirectResult("~/Admin/Statistical");
+                }
                 else
-                    filterContext.Result = new RedirectResult("~/Student/Dashboard");
+                {
+                    // Teacher/Student trong site admin: đưa về trang Home chung (có layout gọn)
+                    filterContext.Result = new RedirectResult("~/Home");
+                }
             }
         }
     }

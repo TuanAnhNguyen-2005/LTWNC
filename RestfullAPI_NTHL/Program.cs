@@ -1,11 +1,25 @@
-﻿// Program.cs – RESTfulAPI.NTHL (ASP.NET Core)
+﻿// Program.cs – RESTfulAPI_NTHL
+using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
+using RestfullAPI_NTHL.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
+// DbContext
+builder.Services.AddDbContext<NenTangDbContext>(options =>
+{
+    var connection = builder.Configuration.GetConnectionString("DefaultConnection");
+    options.UseSqlServer(connection);
+});
 
-// BẬT SWAGGER – 2 DÒNG QUAN TRỌNG
+// Controllers + JSON tránh vòng tham chiếu
+builder.Services.AddControllers()
+    .AddJsonOptions(opt =>
+    {
+        opt.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    });
+
+builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new() { Title = "NenTangHocLieu API", Version = "v1" });
@@ -13,12 +27,11 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-// BẬT SWAGGER TRONG MỌI MÔI TRƯỜNG (Development + Production)
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "NenTangHocLieu API v1");
-    c.RoutePrefix = "swagger"; // vào https://localhost:7068/swagger
+    c.RoutePrefix = "swagger";
 });
 
 app.UseHttpsRedirection();
