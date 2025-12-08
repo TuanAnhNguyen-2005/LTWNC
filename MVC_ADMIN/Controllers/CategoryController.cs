@@ -8,7 +8,17 @@ namespace MVC_ADMIN.Controllers
     [AuthorizeRole("Admin")]
     public class CategoryController : BaseController
     {
-        // add this attribute above the Index action to test
+        // Temporary debug endpoint — remove after debugging
+        [AllowAnonymous]
+        public ActionResult DebugSession()
+        {
+            var userId = Session["UserId"] ?? "null";
+            var email = Session["Email"] ?? "null";
+            var role = Session["Role"] ?? "null";
+            return Content($"UserId={userId}, Email={email}, Role={role}");
+        }
+
+        // annotate the Index action for testing
         [AllowAnonymous]
         public async Task<ActionResult> Index()
         {
@@ -182,13 +192,6 @@ namespace MVC_ADMIN.Controllers
                 HandleException(ex, "Đã xảy ra lỗi khi xóa danh mục");
                 return RedirectToAction("Index");
             }
-        }
-
-        // temporary debug endpoint — remove after use
-        [AllowAnonymous]
-        public ActionResult DebugSession()
-        {
-            return Content($"UserId={Session["UserId"] ?? "null"}, Email={Session["Email"] ?? "null"}, Role={Session["Role"] ?? "null"}");
         }
     }
 }
