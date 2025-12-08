@@ -1,0 +1,208 @@
+@{
+    Layout = "~/Views/Shared/_StudentLayout.cshtml";
+    ViewBag.Title = "Trang chủ";
+}
+
+<!-- Hero Section -->
+<section class="hero-section mb-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 4rem 0; border-radius: 15px; margin-top: 2rem;">
+    <div class="container text-center text-white">
+        <h1 class="display-4 fw-bold mb-3">
+            <i class="fas fa-graduation-cap me-3"></i>Chào mừng đến HocLieu
+        </h1>
+        <p class="lead mb-4">Nền tảng học liệu trực tuyến - Nơi kiến thức được chia sẻ</p>
+        
+        <!-- Search Bar -->
+        <div class="search-bar">
+            <form action="/Search" method="get">
+                <div class="input-group">
+                    <input type="text" class="form-control search-input" name="keyword" placeholder="Tìm kiếm học liệu, bài giảng, tài liệu...">
+                    <button class="btn btn-light" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- Categories Section -->
+<section class="categories-section mb-5">
+    <div class="container">
+        <h2 class="mb-4">
+            <i class="fas fa-folder-open text-primary me-2"></i>Danh mục phổ biến
+        </h2>
+        <div class="row">
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="card card-modern text-center">
+                    <div class="card-body">
+                        <i class="fas fa-code fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Lập trình</h5>
+                        <p class="text-muted">50+ học liệu</p>
+                        <a href="/Category/Details/1" class="btn btn-gradient btn-sm">Xem thêm</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="card card-modern text-center">
+                    <div class="card-body">
+                        <i class="fas fa-database fa-3x text-success mb-3"></i>
+                        <h5 class="card-title">Cơ sở dữ liệu</h5>
+                        <p class="text-muted">30+ học liệu</p>
+                        <a href="/Category/Details/2" class="btn btn-gradient btn-sm">Xem thêm</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="card card-modern text-center">
+                    <div class="card-body">
+                        <i class="fas fa-network-wired fa-3x text-info mb-3"></i>
+                        <h5 class="card-title">Mạng máy tính</h5>
+                        <p class="text-muted">25+ học liệu</p>
+                        <a href="/Category/Details/3" class="btn btn-gradient btn-sm">Xem thêm</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="card card-modern text-center">
+                    <div class="card-body">
+                        <i class="fas fa-globe fa-3x text-warning mb-3"></i>
+                        <h5 class="card-title">Lập trình Web</h5>
+                        <p class="text-muted">40+ học liệu</p>
+                        <a href="/Category/Details/4" class="btn btn-gradient btn-sm">Xem thêm</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Materials Section -->
+<section class="featured-materials mb-5">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>
+                <i class="fas fa-star text-warning me-2"></i>Học liệu nổi bật
+            </h2>
+            <a href="/LearningMaterial" class="btn btn-outline-primary">Xem tất cả <i class="fas fa-arrow-right ms-1"></i></a>
+        </div>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card material-card">
+                    <div class="material-thumbnail">
+                        <i class="fas fa-file-pdf"></i>
+                    </div>
+                    <div class="card-body">
+                        <span class="badge bg-primary mb-2">PDF</span>
+                        <h5 class="card-title">Bài giảng OOP Cơ bản</h5>
+                        <p class="text-muted small mb-2">
+                            <i class="fas fa-user me-1"></i>GV Trần B
+                            <span class="ms-3"><i class="fas fa-eye me-1"></i>1,234 lượt xem</span>
+                        </p>
+                        <div class="mb-2">
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <span class="ms-1">4.8</span>
+                        </div>
+                        <a href="/LearningMaterial/Details/1" class="btn btn-gradient btn-sm w-100">Xem chi tiết</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card material-card">
+                    <div class="material-thumbnail">
+                        <i class="fas fa-video"></i>
+                    </div>
+                    <div class="card-body">
+                        <span class="badge bg-danger mb-2">Video</span>
+                        <h5 class="card-title">Video SQL Join</h5>
+                        <p class="text-muted small mb-2">
+                            <i class="fas fa-user me-1"></i>GV Lê C
+                            <span class="ms-3"><i class="fas fa-eye me-1"></i>856 lượt xem</span>
+                        </p>
+                        <div class="mb-2">
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="far fa-star"></i>
+                            <span class="ms-1">4.5</span>
+                        </div>
+                        <a href="/LearningMaterial/Details/2" class="btn btn-gradient btn-sm w-100">Xem chi tiết</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card material-card">
+                    <div class="material-thumbnail">
+                        <i class="fas fa-file-powerpoint"></i>
+                    </div>
+                    <div class="card-body">
+                        <span class="badge bg-orange mb-2">PowerPoint</span>
+                        <h5 class="card-title">Slide Mạng máy tính</h5>
+                        <p class="text-muted small mb-2">
+                            <i class="fas fa-user me-1"></i>GV Trần B
+                            <span class="ms-3"><i class="fas fa-eye me-1"></i>642 lượt xem</span>
+                        </p>
+                        <div class="mb-2">
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star-half-alt text-warning"></i>
+                            <span class="ms-1">4.7</span>
+                        </div>
+                        <a href="/LearningMaterial/Details/3" class="btn btn-gradient btn-sm w-100">Xem chi tiết</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Statistics Section -->
+<section class="statistics-section mb-5">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="card card-modern">
+                    <div class="card-body">
+                        <i class="fas fa-book fa-3x text-primary mb-3"></i>
+                        <h3 class="fw-bold">150+</h3>
+                        <p class="text-muted mb-0">Học liệu</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="card card-modern">
+                    <div class="card-body">
+                        <i class="fas fa-users fa-3x text-success mb-3"></i>
+                        <h3 class="fw-bold">500+</h3>
+                        <p class="text-muted mb-0">Sinh viên</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="card card-modern">
+                    <div class="card-body">
+                        <i class="fas fa-chalkboard-teacher fa-3x text-info mb-3"></i>
+                        <h3 class="fw-bold">30+</h3>
+                        <p class="text-muted mb-0">Giảng viên</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="card card-modern">
+                    <div class="card-body">
+                        <i class="fas fa-folder fa-3x text-warning mb-3"></i>
+                        <h3 class="fw-bold">20+</h3>
+                        <p class="text-muted mb-0">Danh mục</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+

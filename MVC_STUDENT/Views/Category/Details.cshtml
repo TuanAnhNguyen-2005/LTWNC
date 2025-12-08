@@ -1,0 +1,50 @@
+@{
+    Layout = "~/Views/Shared/_StudentLayout.cshtml";
+    ViewBag.Title = "Chi tiết danh mục";
+    var categoryId = ViewBag.CategoryId ?? 1;
+}
+
+<div class="mb-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/TrangChu">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a href="/Category">Danh mục</a></li>
+            <li class="breadcrumb-item active">Lập trình</li>
+        </ol>
+    </nav>
+    <h2>
+        <i class="fas fa-folder text-primary me-2"></i>Lập trình
+    </h2>
+    <p class="text-muted">50+ học liệu về lập trình</p>
+</div>
+
+<div class="row">
+    @for (int i = 1; i <= 9; i++)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card material-card">
+                <div class="material-thumbnail">
+                    <i class="fas fa-file-pdf"></i>
+                </div>
+                <div class="card-body">
+                    <span class="badge bg-primary mb-2">PDF</span>
+                    <h5 class="card-title">Học liệu @i</h5>
+                    <p class="text-muted small mb-2">
+                        <i class="fas fa-user me-1"></i>Giảng viên
+                        <span class="ms-3"><i class="fas fa-eye me-1"></i>@(i * 100) lượt xem</span>
+                    </p>
+                    <div class="mb-2">
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="far fa-star"></i>
+                        <span class="ms-1">4.0</span>
+                    </div>
+                    <a href="/LearningMaterial/Details/@i" class="btn btn-gradient btn-sm w-100">Xem chi tiết</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+

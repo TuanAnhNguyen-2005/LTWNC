@@ -1,0 +1,138 @@
+@{
+    Layout = "~/Views/Shared/_StudentLayout.cshtml";
+    ViewBag.Title = "Chi tiết học liệu";
+}
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card card-modern mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <span class="badge bg-primary mb-2">PDF</span>
+                        <h2>Bài giảng OOP Cơ bản</h2>
+                        <p class="text-muted mb-0">
+                            <i class="fas fa-user me-1"></i>GV Trần B
+                            <span class="ms-3"><i class="fas fa-calendar me-1"></i>01/01/2024</span>
+                            <span class="ms-3"><i class="fas fa-eye me-1"></i>1,234 lượt xem</span>
+                        </p>
+                    </div>
+                    <button class="btn btn-outline-danger">
+                        <i class="fas fa-heart"></i>
+                    </button>
+                </div>
+
+                <div class="mb-3">
+                    <h5>Mô tả</h5>
+                    <p>Bài giảng về lập trình hướng đối tượng (OOP) cơ bản trong Java, bao gồm các khái niệm về class, object, inheritance, polymorphism...</p>
+                </div>
+
+                <div class="mb-3">
+                    <h5>Đánh giá</h5>
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="me-3">
+                            <span class="display-6 fw-bold">4.8</span>
+                            <div>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                            </div>
+                            <small class="text-muted">(120 đánh giá)</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <a href="#" class="btn btn-gradient">
+                        <i class="fas fa-download me-1"></i>Tải xuống
+                    </a>
+                    <a href="#" class="btn btn-outline-primary">
+                        <i class="fas fa-eye me-1"></i>Xem trực tuyến
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comments Section -->
+        <div class="card card-modern">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="fas fa-comments me-2"></i>Bình luận (15)</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <textarea class="form-control" rows="3" placeholder="Viết bình luận..."></textarea>
+                    <button class="btn btn-gradient btn-sm mt-2">Gửi bình luận</button>
+                </div>
+
+                <div class="comment-item mb-3 p-3 border rounded">
+                    <div class="d-flex">
+                        <div class="user-avatar me-3">A</div>
+                        <div class="flex-grow-1">
+                            <strong>Nguyễn Văn A</strong>
+                            <small class="text-muted ms-2">2 giờ trước</small>
+                            <p class="mb-0 mt-1">Bài giảng rất hay và dễ hiểu!</p>
+                            <div class="mt-2">
+                                <button class="btn btn-sm btn-link p-0 me-2">
+                                    <i class="fas fa-thumbs-up"></i> Thích
+                                </button>
+                                <button class="btn btn-sm btn-link p-0">
+                                    <i class="fas fa-reply"></i> Trả lời
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card card-modern mb-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Thông tin</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr>
+                        <th>Danh mục:</th>
+                        <td><span class="category-badge">Lập trình</span></td>
+                    </tr>
+                    <tr>
+                        <th>Kích thước:</th>
+                        <td>2.5 MB</td>
+                    </tr>
+                    <tr>
+                        <th>Định dạng:</th>
+                        <td>PDF</td>
+                    </tr>
+                    <tr>
+                        <th>Lượt tải:</th>
+                        <td>856</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="card card-modern">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Học liệu liên quan</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h6>Lập trình Java nâng cao</h6>
+                    <small class="text-muted">GV Trần B</small>
+                    <a href="#" class="d-block mt-1">Xem thêm →</a>
+                </div>
+                <hr>
+                <div class="mb-3">
+                    <h6>Design Patterns</h6>
+                    <small class="text-muted">GV Lê C</small>
+                    <a href="#" class="d-block mt-1">Xem thêm →</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
