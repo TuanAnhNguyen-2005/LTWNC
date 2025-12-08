@@ -1,118 +1,139 @@
-﻿// Controllers/SignUpController.cs  (hoặc LoginController, ProfileController… đều dùng được)
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.Net.Http;
-using System.Threading.Tasks;
+using System.Data.SqlClient;
 using System.Web.Mvc;
-using Newtonsoft.Json;
+using MVC_ADMIN.Services;
 
 namespace MVC_ADMIN.Controllers
 {
-    public class SignUpController : Controller
+    /// <summary>
+    /// Controller xử lý đăng ký
+    /// </summary>
+    public class SignUpController : BaseController
     {
-        // Thuộc tính tự động lấy URL API – KHÔNG CÒN HARD-CODE
-        // ĐOẠN NÀY DÁN VÀO ĐẦU MỌI CONTROLLER – CHỈ DÁN 1 LẦN DUY NHẤT!!!
-        // DÁN NGUYÊN KHỐI NÀY VÀO ĐẦU MỌI CONTROLLER (Login, SignUp, User, Category, v.v…)
-        private string ApiUrl
+        private readonly UserDataService _userDataService;
+
+        public SignUpController()
         {
-            get
-            {
-                // Nếu đã cache trong Session rồi → trả luôn (nhanh)
-                if (Session["ApiBaseUrl"] != null)
-                    return Session["ApiBaseUrl"].ToString();
-
-                const string FALLBACK_URL = "https://localhost:7068/api"; // ĐỔI 7068 THÀNH CỔNG API HIỆN TẠI CỦA BẠN
-
-                try
-                {
-                    using (HttpClient client = new HttpClient())
-                    {
-                        HttpResponseMessage response = client.GetAsync("https://localhost:7068/api/config/urls").Result;
-
-                        if (response.IsSuccessStatusCode)
-                        {
-                            string json = response.Content.ReadAsStringAsync().Result;
-                            dynamic cfg = JsonConvert.DeserializeObject(json);
-
-                            string baseUrl = (cfg?.ApiBaseUrl?.ToString() ?? FALLBACK_URL.Replace("/api", "")).TrimEnd('/');
-                            string fullUrl = baseUrl + "/api";
-
-                            Session["ApiBaseUrl"] = fullUrl;
-                            return fullUrl;
-                        }
-                    }
-                }
-                catch
-                {
-                    // Không gọi được config → im lặng dùng fallback
-                }
-
-                // Fallback cuối cùng
-                Session["ApiBaseUrl"] = FALLBACK_URL;
-                return FALLBACK_URL;
-            }
+            _userDataService = new UserDataService();
         }
-        // DÁN XONG – CHẠY NGON 100% VỚI C# 7.3!
+
         public ActionResult Index()
         {
-            return View();
+            // Nếu đã đăng nhập thì redirect về trang chủ
+            if (IsAuthenticated())
+                return RedirectToHomeByRole();
+
+            return View(new SignUpViewModel());
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Index(SignUpViewModel model)
+        public ActionResult Index(SignUpViewModel model)
         {
-            if (!ModelState.IsValid)
-                return View(model);
-
-            using (var client = new HttpClient())
+            try
             {
-                var json = JsonConvert.SerializeObject(new
+                if (!ModelState.IsValid)
+                    return View(model);
+
+                // Kiểm tra mật khẩu xác nhận
+                if (model.Password != model.ConfirmPassword)
                 {
-                    fullName = model.FullName,
-                    email = model.Email,
-                    password = model.Password,
-                    confirmPassword = model.ConfirmPassword,
-                    role = model.Role
-                });
-
-                var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
-
-                // DÙNG ApiUrl Ở ĐÂY → KHÔNG LỖI NỮA
-                var response = await client.PostAsync($"{ApiUrl}/auth/register", content);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    TempData["Success"] = "Đăng ký thành công! Vui lòng đăng nhập.";
-                    return RedirectToAction("Index", "Login");
+                    ModelState.AddModelError("ConfirmPassword", "Mật khẩu xác nhận không khớp!");
+                    return View(model);
                 }
 
-                var errorJson = await response.Content.ReadAsStringAsync();
-                dynamic err = JsonConvert.DeserializeObject(errorJson);
-                ViewBag.Error = err?.message ?? "Đăng ký thất bại!";
+                // Lưu vào database
+                bool success = _userDataService.RegisterUser(
+                    model.FullName,
+                    model.Email,
+                    model.Password,
+                    model.Role,
+                    model.PhoneNumber,
+                    model.Gender,
+                    model.Address,
+                    model.DateOfBirth
+                );
+
+                if (success)
+                {
+                    SetSuccessMessage("Đăng ký thành công! Vui lòng đăng nhập.");
+                    return RedirectToAction("Index", "Login");
+                }
+                else
+                {
+                    ViewBag.Error = "Đăng ký thất bại! Email có thể đã được sử dụng.";
+                    return View(model);
+                }
+            }
+            catch (SqlException sqlEx)
+            {
+                // Lỗi SQL cụ thể
+                string errorMsg = "Đã xảy ra lỗi khi đăng ký: ";
+                if (sqlEx.Number == 2627 || sqlEx.Number == 2601) // Duplicate key
+                {
+                    errorMsg = "Email này đã được sử dụng. Vui lòng chọn email khác.";
+                }
+                else
+                {
+                    errorMsg += sqlEx.Message;
+                }
+                ViewBag.Error = errorMsg;
+                System.Diagnostics.Debug.WriteLine($"SQL Error: {sqlEx.Message}");
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, "Đã xảy ra lỗi khi đăng ký. Vui lòng thử lại sau.");
+                ViewBag.Error = "Đã xảy ra lỗi khi đăng ký. Vui lòng thử lại sau.";
+                System.Diagnostics.Debug.WriteLine($"Error: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Stack: {ex.StackTrace}");
                 return View(model);
             }
         }
     }
 
-    // ViewModel (đã fix Compare lỗi)
+    /// <summary>
+    /// ViewModel cho đăng ký
+    /// </summary>
     public class SignUpViewModel
     {
+        [Required(ErrorMessage = "Vui lòng nhập họ và tên")]
+        [Display(Name = "Họ và tên")]
         public string FullName { get; set; }
 
         [Required(ErrorMessage = "Vui lòng nhập email")]
         [EmailAddress(ErrorMessage = "Email không hợp lệ")]
+        [Display(Name = "Email")]
         public string Email { get; set; }
 
-        [Required]
-        [StringLength(100, MinimumLength = 6)]
+        [Required(ErrorMessage = "Vui lòng nhập mật khẩu")]
+        [StringLength(100, MinimumLength = 6, ErrorMessage = "Mật khẩu phải có ít nhất 6 ký tự")]
         [DataType(DataType.Password)]
+        [Display(Name = "Mật khẩu")]
         public string Password { get; set; }
 
+        [Required(ErrorMessage = "Vui lòng xác nhận mật khẩu")]
         [System.Web.Mvc.Compare("Password", ErrorMessage = "Mật khẩu xác nhận không khớp")]
         [DataType(DataType.Password)]
+        [Display(Name = "Xác nhận mật khẩu")]
         public string ConfirmPassword { get; set; }
 
+        [Display(Name = "Số điện thoại")]
+        public string PhoneNumber { get; set; }
+
+        [Display(Name = "Giới tính")]
+        public string Gender { get; set; }
+
+        [Display(Name = "Địa chỉ")]
+        public string Address { get; set; }
+
+        [Display(Name = "Ngày sinh")]
+        [DataType(DataType.Date)]
+        public DateTime? DateOfBirth { get; set; }
+
+        [Required(ErrorMessage = "Vui lòng chọn vai trò")]
+        [Display(Name = "Vai trò")]
         public string Role { get; set; } = "Student";
     }
 }

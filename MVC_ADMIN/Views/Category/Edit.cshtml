@@ -1,0 +1,97 @@
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewBag.Title = "Chỉnh sửa danh mục";
+}
+
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0"><i class="fas fa-folder-edit me-2"></i>Chỉnh sửa danh mục</h5>
+            </div>
+            <div class="card-body">
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show">
+                        <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
+                <form id="editCategoryForm" method="post" action="/Category/Edit">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="categoryId" name="categoryId" value="@(ViewBag.Category?.categoryId ?? ViewBag.Category?.id)" />
+                    
+                    <div class="mb-3">
+                        <label for="categoryName" class="form-label">Tên danh mục <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="categoryName" name="categoryName" 
+                               value="@(ViewBag.Category?.categoryName ?? ViewBag.Category?.CategoryName)" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="slug" class="form-label">Slug</label>
+                        <input type="text" class="form-control" id="slug" name="slug" 
+                               value="@(ViewBag.Category?.slug ?? ViewBag.Category?.Slug)">
+                        <small class="form-text text-muted">URL-friendly version của tên danh mục</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Mô tả</label>
+                        <textarea class="form-control" id="description" name="description" rows="4">@(ViewBag.Category?.description ?? ViewBag.Category?.Description)</textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="parentCategoryId" class="form-label">Danh mục cha</label>
+                        <select class="form-select" id="parentCategoryId" name="parentCategoryId">
+                            <option value="">-- Không có (danh mục gốc) --</option>
+                            <!-- Sẽ được load từ API -->
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="displayOrder" class="form-label">Thứ tự hiển thị</label>
+                        <input type="number" class="form-control" id="displayOrder" name="displayOrder" 
+                               value="@(ViewBag.Category?.displayOrder ?? ViewBag.Category?.DisplayOrder ?? 0)" min="0">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="isActive" class="form-label">Trạng thái</label>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="isActive" name="isActive" 
+                                   checked="@(ViewBag.Category?.isActive ?? ViewBag.Category?.IsActive ?? true)">
+                            <label class="form-check-label" for="isActive">Kích hoạt</label>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="/Category" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>Quay lại
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>Cập nhật
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function() {
+            // Tự động tạo slug từ tên danh mục
+            $('#categoryName').on('input', function() {
+                var name = $(this).val();
+                var slug = name.toLowerCase()
+                    .normalize('NFD')
+                    .replace(/[\u0300-\u036f]/g, '')
+                    .replace(/đ/g, 'd').replace(/Đ/g, 'D')
+                    .replace(/[^a-z0-9]+/g, '-')
+                    .replace(/(^-|-$)/g, '');
+                $('#slug').val(slug);
+            });
+        });
+    </script>
+}
+
