@@ -102,3 +102,4 @@ taskkill /PID <PID> /F
 - Chrome tự động mở sau 5-6 giây
 - Để dừng, đóng terminal hoặc nhấn **Ctrl+C**
 
+
