@@ -9,10 +9,10 @@
             <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
                 <h5 class="mb-0"><i class="fas fa-shield-alt me-2"></i>Chi tiết quyền</h5>
                 <div>
-                    <a href="/Permission/Edit/@(ViewBag.Permission?.permissionId ?? ViewBag.Permission?.id)" class="btn btn-sm btn-primary">
+                    <a href="@Url.RouteUrl("Admin", new { controller = "Permission", action = "Edit", id = (ViewBag.Permission?.permissionId ?? ViewBag.Permission?.id) })" class="btn btn-sm btn-primary">
                         <i class="fas fa-edit me-1"></i>Chỉnh sửa
                     </a>
-                    <a href="/Permission" class="btn btn-sm btn-secondary">
+                    <a href="@Url.RouteUrl("Admin", new { controller = "Permission", action = "Index" })" class="btn btn-sm btn-secondary">
                         <i class="fas fa-arrow-left me-1"></i>Quay lại
                     </a>
                 </div>
@@ -83,7 +83,7 @@
                     <div class="alert alert-warning">
                         <i class="fas fa-exclamation-triangle me-2"></i>Không tìm thấy thông tin quyền
                     </div>
-                    <a href="/Permission" class="btn btn-secondary">
+                    <a href="@Url.RouteUrl("Admin", new { controller = "Permission", action = "Index" })" class="btn btn-secondary">
                         <i class="fas fa-arrow-left me-1"></i>Quay lại danh sách
                     </a>
                 }
@@ -91,4 +91,3 @@
         </div>
     </div>
 </div>
-

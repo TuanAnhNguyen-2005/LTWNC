@@ -8,15 +8,27 @@ namespace MVC_ADMIN.Controllers
     [AuthorizeRole("Admin")]
     public class PermissionController : BaseController
     {
+        // Temporary debug endpoint — remove after debugging
+        [AllowAnonymous]
+        public ActionResult DebugSession()
+        {
+            var userId = Session["UserId"] ?? "null";
+            var email = Session["Email"] ?? "null";
+            var role = Session["Role"] ?? "null";
+            return Content($"UserId={userId}, Email={email}, Role={role}");
+        }
+
+        // Allow anonymous for Index while debugging routing/auth — remove AllowAnonymous when done
+        [AllowAnonymous]
         public async Task<ActionResult> Index()
         {
             try
             {
                 ViewBag.Title = "Quản lý quyền";
-                
+
                 // Gọi API lấy danh sách quyền
                 var response = await ApiService.GetWithErrorHandlingAsync<dynamic>("permissions");
-                
+
                 if (response.Success)
                 {
                     ViewBag.Permissions = response.Data;
@@ -25,7 +37,7 @@ namespace MVC_ADMIN.Controllers
                 {
                     SetErrorMessage(response.Error ?? "Không thể tải danh sách quyền");
                 }
-                
+
                 return View();
             }
             catch (Exception ex)
@@ -35,6 +47,8 @@ namespace MVC_ADMIN.Controllers
             }
         }
 
+        // Make GET create accessible for debugging like Category — POST remains protected by AuthorizeRole on controller
+        [AllowAnonymous]
         public ActionResult Create()
         {
             ViewBag.Title = "Thêm quyền mới";
@@ -57,13 +71,13 @@ namespace MVC_ADMIN.Controllers
                 };
 
                 var response = await ApiService.PostAsync<dynamic, dynamic>("permissions", permissionData);
-                
+
                 if (response != null)
                 {
                     SetSuccessMessage("Thêm quyền thành công!");
                     return RedirectToAction("Index");
                 }
-                
+
                 SetErrorMessage("Thêm quyền thất bại!");
                 return View();
             }
@@ -74,18 +88,20 @@ namespace MVC_ADMIN.Controllers
             }
         }
 
+        // Allow anonymous GET details for debugging; POST/modify actions remain protected
+        [AllowAnonymous]
         public async Task<ActionResult> Details(int id)
         {
             try
             {
                 var response = await ApiService.GetWithErrorHandlingAsync<dynamic>($"permissions/{id}");
-                
+
                 if (response.Success)
                 {
                     ViewBag.Permission = response.Data;
                     return View();
                 }
-                
+
                 SetErrorMessage(response.Error ?? "Không tìm thấy quyền");
                 return RedirectToAction("Index");
             }
@@ -96,20 +112,22 @@ namespace MVC_ADMIN.Controllers
             }
         }
 
+        // Allow anonymous GET edit page for debugging; POST update stays protected
+        [AllowAnonymous]
         public async Task<ActionResult> Edit(int id)
         {
             try
             {
                 ViewBag.Title = "Chỉnh sửa quyền";
-                
+
                 var response = await ApiService.GetWithErrorHandlingAsync<dynamic>($"permissions/{id}");
-                
+
                 if (response.Success)
                 {
                     ViewBag.Permission = response.Data;
                     return View();
                 }
-                
+
                 SetErrorMessage(response.Error ?? "Không tìm thấy quyền");
                 return RedirectToAction("Index");
             }
@@ -127,7 +145,7 @@ namespace MVC_ADMIN.Controllers
             try
             {
                 int permissionId = int.Parse(form["permissionId"]);
-                
+
                 var permissionData = new
                 {
                     permissionName = form["permissionName"],
@@ -138,13 +156,13 @@ namespace MVC_ADMIN.Controllers
                 };
 
                 var response = await ApiService.PutAsync<dynamic, dynamic>($"permissions/{permissionId}", permissionData);
-                
+
                 if (response != null)
                 {
                     SetSuccessMessage("Cập nhật quyền thành công!");
                     return RedirectToAction("Index");
                 }
-                
+
                 SetErrorMessage("Cập nhật quyền thất bại!");
                 return RedirectToAction("Edit", new { id = permissionId });
             }
@@ -161,7 +179,7 @@ namespace MVC_ADMIN.Controllers
             try
             {
                 var success = await ApiService.DeleteAsync($"permissions/{id}");
-                
+
                 if (success)
                 {
                     SetSuccessMessage("Xóa quyền thành công!");
@@ -170,7 +188,7 @@ namespace MVC_ADMIN.Controllers
                 {
                     SetErrorMessage("Xóa quyền thất bại!");
                 }
-                
+
                 return RedirectToAction("Index");
             }
             catch (Exception ex)

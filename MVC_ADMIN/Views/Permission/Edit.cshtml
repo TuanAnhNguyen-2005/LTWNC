@@ -18,20 +18,20 @@
                     </div>
                 }
 
-                <form id="editPermissionForm" method="post" action="/Permission/Edit">
+                <form id="editPermissionForm" method="post" action="@Url.RouteUrl("Admin", new { controller = "Permission", action = "Edit" })">
                     @Html.AntiForgeryToken()
                     <input type="hidden" id="permissionId" name="permissionId" value="@(ViewBag.Permission?.permissionId ?? ViewBag.Permission?.id)" />
-                    
+
                     <div class="mb-3">
                         <label for="permissionName" class="form-label">Tên quyền <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="permissionName" name="permissionName" 
+                        <input type="text" class="form-control" id="permissionName" name="permissionName"
                                value="@(ViewBag.Permission?.permissionName ?? ViewBag.Permission?.PermissionName)" required>
                         <small class="form-text text-muted">Ví dụ: ViewUsers, EditUsers, DeleteUsers</small>
                     </div>
 
                     <div class="mb-3">
                         <label for="displayName" class="form-label">Tên hiển thị <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="displayName" name="displayName" 
+                        <input type="text" class="form-control" id="displayName" name="displayName"
                                value="@(ViewBag.Permission?.displayName ?? ViewBag.Permission?.DisplayName)" required>
                         <small class="form-text text-muted">Tên hiển thị cho người dùng</small>
                     </div>
@@ -57,14 +57,14 @@
                     <div class="mb-3">
                         <label for="isActive" class="form-label">Trạng thái</label>
                         <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" id="isActive" name="isActive" 
+                            <input class="form-check-input" type="checkbox" id="isActive" name="isActive"
                                    checked="@(ViewBag.Permission?.isActive ?? ViewBag.Permission?.IsActive ?? true)">
                             <label class="form-check-label" for="isActive">Kích hoạt</label>
                         </div>
                     </div>
 
                     <div class="d-flex justify-content-between">
-                        <a href="/Permission" class="btn btn-secondary">
+                        <a href="@Url.RouteUrl("Admin", new { controller = "Permission", action = "Index" })" class="btn btn-secondary">
                             <i class="fas fa-arrow-left me-1"></i>Quay lại
                         </a>
                         <button type="submit" class="btn btn-primary">
@@ -76,4 +76,3 @@
         </div>
     </div>
 </div>
-
