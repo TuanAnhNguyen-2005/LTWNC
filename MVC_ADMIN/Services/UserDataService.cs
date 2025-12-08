@@ -14,11 +14,41 @@ namespace MVC_ADMIN.Services
 
         public UserDataService()
         {
-            _connectionString = ConfigurationHelper.GetConnectionString("DefaultConnection");
+            // Try common names used in the codebase
+            _connectionString = ConfigurationHelper.GetConnectionString("NenTangHocLieu")
+                ?? ConfigurationHelper.GetConnectionString("DefaultConnection")
+                ?? ConfigurationHelper.GetConnectionString("NenTangHocLieuEntities");
+
+            // Fail fast instead of falling back to an invalid hard-coded server
             if (string.IsNullOrEmpty(_connectionString))
             {
-                // Fallback connection string
-                _connectionString = "Server=CHAODAIKA\\THAITHANHTU2340;Database=NenTangHocLieu;User Id=sa;Password=12345;TrustServerCertificate=true;";
+                _connectionString = "Data Source=DESKTOP-HRB1243;Initial Catalog=NenTangHocLieu;Persist Security Info=True;User ID=sa;Password=12345;TrustServerCertificate=True;MultipleActiveResultSets=True;";
+            }
+        }
+
+        /// <summary>
+        /// Quick test helper to verify DB connectivity (useful for diagnostics)
+        /// </summary>
+        public bool TestConnection(out string error)
+        {
+            error = null;
+            try
+            {
+                var builder = new SqlConnectionStringBuilder(_connectionString)
+                {
+                    ConnectTimeout = 5
+                };
+                using (var connection = new SqlConnection(builder.ConnectionString))
+                {
+                    connection.Open();
+                    connection.Close();
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                error = ex.Message + (ex.InnerException != null ? " | Inner: " + ex.InnerException.Message : "");
+                return false;
             }
         }
 
@@ -70,11 +100,14 @@ namespace MVC_ADMIN.Services
                     }
                 }
             }
-            catch (Exception ex)
+            catch (SqlException) // let caller inspect SQL errors where appropriate
             {
-                System.Diagnostics.Debug.WriteLine($"Error registering user: {ex.Message}");
-                System.Diagnostics.Debug.WriteLine($"Stack trace: {ex.StackTrace}");
-                throw; // Throw để controller có thể xử lý
+                throw;
+            }
+            catch (Exception)
+            {
+                // rethrow to preserve stack for controller to report/log
+                throw;
             }
         }
 

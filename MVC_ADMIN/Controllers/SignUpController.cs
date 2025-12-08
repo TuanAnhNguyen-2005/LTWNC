@@ -68,28 +68,36 @@ namespace MVC_ADMIN.Controllers
             }
             catch (SqlException sqlEx)
             {
-                // Lỗi SQL cụ thể
-                string errorMsg = "Đã xảy ra lỗi khi đăng ký: ";
-                if (sqlEx.Number == 2627 || sqlEx.Number == 2601) // Duplicate key
-                {
-                    errorMsg = "Email này đã được sử dụng. Vui lòng chọn email khác.";
-                }
-                else
-                {
-                    errorMsg += sqlEx.Message;
-                }
-                ViewBag.Error = errorMsg;
+                // show the SQL error for debugging (temporary)
+                ViewBag.Error = "Đã xảy ra lỗi khi đăng ký: " + sqlEx.Message;
                 System.Diagnostics.Debug.WriteLine($"SQL Error: {sqlEx.Message}");
+                return View(model);
+            }
+            catch (InvalidOperationException invEx)
+            {
+                // Missing connection string or configuration error — give actionable message
+                ViewBag.Error = invEx.Message;
+                System.Diagnostics.Debug.WriteLine($"Config Error: {invEx.Message}");
                 return View(model);
             }
             catch (Exception ex)
             {
-                HandleException(ex, "Đã xảy ra lỗi khi đăng ký. Vui lòng thử lại sau.");
-                ViewBag.Error = "Đã xảy ra lỗi khi đăng ký. Vui lòng thử lại sau.";
+                // TEMPORARY: include detailed error to help diagnose environment problems
+                ViewBag.Error = "Đã xảy ra lỗi khi đăng ký. Details: " + ex.Message + (ex.InnerException != null ? " | Inner: " + ex.InnerException.Message : "");
                 System.Diagnostics.Debug.WriteLine($"Error: {ex.Message}");
                 System.Diagnostics.Debug.WriteLine($"Stack: {ex.StackTrace}");
                 return View(model);
             }
+        }
+
+        // Temporary diagnostic endpoint — remove in production
+        [AllowAnonymous]
+        public ActionResult TestDb()
+        {
+            var svc = new UserDataService();
+            if (svc.TestConnection(out var error))
+                return Content("DB connection OK");
+            return Content("DB connection FAILED: " + error);
         }
     }
 
