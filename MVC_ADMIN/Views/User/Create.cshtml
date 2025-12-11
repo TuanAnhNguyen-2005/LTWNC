@@ -1,0 +1,95 @@
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewBag.Title = "Thêm người dùng mới";
+}
+
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0"><i class="fas fa-user-plus me-2"></i>Thêm người dùng mới</h5>
+            </div>
+            <div class="card-body">
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show">
+                        <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
+                <form id="createUserForm" method="post" action="/User/Create">
+                    @Html.AntiForgeryToken()
+                    
+                    <div class="mb-3">
+                        <label for="fullName" class="form-label">Họ và tên <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="fullName" name="fullName" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Mật khẩu <span class="text-danger">*</span></label>
+                        <input type="password" class="form-control" id="password" name="password" required minlength="6">
+                        <small class="form-text text-muted">Tối thiểu 6 ký tự</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="confirmPassword" class="form-label">Xác nhận mật khẩu <span class="text-danger">*</span></label>
+                        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="role" class="form-label">Vai trò <span class="text-danger">*</span></label>
+                        <select class="form-select" id="role" name="role" required>
+                            <option value="">-- Chọn vai trò --</option>
+                            <option value="Admin">Admin</option>
+                            <option value="Teacher">Teacher</option>
+                            <option value="Student">Student</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Số điện thoại</label>
+                        <input type="tel" class="form-control" id="phone" name="phone">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Địa chỉ</label>
+                        <textarea class="form-control" id="address" name="address" rows="3"></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="/User" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>Quay lại
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>Lưu
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function() {
+            $('#createUserForm').on('submit', function(e) {
+                var password = $('#password').val();
+                var confirmPassword = $('#confirmPassword').val();
+                
+                if (password !== confirmPassword) {
+                    e.preventDefault();
+                    alert('Mật khẩu xác nhận không khớp!');
+                    return false;
+                }
+            });
+        });
+    </script>
+}
+

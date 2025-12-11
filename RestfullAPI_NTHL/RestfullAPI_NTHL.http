@@ -1,0 +1,6 @@
+@RestfullAPI_NTHL_HostAddress = http://localhost:5015
+
+GET {{RestfullAPI_NTHL_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

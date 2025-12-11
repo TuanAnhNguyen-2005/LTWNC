@@ -1,0 +1,83 @@
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewBag.Title = "Chi tiết danh mục";
+}
+
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-folder me-2"></i>Chi tiết danh mục</h5>
+                <div>
+                    <a href="/Category/Edit/@(ViewBag.Category?.categoryId ?? ViewBag.Category?.id)" class="btn btn-sm btn-primary">
+                        <i class="fas fa-edit me-1"></i>Chỉnh sửa
+                    </a>
+                    <a href="/Category" class="btn btn-sm btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>Quay lại
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                @if (ViewBag.Category != null)
+                {
+                    <div class="mb-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fas fa-folder-open fa-3x text-primary me-3"></i>
+                            <div>
+                                <h4 class="mb-0">@(ViewBag.Category?.categoryName ?? ViewBag.Category?.CategoryName)</h4>
+                                <span class="badge bg-@(ViewBag.Category?.isActive ?? ViewBag.Category?.IsActive ?? true ? "success" : "danger")">
+                                    @(ViewBag.Category?.isActive ?? ViewBag.Category?.IsActive ?? true ? "Đang hoạt động" : "Đã khóa")
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <table class="table table-borderless">
+                        <tr>
+                            <th width="30%">ID:</th>
+                            <td>@(ViewBag.Category?.categoryId ?? ViewBag.Category?.id)</td>
+                        </tr>
+                        <tr>
+                            <th>Slug:</th>
+                            <td><code>@(ViewBag.Category?.slug ?? ViewBag.Category?.Slug)</code></td>
+                        </tr>
+                        <tr>
+                            <th>Mô tả:</th>
+                            <td>@(ViewBag.Category?.description ?? ViewBag.Category?.Description ?? "Chưa có mô tả")</td>
+                        </tr>
+                        <tr>
+                            <th>Danh mục cha:</th>
+                            <td>@(ViewBag.Category?.parentCategoryName ?? ViewBag.Category?.ParentCategoryName ?? "Không có")</td>
+                        </tr>
+                        <tr>
+                            <th>Thứ tự hiển thị:</th>
+                            <td>@(ViewBag.Category?.displayOrder ?? ViewBag.Category?.DisplayOrder ?? 0)</td>
+                        </tr>
+                        <tr>
+                            <th>Số khóa học:</th>
+                            <td>@(ViewBag.Category?.courseCount ?? ViewBag.Category?.CourseCount ?? 0)</td>
+                        </tr>
+                        <tr>
+                            <th>Ngày tạo:</th>
+                            <td>@(ViewBag.Category?.createdDate ?? ViewBag.Category?.CreatedDate ?? "N/A")</td>
+                        </tr>
+                        <tr>
+                            <th>Ngày cập nhật:</th>
+                            <td>@(ViewBag.Category?.updatedDate ?? ViewBag.Category?.UpdatedDate ?? "N/A")</td>
+                        </tr>
+                    </table>
+                }
+                else
+                {
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Không tìm thấy thông tin danh mục
+                    </div>
+                    <a href="/Category" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>Quay lại danh sách
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+

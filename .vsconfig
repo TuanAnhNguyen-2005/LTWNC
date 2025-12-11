@@ -1,0 +1,14 @@
+{
+  "version": "1.0",
+  "components": [
+    "Microsoft.VisualStudio.Component.CoreEditor",
+    "Microsoft.VisualStudio.Workload.NetWeb",
+    "Microsoft.VisualStudio.Component.Web",
+    "Microsoft.VisualStudio.Component.AspNet45"
+  ],
+  "properties": {
+    "AutoReloadFiles": true,
+    "DetectFileChanges": true
+  }
+}
+

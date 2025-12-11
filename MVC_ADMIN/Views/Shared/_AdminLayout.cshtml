@@ -1,0 +1,345 @@
+@{
+    var isAuthenticated = Session["UserId"] != null && Session["Email"] != null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>@ViewBag.Title - HocLieu Admin</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f7fa;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 260px;
+            background: linear-gradient(180deg, #1e3a8a 0%, #1e40af 100%);
+            color: white;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            overflow-y: auto;
+        }
+
+            .sidebar.collapsed {
+                width: 70px;
+            }
+
+        .sidebar-header {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            color: white;
+            text-decoration: none;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .sidebar-brand-icon {
+            font-size: 28px;
+            color: #60a5fa;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 20px 0;
+        }
+
+            .sidebar-menu li {
+                margin: 5px 0;
+            }
+
+            .sidebar-menu a {
+                display: flex;
+                align-items: center;
+                padding: 12px 20px;
+                color: rgba(255,255,255,0.8);
+                text-decoration: none;
+                transition: all 0.3s ease;
+                border-left: 3px solid transparent;
+            }
+
+                .sidebar-menu a:hover, .sidebar-menu a.active {
+                    background: rgba(255,255,255,0.1);
+                    color: white;
+                    border-left-color: #60a5fa;
+                }
+
+            .sidebar-menu i {
+                width: 24px;
+                margin-right: 12px;
+                text-align: center;
+            }
+
+        .hamburger-btn {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1001;
+            background: #1e3a8a;
+            border: none;
+            color: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+            .hamburger-btn i {
+                font-size: 20px;
+            }
+
+        .main-content {
+            margin-left: 260px;
+            transition: all 0.3s ease;
+            min-height: 100vh;
+        }
+
+        .sidebar.collapsed ~ .main-content {
+            margin-left: 70px;
+        }
+
+        .main-content.no-sidebar {
+            margin-left: 0;
+        }
+
+        .topbar {
+            background: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+
+        .topbar-nav {
+            display: flex;
+            gap: 10px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+            .topbar-nav a {
+                padding: 8px 16px;
+                color: #4b5563;
+                text-decoration: none;
+                border-radius: 6px;
+                transition: all 0.3s ease;
+                font-weight: 500;
+            }
+
+                .topbar-nav a:hover, .topbar-nav a.active {
+                    background: #eff6ff;
+                    color: #1e40af;
+                }
+
+        .content-area {
+            padding: 30px;
+        }
+
+        @@media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+                .sidebar.show {
+                    transform: translateX(0);
+                }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .topbar-nav {
+                display: none;
+            }
+        }
+
+        /* Scrollbar */
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    @if (isAuthenticated)
+    {
+        <button class="hamburger-btn" id="sidebarToggle" aria-label="Toggle sidebar">
+            <i class="fas fa-bars"></i>
+        </button>
+    }
+
+    @if (isAuthenticated)
+    {
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="@Url.RouteUrl("Admin", new { controller = "Statistical", action = "Index" })" class="sidebar-brand">
+                    <i class="fas fa-graduation-cap sidebar-brand-icon"></i>
+                    <span class="sidebar-brand-text">HocLieu Admin</span>
+                </a>
+            </div>
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="@Url.RouteUrl("Admin", new { controller = "Statistical", action = "Index" })" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Statistical" ? "active" : "")">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="@Url.RouteUrl("Admin", new { controller = "User", action = "Index" })" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "User" ? "active" : "")">
+                        <i class="fas fa-users"></i>
+                        <span>Quản lý người dùng</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="@Url.RouteUrl("Admin", new { controller = "Category", action = "Index" })" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Category" ? "active" : "")">
+                        <i class="fas fa-folder"></i>
+                        <span>Quản lý danh mục</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="@Url.RouteUrl("Admin", new { controller = "Permission", action = "Index" })" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Permission" ? "active" : "")">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Quản lý quyền</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="@Url.RouteUrl("Admin", new { controller = "Profile", action = "Index" })" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Profile" ? "active" : "")">
+                        <i class="fas fa-user-circle"></i>
+                        <span>Thông tin cá nhân</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+    }
+
+    <div class="main-content @(isAuthenticated ? "" : "no-sidebar")">
+        <nav class="topbar">
+            @if (isAuthenticated)
+            {
+                <ul class="topbar-nav">
+                    <li><a href="@Url.RouteUrl("Admin", new { controller = "Statistical", action = "Index" })" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Statistical" ? "active" : "")"><i class="fas fa-chart-line me-1"></i>Dashboard</a></li>
+                    <li><a href="@Url.RouteUrl("Admin", new { controller = "User", action = "Index" })" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "User" ? "active" : "")"><i class="fas fa-users me-1"></i>Người dùng</a></li>
+                    <li><a href="@Url.RouteUrl("Admin", new { controller = "Category", action = "Index" })" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Category" ? "active" : "")"><i class="fas fa-folder me-1"></i>Danh mục</a></li>
+                    <li><a href="@Url.RouteUrl("Admin", new { controller = "Permission", action = "Index" })" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Permission" ? "active" : "")"><i class="fas fa-shield-alt me-1"></i>Quyền</a></li>
+                </ul>
+            }
+            else
+            {
+                <ul class="topbar-nav">
+                    <li><a href="@Url.Action("Index","Home")" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "active" : "")"><i class="fas fa-home me-1"></i>Trang chủ</a></li>
+                </ul>
+            }
+
+            <div class="user-menu">
+                    @{
+                        var userName = (Session["FullName"] ?? Session["Email"] ?? "Admin").ToString();
+                        var firstChar = !string.IsNullOrEmpty(userName) ? userName[0].ToString().ToUpper() : "A";
+                    }
+                    <div class="user-info">
+                        <div class="user-avatar">@firstChar</div>
+                        <div>
+                            <div style="font-weight:600; color:#1f2937;">@userName</div>
+                            <small style="color:#6b7280;">@(Session["Role"]?.ToString() ?? "Admin")</small>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-link" type="button" id="userDropdown" data-bs-toggle="dropdown"><i class="fas fa-chevron-down"></i></button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="@Url.RouteUrl("Admin", new { controller = "Profile", action = "Index" })"><i class="fas fa-user me-2"></i>Thông tin cá nhân</a></li>
+                            <li><hr class="dropdown-divider" /></li>
+                            <li><a class="dropdown-item" href="@Url.Action("Logout","Login")"><i class="fas fa-sign-out-alt me-2"></i>Đăng xuất</a></li>
+                        </ul>
+                    </div>
+                    <div class="auth-buttons">
+                        <a href="@Url.Action("Index","Login")" class="btn btn-outline-primary btn-sm me-2"><i class="fas fa-sign-in-alt me-1"></i>Đăng nhập</a>
+                        <a href="@Url.Action("Index","SignUp")" class="btn btn-primary btn-sm"><i class="fas fa-user-plus me-1"></i>Đăng ký</a>
+                    </div>
+            </div>
+        </nav>
+
+        <div class="content-area">
+            @RenderBody()
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+    <script>
+        (function () {
+            var sidebarToggle = document.getElementById('sidebarToggle');
+            var sidebar = document.getElementById('sidebar');
+
+            if (sidebarToggle && sidebar) {
+                sidebarToggle.addEventListener('click', function () {
+                    sidebar.classList.toggle('collapsed');
+                    try { localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed')); } catch (e) { }
+                    if (window.innerWidth <= 768) { sidebar.classList.toggle('show'); }
+                });
+            }
+
+            document.addEventListener('DOMContentLoaded', function () {
+                if (sidebar) {
+                    try {
+                        var isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+                        if (isCollapsed) sidebar.classList.add('collapsed');
+                    } catch (e) { }
+                }
+            });
+        })();
+    </script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using System.Web.Routing;
 
 namespace MVC_ADMIN
@@ -13,9 +9,24 @@ namespace MVC_ADMIN
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
+            // 1. ROUTE ADMIN
+            routes.MapRoute(
+                name: "Admin",
+                url: "Admin/{controller}/{action}/{id}",
+                defaults: new { controller = "Statistical", action = "Index", id = UrlParameter.Optional }
+            );
+
+            // 2. ROUTE MẶC ĐỊNH – TRANG CHỦ CHUYỂN HƯỚNG LUÔN VÀO ADMIN
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
+                defaults: new { controller = "Statistical", action = "Index", id = UrlParameter.Optional }
+            );
+
+            // 3. (TÙY CHỌN) Nếu vẫn muốn giữ trang Home/Index cũ thì để dòng này ở dưới cùng
+            routes.MapRoute(
+                name: "HomePage",
+                url: "Home/{action}/{id}",
                 defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
             );
         }

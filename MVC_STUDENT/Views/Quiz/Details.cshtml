@@ -1,0 +1,88 @@
+@{
+    Layout = "~/Views/Shared/_StudentLayout.cshtml";
+    ViewBag.Title = "Chi tiết Quiz";
+}
+
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card card-modern">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0"><i class="fas fa-question-circle me-2"></i>Quiz: Lập trình Java</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Hướng dẫn:</strong> Quiz này có 10 câu hỏi, thời gian làm bài 30 phút. Chọn đáp án đúng cho mỗi câu hỏi.
+                </div>
+
+                <form id="quizForm">
+                    <div class="question-item mb-4 p-3 border rounded">
+                        <h6 class="mb-3">Câu 1: Java là ngôn ngữ lập trình gì?</h6>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="question1" id="q1a" value="a">
+                            <label class="form-check-label" for="q1a">A. Compiled</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="question1" id="q1b" value="b">
+                            <label class="form-check-label" for="q1b">B. Interpreted</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="question1" id="q1c" value="c">
+                            <label class="form-check-label" for="q1c">C. Both</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="question1" id="q1d" value="d">
+                            <label class="form-check-label" for="q1d">D. None</label>
+                        </div>
+                    </div>
+
+                    <div class="question-item mb-4 p-3 border rounded">
+                        <h6 class="mb-3">Câu 2: Từ khóa nào dùng để kế thừa trong Java?</h6>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="question2" id="q2a" value="a">
+                            <label class="form-check-label" for="q2a">A. extends</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="question2" id="q2b" value="b">
+                            <label class="form-check-label" for="q2b">B. implements</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="question2" id="q2c" value="c">
+                            <label class="form-check-label" for="q2c">C. inherit</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="question2" id="q2d" value="d">
+                            <label class="form-check-label" for="q2d">D. super</label>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="/Quiz" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>Quay lại
+                        </a>
+                        <button type="submit" class="btn btn-gradient">
+                            <i class="fas fa-paper-plane me-1"></i>Nộp bài
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function() {
+            $('#quizForm').on('submit', function(e) {
+                e.preventDefault();
+                if (confirm('Bạn có chắc chắn muốn nộp bài?')) {
+                    // Submit quiz
+                    window.location.href = '/Quiz/Result/1';
+                }
+            });
+        });
+    </script>
+}
+
+
+

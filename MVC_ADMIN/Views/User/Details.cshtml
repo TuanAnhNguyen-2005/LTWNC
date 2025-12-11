@@ -1,0 +1,93 @@
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewBag.Title = "Chi tiết người dùng";
+}
+
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-user me-2"></i>Chi tiết người dùng</h5>
+                <div>
+                    <a href="/User/Edit/@(ViewBag.User?.userId ?? ViewBag.User?.id)" class="btn btn-sm btn-primary">
+                        <i class="fas fa-edit me-1"></i>Chỉnh sửa
+                    </a>
+                    <a href="/User" class="btn btn-sm btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>Quay lại
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                @if (ViewBag.User != null)
+                {
+                    <div class="row mb-4">
+                        <div class="col-md-4 text-center">
+                            <div class="user-avatar-large mx-auto mb-3" style="width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 48px; font-weight: 600;">
+                                @{
+                                    var fullName = ViewBag.User?.fullName ?? ViewBag.User?.FullName ?? "U";
+                                    var firstChar = fullName.Length > 0 ? fullName[0].ToString().ToUpper() : "U";
+                                }
+                                @firstChar
+                            </div>
+                            <h4>@(ViewBag.User?.fullName ?? ViewBag.User?.FullName)</h4>
+                            <span class="badge bg-@(ViewBag.User?.role == "Admin" || ViewBag.User?.Role == "Admin" ? "danger" : ViewBag.User?.role == "Teacher" || ViewBag.User?.Role == "Teacher" ? "primary" : "success")">
+                                @(ViewBag.User?.role ?? ViewBag.User?.Role)
+                            </span>
+                        </div>
+                        <div class="col-md-8">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th width="30%">ID:</th>
+                                    <td>@(ViewBag.User?.userId ?? ViewBag.User?.id)</td>
+                                </tr>
+                                <tr>
+                                    <th>Email:</th>
+                                    <td>@(ViewBag.User?.email ?? ViewBag.User?.Email)</td>
+                                </tr>
+                                <tr>
+                                    <th>Số điện thoại:</th>
+                                    <td>@(ViewBag.User?.phone ?? ViewBag.User?.Phone ?? "Chưa cập nhật")</td>
+                                </tr>
+                                <tr>
+                                    <th>Địa chỉ:</th>
+                                    <td>@(ViewBag.User?.address ?? ViewBag.User?.Address ?? "Chưa cập nhật")</td>
+                                </tr>
+                                <tr>
+                                    <th>Trạng thái:</th>
+                                    <td>
+                                        @if (ViewBag.User?.isActive ?? ViewBag.User?.IsActive ?? true)
+                                        {
+                                            <span class="badge bg-success">Đang hoạt động</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">Đã khóa</span>
+                                        }
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Ngày tạo:</th>
+                                    <td>@(ViewBag.User?.createdDate ?? ViewBag.User?.CreatedDate ?? "N/A")</td>
+                                </tr>
+                                <tr>
+                                    <th>Ngày cập nhật:</th>
+                                    <td>@(ViewBag.User?.updatedDate ?? ViewBag.User?.UpdatedDate ?? "N/A")</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Không tìm thấy thông tin người dùng
+                    </div>
+                    <a href="/User" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>Quay lại danh sách
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+

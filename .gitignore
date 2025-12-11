@@ -1,0 +1,16 @@
+# Tệp cấu hình Visual Studio
+.vs/
+*.suo
+*.user
+*.pdb
+*.obj
+
+# Thư mục build
+[Dd]ebug/
+[Rr]elease/
+bin/
+obj/
+
+# NuGet packages
+packages/
+*.nupkg

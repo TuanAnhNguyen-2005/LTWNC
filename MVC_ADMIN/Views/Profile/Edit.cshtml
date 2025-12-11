@@ -1,0 +1,77 @@
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewBag.Title = "Chỉnh sửa thông tin cá nhân";
+}
+
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0"><i class="fas fa-user-edit me-2"></i>Chỉnh sửa thông tin cá nhân</h5>
+            </div>
+            <div class="card-body">
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show">
+                        <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
+                <form id="editProfileForm" method="post" action="/Profile/Edit">
+                    @Html.AntiForgeryToken()
+                    
+                    <div class="mb-3">
+                        <label for="fullName" class="form-label">Họ và tên <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="fullName" name="fullName" 
+                               value="@(ViewBag.Profile?.fullName ?? ViewBag.Profile?.FullName ?? ViewBag.FullName)" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                        <input type="email" class="form-control" id="email" name="email" 
+                               value="@(ViewBag.Profile?.email ?? ViewBag.Profile?.Email ?? ViewBag.Email)" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Số điện thoại</label>
+                        <input type="tel" class="form-control" id="phone" name="phone" 
+                               value="@(ViewBag.Profile?.phone ?? ViewBag.Profile?.Phone)">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Địa chỉ</label>
+                        <textarea class="form-control" id="address" name="address" rows="3">@(ViewBag.Profile?.address ?? ViewBag.Profile?.Address)</textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="dateOfBirth" class="form-label">Ngày sinh</label>
+                            <input type="date" class="form-control" id="dateOfBirth" name="dateOfBirth" 
+                                   value="@(ViewBag.Profile?.dateOfBirth ?? ViewBag.Profile?.DateOfBirth)">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="gender" class="form-label">Giới tính</label>
+                            <select class="form-select" id="gender" name="gender">
+                                <option value="">-- Chọn giới tính --</option>
+                                <option value="Nam" selected="@(ViewBag.Profile?.gender == "Nam" || ViewBag.Profile?.Gender == "Nam")">Nam</option>
+                                <option value="Nữ" selected="@(ViewBag.Profile?.gender == "Nữ" || ViewBag.Profile?.Gender == "Nữ")">Nữ</option>
+                                <option value="Khác" selected="@(ViewBag.Profile?.gender == "Khác" || ViewBag.Profile?.Gender == "Khác")">Khác</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="/Profile" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>Quay lại
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>Cập nhật
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,93 @@
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewBag.Title = "Chi tiết quyền";
+}
+
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-shield-alt me-2"></i>Chi tiết quyền</h5>
+                <div>
+                    <a href="@Url.RouteUrl("Admin", new { controller = "Permission", action = "Edit", id = (ViewBag.Permission?.permissionId ?? ViewBag.Permission?.id) })" class="btn btn-sm btn-primary">
+                        <i class="fas fa-edit me-1"></i>Chỉnh sửa
+                    </a>
+                    <a href="@Url.RouteUrl("Admin", new { controller = "Permission", action = "Index" })" class="btn btn-sm btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>Quay lại
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                @if (ViewBag.Permission != null)
+                {
+                    <div class="mb-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fas fa-shield-alt fa-3x text-primary me-3"></i>
+                            <div>
+                                <h4 class="mb-0">@(ViewBag.Permission?.displayName ?? ViewBag.Permission?.DisplayName)</h4>
+                                <code class="text-muted">@(ViewBag.Permission?.permissionName ?? ViewBag.Permission?.PermissionName)</code>
+                            </div>
+                        </div>
+                    </div>
+
+                    <table class="table table-borderless">
+                        <tr>
+                            <th width="30%">ID:</th>
+                            <td>@(ViewBag.Permission?.permissionId ?? ViewBag.Permission?.id)</td>
+                        </tr>
+                        <tr>
+                            <th>Tên quyền:</th>
+                            <td><code>@(ViewBag.Permission?.permissionName ?? ViewBag.Permission?.PermissionName)</code></td>
+                        </tr>
+                        <tr>
+                            <th>Tên hiển thị:</th>
+                            <td>@(ViewBag.Permission?.displayName ?? ViewBag.Permission?.DisplayName)</td>
+                        </tr>
+                        <tr>
+                            <th>Mô tả:</th>
+                            <td>@(ViewBag.Permission?.description ?? ViewBag.Permission?.Description ?? "Chưa có mô tả")</td>
+                        </tr>
+                        <tr>
+                            <th>Module:</th>
+                            <td>
+                                <span class="badge bg-info">
+                                    @(ViewBag.Permission?.module ?? ViewBag.Permission?.Module ?? "N/A")
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Trạng thái:</th>
+                            <td>
+                                @if (ViewBag.Permission?.isActive ?? ViewBag.Permission?.IsActive ?? true)
+                                {
+                                    <span class="badge bg-success">Đang hoạt động</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Đã khóa</span>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Ngày tạo:</th>
+                            <td>@(ViewBag.Permission?.createdDate ?? ViewBag.Permission?.CreatedDate ?? "N/A")</td>
+                        </tr>
+                        <tr>
+                            <th>Ngày cập nhật:</th>
+                            <td>@(ViewBag.Permission?.updatedDate ?? ViewBag.Permission?.UpdatedDate ?? "N/A")</td>
+                        </tr>
+                    </table>
+                }
+                else
+                {
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Không tìm thấy thông tin quyền
+                    </div>
+                    <a href="@Url.RouteUrl("Admin", new { controller = "Permission", action = "Index" })" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>Quay lại danh sách
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+</div>

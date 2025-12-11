@@ -1,17 +1,53 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using System.Threading.Tasks;
 using System.Web.Mvc;
+using MVC_ADMIN.Filters;
 
 namespace MVC_ADMIN.Controllers
 {
-    public class StatisticalController : Controller
+    [AuthorizeRole("Admin")]
+    public class StatisticalController : BaseController
     {
-        // GET: Statistical
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
-            return View();
+            try
+            {
+                ViewBag.Title = "Dashboard Admin";
+
+                // Gọi API lấy thống kê
+                var response = await ApiService.GetWithErrorHandlingAsync<dynamic>("statistics/dashboard");
+
+                if (response.Success)
+                {
+                    ViewBag.Statistics = response.Data;
+                }
+                else
+                {
+                    // Nếu API lỗi, vẫn hiển thị trang với dữ liệu mặc định
+                    ViewBag.Statistics = new
+                    {
+                        totalUsers = 0,
+                        totalQuizzes = 0,
+                        totalMaterials = 0,
+                        totalCategories = 0
+                    };
+                }
+
+                return View();
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+                // Vẫn hiển thị trang với dữ liệu mặc định
+                ViewBag.Statistics = new
+                {
+                    totalUsers = 0,
+                    totalQuizzes = 0,
+                    totalMaterials = 0,
+                    totalCategories = 0
+                };
+                return View();
+            }
         }
     }
 }
