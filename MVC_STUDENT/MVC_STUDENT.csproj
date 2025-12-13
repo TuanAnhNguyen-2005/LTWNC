@@ -233,7 +233,6 @@
     <Content Include="obj\Debug\DesignTimeResolveAssemblyReferencesInput.cache" />
     <Content Include="obj\Debug\MVC_STUD.CDF905A3.Up2Date" />
     <Content Include="obj\Debug\MVC_STUDENT.csproj.AssemblyReference.cache" />
-    <Content Include="obj\Debug\MVC_STUDENT.csproj.CoreCompileInputs.cache" />
     <Content Include="obj\Release\MVC_STUDENT.csproj.AssemblyReference.cache" />
     <Content Include="bin\MVC_STUDENT.dll.config" />
     <Content Include="bin\roslyn\csc.exe.config" />

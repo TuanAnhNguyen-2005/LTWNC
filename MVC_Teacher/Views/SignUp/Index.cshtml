@@ -1,0 +1,148 @@
+﻿@{
+    Layout = "~/Views/Shared/_LoginLayout.cshtml";
+    ViewBag.Title = "Đăng ký tài khoản";
+}
+
+<div class="card-body p-4">
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger">@ViewBag.Error</div>
+    }
+
+    <form method="post" action="/SignUp/Index">
+        @Html.AntiForgeryToken()
+
+        <div class="mb-3">
+            <label for="FullName" class="form-label">
+                <i class="fas fa-user me-1"></i> Họ và tên <span class="text-danger">*</span>
+            </label>
+            <input type="text" name="FullName" id="FullName" class="form-control form-control-lg"
+                   placeholder="Nhập họ và tên đầy đủ" required />
+        </div>
+
+        <div class="mb-3">
+            <label for="Email" class="form-label">
+                <i class="fas fa-envelope me-1"></i> Email <span class="text-danger">*</span>
+            </label>
+            <input type="email" name="Email" id="Email" class="form-control form-control-lg"
+                   placeholder="example@email.com" required />
+        </div>
+
+        <div class="mb-3">
+            <label for="Password" class="form-label">
+                <i class="fas fa-lock me-1"></i> Mật khẩu <span class="text-danger">*</span>
+            </label>
+            <input type="password" name="Password" id="Password" class="form-control form-control-lg"
+                   placeholder="Tối thiểu 6 ký tự" required minlength="6" />
+        </div>
+
+        <div class="mb-3">
+            <label for="ConfirmPassword" class="form-label">
+                <i class="fas fa-lock me-1"></i> Xác nhận mật khẩu <span class="text-danger">*</span>
+            </label>
+            <input type="password" name="ConfirmPassword" id="ConfirmPassword" class="form-control form-control-lg"
+                   placeholder="Nhập lại mật khẩu" required />
+        </div>
+
+        <div class="mb-3">
+            <label for="PhoneNumber" class="form-label">
+                <i class="fas fa-phone me-1"></i> Số điện thoại
+            </label>
+            <input type="text" name="PhoneNumber" id="PhoneNumber" class="form-control form-control-lg"
+                   placeholder="Nhập số điện thoại (tùy chọn)" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">
+                <i class="fas fa-venus-mars me-1"></i> Giới tính
+            </label>
+            <div class="row g-2">
+                <div class="col-4">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="Gender" id="genderMale" value="Nam">
+                        <label class="form-check-label" for="genderMale">Nam</label>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="Gender" id="genderFemale" value="Nữ">
+                        <label class="form-check-label" for="genderFemale">Nữ</label>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="Gender" id="genderOther" value="Khác" checked>
+                        <label class="form-check-label" for="genderOther">Khác</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="DateOfBirth" class="form-label">
+                <i class="fas fa-calendar me-1"></i> Ngày sinh
+            </label>
+            <input type="date" name="DateOfBirth" id="DateOfBirth" class="form-control form-control-lg" />
+        </div>
+
+        <div class="mb-3">
+            <label for="Address" class="form-label">
+                <i class="fas fa-map-marker-alt me-1"></i> Địa chỉ
+            </label>
+            <input type="text" name="Address" id="Address" class="form-control form-control-lg"
+                   placeholder="Nhập địa chỉ (tùy chọn)" />
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label">
+                <i class="fas fa-user-tag me-1"></i> Vai trò <span class="text-danger">*</span>
+            </label>
+            <div class="row g-2">
+                <div class="col-6">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="Role" id="roleStudent" value="Student" checked required>
+                        <label class="form-check-label w-100 p-3 border rounded" for="roleStudent">
+                            <i class="fas fa-graduation-cap d-block mb-2 text-primary"></i>
+                            <strong>Học viên</strong>
+                            <small class="d-block text-muted">Sinh viên</small>
+                        </label>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="Role" id="roleTeacher" value="Teacher" required>
+                        <label class="form-check-label w-100 p-3 border rounded" for="roleTeacher">
+                            <i class="fas fa-chalkboard-teacher d-block mb-2 text-success"></i>
+                            <strong>Giáo viên</strong>
+                            <small class="d-block text-muted">Giảng viên</small>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-success btn-lg w-100 mb-3">
+            <i class="fas fa-user-plus me-2"></i>
+            Đăng ký ngay
+        </button>
+    </form>
+
+    <hr class="my-4">
+    <p class="text-center mb-0">
+        Đã có tài khoản?
+        <a href="/Login" class="text-decoration-none fw-bold">
+            <i class="fas fa-sign-in-alt me-1"></i>Đăng nhập ngay
+        </a>
+    </p>
+</div>
+
+<style>
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+    }
+
+    .form-control-lg {
+        border-radius: 8px;
+    }
+</style>
