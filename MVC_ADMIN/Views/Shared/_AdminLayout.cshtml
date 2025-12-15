@@ -324,17 +324,16 @@
             }
 
             <div class="user-menu">
-                @@if (isAuthenticated)
+                @if (isAuthenticated)
                 {
-                    @{
-                        var userName = (Session["FullName"] ?? Session["Email"] ?? "Admin").ToString();
-                        var firstChar = !string.IsNullOrEmpty(userName) ? userName[0].ToString().ToUpper() : "A";
-                    }
+                    var userName = (Session["FullName"] ?? Session["Email"] ?? "Admin").ToString();
+                    var firstChar = !string.IsNullOrEmpty(userName) ? userName[0].ToString().ToUpper() : "A";
+                    var role = Session["Role"]?.ToString() ?? "Admin";
                     <div class="user-info">
                         <div class="user-avatar">@firstChar</div>
                         <div>
                             <div style="font-weight:600; color:#1f2937;">@userName</div>
-                            <small style="color:#6b7280;">@(Session["Role"]?.ToString() ?? "Admin")</small>
+                            <small style="color:#6b7280;">@role</small>
                         </div>
                     </div>
                     <div class="dropdown">
@@ -345,10 +344,14 @@
                             <li><a class="dropdown-item" href="@Url.Action("Logout","Login")"><i class="fas fa-sign-out-alt me-2"></i>Đăng xuất</a></li>
                         </ul>
                     </div>
+                }
+                else
+                {
                     <div class="auth-buttons">
                         <a href="@Url.Action("Index","Login")" class="btn btn-outline-primary btn-sm me-2"><i class="fas fa-sign-in-alt me-1"></i>Đăng nhập</a>
                         <a href="@Url.Action("Index","SignUp")" class="btn btn-primary btn-sm"><i class="fas fa-user-plus me-1"></i>Đăng ký</a>
                     </div>
+                }
             </div>
         </nav>
 

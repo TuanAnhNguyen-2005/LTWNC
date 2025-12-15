@@ -12,6 +12,13 @@ namespace MVC_ADMIN
             // Chặn truy cập trực tiếp vào Views folder
             routes.IgnoreRoute("Views/{*pathInfo}");
 
+            // Route gốc → Login (tránh gõ nhầm đường dẫn file .cshtml gây 404)
+            routes.MapRoute(
+                name: "Root",
+                url: "",
+                defaults: new { controller = "Login", action = "Index", id = UrlParameter.Optional }
+            );
+
             // Route cho Login và SignUp (public pages)
             routes.MapRoute(
                 name: "Login",
