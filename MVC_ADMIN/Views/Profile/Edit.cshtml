@@ -1,3 +1,5 @@
+@model MVC_ADMIN.Models.ProfileEditViewModel
+
 @{
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
     ViewBag.Title = "Chỉnh sửa thông tin cá nhân";
@@ -17,61 +19,76 @@
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                 }
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show">
+                        <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
 
-                <form id="editProfileForm" method="post" action="/Profile/Edit">
+                @using (Html.BeginForm("Edit", "Profile", FormMethod.Post, new { id = "editProfileForm" }))
+                {
                     @Html.AntiForgeryToken()
-                    
+
                     <div class="mb-3">
-                        <label for="fullName" class="form-label">Họ và tên <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="fullName" name="fullName" 
-                               value="@(ViewBag.Profile?.fullName ?? ViewBag.Profile?.FullName ?? ViewBag.FullName)" required>
+                        @Html.LabelFor(m => m.FullName, "Họ và tên", new { @class = "form-label" })
+                        <span class="text-danger">*</span>
+                        @Html.TextBoxFor(m => m.FullName, new { @class = "form-control", required = "required" })
+                        @Html.HiddenFor(m => m.Password)
+                        @Html.ValidationMessageFor(m => m.FullName, "", new { @class = "text-danger" })
                     </div>
 
                     <div class="mb-3">
-                        <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
-                        <input type="email" class="form-control" id="email" name="email" 
-                               value="@(ViewBag.Profile?.email ?? ViewBag.Profile?.Email ?? ViewBag.Email)" required>
+                        @Html.LabelFor(m => m.Email, "Email", new { @class = "form-label" })
+                        <span class="text-danger">*</span>
+                        @Html.TextBoxFor(m => m.Email, new { @class = "form-control", type = "email", required = "required" })
+                        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
                     </div>
 
                     <div class="mb-3">
-                        <label for="phone" class="form-label">Số điện thoại</label>
-                        <input type="tel" class="form-control" id="phone" name="phone" 
-                               value="@(ViewBag.Profile?.phone ?? ViewBag.Profile?.Phone)">
+                        @Html.LabelFor(m => m.Phone, "Số điện thoại", new { @class = "form-label" })
+                        @Html.TextBoxFor(m => m.Phone, new { @class = "form-control", type = "tel" })
+                        @Html.ValidationMessageFor(m => m.Phone, "", new { @class = "text-danger" })
                     </div>
 
                     <div class="mb-3">
-                        <label for="address" class="form-label">Địa chỉ</label>
-                        <textarea class="form-control" id="address" name="address" rows="3">@(ViewBag.Profile?.address ?? ViewBag.Profile?.Address)</textarea>
+                        @Html.LabelFor(m => m.Address, "Địa chỉ", new { @class = "form-label" })
+                        @Html.TextAreaFor(m => m.Address, new { @class = "form-control", rows = "3" })
                     </div>
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="dateOfBirth" class="form-label">Ngày sinh</label>
-                            <input type="date" class="form-control" id="dateOfBirth" name="dateOfBirth" 
-                                   value="@(ViewBag.Profile?.dateOfBirth ?? ViewBag.Profile?.DateOfBirth)">
+                            @Html.LabelFor(m => m.DateOfBirth, "Ngày sinh", new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.DateOfBirth, new { @class = "form-control", type = "date" })
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="gender" class="form-label">Giới tính</label>
-                            <select class="form-select" id="gender" name="gender">
-                                <option value="">-- Chọn giới tính --</option>
-                                <option value="Nam" selected="@(ViewBag.Profile?.gender == "Nam" || ViewBag.Profile?.Gender == "Nam")">Nam</option>
-                                <option value="Nữ" selected="@(ViewBag.Profile?.gender == "Nữ" || ViewBag.Profile?.Gender == "Nữ")">Nữ</option>
-                                <option value="Khác" selected="@(ViewBag.Profile?.gender == "Khác" || ViewBag.Profile?.Gender == "Khác")">Khác</option>
-                            </select>
+                            @Html.LabelFor(m => m.Gender, "Giới tính", new { @class = "form-label" })
+                            @Html.DropDownListFor(m => m.Gender, new SelectList(
+                                new List<SelectListItem>
+                                {
+                                    new SelectListItem { Text = "-- Chọn giới tính --", Value = "" },
+                                    new SelectListItem { Text = "Nam", Value = "Nam" },
+                                    new SelectListItem { Text = "Nữ", Value = "Nữ" },
+                                    new SelectListItem { Text = "Khác", Value = "Khác" }
+                                }, "Value", "Text"), new { @class = "form-select" })
                         </div>
                     </div>
 
                     <div class="d-flex justify-content-between">
-                        <a href="/Profile" class="btn btn-secondary">
+                        <a href="@Url.Action("Index", "Profile")" class="btn btn-secondary">
                             <i class="fas fa-arrow-left me-1"></i>Quay lại
                         </a>
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-save me-1"></i>Cập nhật
                         </button>
                     </div>
-                </form>
+                }
             </div>
         </div>
     </div>
 </div>
 
+@section Scripts {
+    <!-- Không cần script validation bổ sung vì đã load jquery.validate ở layout -->
+}

@@ -1,6 +1,91 @@
 @{
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
     ViewBag.Title = "Thông tin cá nhân";
+
+    var profileObj = ViewBag.Profile;
+    Func<string[], string> getProfileString = names =>
+    {
+        if (profileObj == null)
+        {
+            return null;
+        }
+
+        var type = profileObj.GetType();
+        foreach (var name in names)
+        {
+            var prop = type.GetProperty(name);
+            if (prop != null)
+            {
+                var value = prop.GetValue(profileObj, null);
+                if (value != null)
+                {
+                    var strValue = value.ToString().Trim();
+                    if (!string.IsNullOrEmpty(strValue))
+                    {
+                        return strValue;
+                    }
+                }
+            }
+        }
+
+        return null;
+    };
+
+    var fullName = getProfileString(new[] { "fullName", "FullName", "HoTen", "hoTen" }) ?? (ViewBag.FullName as string) ?? "U";
+    if (string.IsNullOrWhiteSpace(fullName))
+    {
+        fullName = "U";
+    }
+
+    var firstChar = fullName.Length > 0 ? fullName[0].ToString().ToUpper() : "U";
+
+    var email = getProfileString(new[] { "email", "Email" }) ?? (ViewBag.Email as string) ?? "Chưa cập nhật";
+    if (string.IsNullOrWhiteSpace(email))
+    {
+        email = "Chưa cập nhật";
+    }
+
+    var phone = getProfileString(new[] { "phone", "Phone", "SoDienThoai", "soDienThoai" }) ?? (ViewBag.Phone as string) ?? "Chưa cập nhật";
+    if (string.IsNullOrWhiteSpace(phone))
+    {
+        phone = "Chưa cập nhật";
+    }
+
+    var address = getProfileString(new[] { "address", "Address", "DiaChi", "diaChi" }) ?? (ViewBag.Address as string) ?? "Chưa cập nhật";
+    if (string.IsNullOrWhiteSpace(address))
+    {
+        address = "Chưa cập nhật";
+    }
+
+    var dateOfBirth = getProfileString(new[] { "dateOfBirth", "DateOfBirth", "NgaySinh", "ngaySinh" }) ?? "Chưa cập nhật";
+    if (string.IsNullOrWhiteSpace(dateOfBirth))
+    {
+        dateOfBirth = "Chưa cập nhật";
+    }
+
+    var gender = getProfileString(new[] { "gender", "Gender", "GioiTinh", "gioiTinh" }) ?? "Chưa cập nhật";
+    if (string.IsNullOrWhiteSpace(gender))
+    {
+        gender = "Chưa cập nhật";
+    }
+
+    var createdDate = getProfileString(new[] { "createdDate", "CreatedDate", "NgayTao", "ngayTao" }) ?? "N/A";
+    if (string.IsNullOrWhiteSpace(createdDate))
+    {
+        createdDate = "N/A";
+    }
+
+    var role = getProfileString(new[] { "role", "Role" }) ?? (ViewBag.Role as string) ?? "User";
+    if (string.IsNullOrWhiteSpace(role))
+    {
+        role = "User";
+    }
+
+    var roleBadgeClass = role == "Admin"
+        ? "danger"
+        : role == "Teacher"
+            ? "primary"
+            : "success";
 }
 
 <div class="row">
@@ -26,42 +111,38 @@
                     <div class="row mb-4">
                         <div class="col-md-4 text-center">
                             <div class="user-avatar-large mx-auto mb-3" style="width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 48px; font-weight: 600;">
-                                @{
-                                    var fullName = ViewBag.Profile?.fullName ?? ViewBag.Profile?.FullName ?? ViewBag.FullName ?? "U";
-                                    var firstChar = fullName.Length > 0 ? fullName[0].ToString().ToUpper() : "U";
-                                }
                                 @firstChar
                             </div>
-                            <h4>@(ViewBag.Profile?.fullName ?? ViewBag.Profile?.FullName ?? ViewBag.FullName)</h4>
-                            <span class="badge bg-@(ViewBag.Profile?.role == "Admin" || ViewBag.Role == "Admin" ? "danger" : ViewBag.Profile?.role == "Teacher" || ViewBag.Role == "Teacher" ? "primary" : "success")">
-                                @(ViewBag.Profile?.role ?? ViewBag.Role ?? "User")
+                            <h4>@fullName</h4>
+                            <span class="badge bg-@roleBadgeClass">
+                                @role
                             </span>
                         </div>
                         <div class="col-md-8">
                             <table class="table table-borderless">
                                 <tr>
                                     <th width="35%">Email:</th>
-                                    <td>@(ViewBag.Profile?.email ?? ViewBag.Profile?.Email ?? ViewBag.Email)</td>
+                                    <td>@email</td>
                                 </tr>
                                 <tr>
                                     <th>Số điện thoại:</th>
-                                    <td>@(ViewBag.Profile?.phone ?? ViewBag.Profile?.Phone ?? "Chưa cập nhật")</td>
+                                    <td>@phone</td>
                                 </tr>
                                 <tr>
                                     <th>Địa chỉ:</th>
-                                    <td>@(ViewBag.Profile?.address ?? ViewBag.Profile?.Address ?? "Chưa cập nhật")</td>
+                                    <td>@address</td>
                                 </tr>
                                 <tr>
                                     <th>Ngày sinh:</th>
-                                    <td>@(ViewBag.Profile?.dateOfBirth ?? ViewBag.Profile?.DateOfBirth ?? "Chưa cập nhật")</td>
+                                    <td>@dateOfBirth</td>
                                 </tr>
                                 <tr>
                                     <th>Giới tính:</th>
-                                    <td>@(ViewBag.Profile?.gender ?? ViewBag.Profile?.Gender ?? "Chưa cập nhật")</td>
+                                    <td>@gender</td>
                                 </tr>
                                 <tr>
                                     <th>Ngày tham gia:</th>
-                                    <td>@(ViewBag.Profile?.createdDate ?? ViewBag.Profile?.CreatedDate ?? "N/A")</td>
+                                    <td>@createdDate</td>
                                 </tr>
                             </table>
                         </div>

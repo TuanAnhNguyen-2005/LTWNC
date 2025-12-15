@@ -56,7 +56,11 @@ CREATE TABLE NguoiDung (
     CONSTRAINT FK_NguoiDung_VaiTro FOREIGN KEY (MaVaiTro) REFERENCES VaiTro(MaVaiTro)
 );
 GO
-
+USE NenTangHocLieu;
+GO
+UPDATE NguoiDung
+SET MaVaiTro = '2'
+WHERE Email = 'thanhtu98912@gmail.com';
 -- ==============================
 -- BẢNG HỌC LIỆU
 -- ==============================
