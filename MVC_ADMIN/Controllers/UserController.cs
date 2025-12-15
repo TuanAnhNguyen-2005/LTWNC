@@ -8,15 +8,27 @@ namespace MVC_ADMIN.Controllers
     [AuthorizeRole("Admin")]
     public class UserController : BaseController
     {
+        // Temporary debug endpoint — remove after debugging
+        [AllowAnonymous]
+        public ActionResult DebugSession()
+        {
+            var userId = Session["UserId"] ?? "null";
+            var email = Session["Email"] ?? "null";
+            var role = Session["Role"] ?? "null";
+            return Content($"UserId={userId}, Email={email}, Role={role}");
+        }
+
+        // Allow anonymous GET while debugging routing/auth (remove AllowAnonymous after fixing)
+        [AllowAnonymous]
         public async Task<ActionResult> Index()
         {
             try
             {
                 ViewBag.Title = "Quản lý người dùng";
-                
+
                 // Gọi API lấy danh sách user
                 var response = await ApiService.GetWithErrorHandlingAsync<dynamic>("users");
-                
+
                 if (response.Success)
                 {
                     ViewBag.Users = response.Data;
@@ -25,7 +37,7 @@ namespace MVC_ADMIN.Controllers
                 {
                     SetErrorMessage(response.Error ?? "Không thể tải danh sách người dùng");
                 }
-                
+
                 return View();
             }
             catch (Exception ex)
@@ -35,28 +47,8 @@ namespace MVC_ADMIN.Controllers
             }
         }
 
-        public async Task<ActionResult> Details(int id)
-        {
-            try
-            {
-                var response = await ApiService.GetWithErrorHandlingAsync<dynamic>($"users/{id}");
-                
-                if (response.Success)
-                {
-                    ViewBag.User = response.Data;
-                    return View();
-                }
-                
-                SetErrorMessage(response.Error ?? "Không tìm thấy người dùng");
-                return RedirectToAction("Index");
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex, "Đã xảy ra lỗi khi tải thông tin người dùng");
-                return RedirectToAction("Index");
-            }
-        }
-
+        // Allow anonymous GET create page for debugging
+        [AllowAnonymous]
         public ActionResult Create()
         {
             ViewBag.Title = "Thêm người dùng mới";
@@ -80,13 +72,13 @@ namespace MVC_ADMIN.Controllers
                 };
 
                 var response = await ApiService.PostAsync<dynamic, dynamic>("users", userData);
-                
+
                 if (response != null)
                 {
                     SetSuccessMessage("Thêm người dùng thành công!");
                     return RedirectToAction("Index");
                 }
-                
+
                 SetErrorMessage("Thêm người dùng thất bại!");
                 return View();
             }
@@ -97,20 +89,46 @@ namespace MVC_ADMIN.Controllers
             }
         }
 
-        public async Task<ActionResult> Edit(int id)
+        // Allow anonymous GET details page for debugging
+        [AllowAnonymous]
+        public async Task<ActionResult> Details(int id)
         {
             try
             {
-                ViewBag.Title = "Chỉnh sửa người dùng";
-                
                 var response = await ApiService.GetWithErrorHandlingAsync<dynamic>($"users/{id}");
-                
+
                 if (response.Success)
                 {
                     ViewBag.User = response.Data;
                     return View();
                 }
-                
+
+                SetErrorMessage(response.Error ?? "Không tìm thấy người dùng");
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, "Đã xảy ra lỗi khi tải thông tin người dùng");
+                return RedirectToAction("Index");
+            }
+        }
+
+        // Allow anonymous GET edit page for debugging
+        [AllowAnonymous]
+        public async Task<ActionResult> Edit(int id)
+        {
+            try
+            {
+                ViewBag.Title = "Chỉnh sửa người dùng";
+
+                var response = await ApiService.GetWithErrorHandlingAsync<dynamic>($"users/{id}");
+
+                if (response.Success)
+                {
+                    ViewBag.User = response.Data;
+                    return View();
+                }
+
                 SetErrorMessage(response.Error ?? "Không tìm thấy người dùng");
                 return RedirectToAction("Index");
             }
@@ -128,7 +146,7 @@ namespace MVC_ADMIN.Controllers
             try
             {
                 int userId = int.Parse(form["userId"]);
-                
+
                 var userData = new
                 {
                     fullName = form["fullName"],
@@ -141,13 +159,13 @@ namespace MVC_ADMIN.Controllers
                 };
 
                 var response = await ApiService.PutAsync<dynamic, dynamic>($"users/{userId}", userData);
-                
+
                 if (response != null)
                 {
                     SetSuccessMessage("Cập nhật người dùng thành công!");
                     return RedirectToAction("Index");
                 }
-                
+
                 SetErrorMessage("Cập nhật người dùng thất bại!");
                 return RedirectToAction("Edit", new { id = userId });
             }
@@ -164,7 +182,7 @@ namespace MVC_ADMIN.Controllers
             try
             {
                 var success = await ApiService.DeleteAsync($"users/{id}");
-                
+
                 if (success)
                 {
                     SetSuccessMessage("Xóa người dùng thành công!");
@@ -173,7 +191,7 @@ namespace MVC_ADMIN.Controllers
                 {
                     SetErrorMessage("Xóa người dùng thất bại!");
                 }
-                
+
                 return RedirectToAction("Index");
             }
             catch (Exception ex)

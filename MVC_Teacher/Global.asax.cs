@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using MVC_Teacher.Services;
 
 namespace MVC_Teacher
 {
@@ -16,6 +17,17 @@ namespace MVC_Teacher
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+
+            // Create sample/default users on startup
+            try
+            {
+                var userService = new UserDataService();
+                userService.CreateSampleUser();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error creating sample users on startup: {ex.Message}");
+            }
         }
     }
 }
