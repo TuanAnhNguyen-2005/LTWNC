@@ -20,7 +20,12 @@ namespace MVC_ADMIN.Services
         public ApiService(string baseUrl)
         {
             _baseUrl = baseUrl?.TrimEnd('/') ?? throw new ArgumentNullException(nameof(baseUrl));
-            _httpClient = new HttpClient
+            
+            // Xử lý SSL certificate cho development (bỏ qua lỗi certificate)
+            var handler = new System.Net.Http.HttpClientHandler();
+            handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+            
+            _httpClient = new HttpClient(handler)
             {
                 Timeout = TimeSpan.FromSeconds(30) // Timeout 30 giây
             };
@@ -163,23 +168,59 @@ namespace MVC_ADMIN.Services
         {
             try
             {
-                var response = await _httpClient.GetAsync($"{_baseUrl}/{endpoint.TrimStart('/')}");
+                var url = $"{_baseUrl}/{endpoint.TrimStart('/')}";
+                System.Diagnostics.Debug.WriteLine($"API Request: {url}");
+                
+                var response = await _httpClient.GetAsync(url);
                 var json = await response.Content.ReadAsStringAsync();
+                
+                System.Diagnostics.Debug.WriteLine($"API Response Status: {response.StatusCode}");
+                System.Diagnostics.Debug.WriteLine($"API Response Content: {(string.IsNullOrEmpty(json) ? "(empty)" : json.Substring(0, Math.Min(500, json.Length)))}");
 
                 if (response.IsSuccessStatusCode)
                 {
-                    var data = JsonConvert.DeserializeObject<T>(json);
-                    return new ApiResponse<T> { Success = true, Data = data };
+                    try
+                    {
+                        var data = JsonConvert.DeserializeObject<T>(json);
+                        return new ApiResponse<T> { Success = true, Data = data };
+                    }
+                    catch (JsonException jsonEx)
+                    {
+                        return new ApiResponse<T> 
+                        { 
+                            Success = false, 
+                            Error = $"Lỗi parse JSON: {jsonEx.Message}. Response: {(string.IsNullOrEmpty(json) ? "(empty)" : json.Substring(0, Math.Min(200, json.Length)))}" 
+                        };
+                    }
                 }
                 else
                 {
-                    var error = JsonConvert.DeserializeObject<ApiError>(json);
-                    return new ApiResponse<T> { Success = false, Error = error?.Message ?? "Request failed" };
+                    string errorMessage = $"HTTP {(int)response.StatusCode}: {response.ReasonPhrase}";
+                    try
+                    {
+                        var error = JsonConvert.DeserializeObject<ApiError>(json);
+                        if (error != null && !string.IsNullOrEmpty(error.Message))
+                            errorMessage = error.Message;
+                    }
+                    catch { }
+                    
+                    return new ApiResponse<T> { Success = false, Error = errorMessage };
                 }
+            }
+            catch (System.Net.Http.HttpRequestException httpEx)
+            {
+                string errorMsg = $"Không thể kết nối đến API: {httpEx.Message}";
+                if (httpEx.InnerException != null)
+                    errorMsg += $" ({httpEx.InnerException.Message})";
+                return new ApiResponse<T> { Success = false, Error = errorMsg };
+            }
+            catch (TaskCanceledException)
+            {
+                return new ApiResponse<T> { Success = false, Error = "Request timeout - API không phản hồi" };
             }
             catch (Exception ex)
             {
-                return new ApiResponse<T> { Success = false, Error = ex.Message };
+                return new ApiResponse<T> { Success = false, Error = $"Lỗi: {ex.Message}" };
             }
         }
 

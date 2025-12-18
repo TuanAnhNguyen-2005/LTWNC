@@ -9,6 +9,7 @@ namespace MVC_ADMIN.Controllers
     /// <summary>
     /// Controller xử lý đăng ký
     /// </summary>
+    [AllowAnonymous]
     public class SignUpController : BaseController
     {
         private readonly UserDataService _userDataService;
@@ -18,6 +19,7 @@ namespace MVC_ADMIN.Controllers
             _userDataService = new UserDataService();
         }
 
+        [AllowAnonymous]
         public ActionResult Index()
         {
             // Nếu đã đăng nhập thì redirect về trang chủ

@@ -11,27 +11,7 @@ namespace MVC_ADMIN.Controllers
     /// </summary>
     public abstract class BaseController : Controller
     {
-        private ApiService _apiService;
-        protected ApiService ApiService
-        {
-            get
-            {
-                if (_apiService == null)
-                {
-                    _apiService = new ApiService(GetApiBaseUrl());
-                }
-                return _apiService;
-            }
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _apiService?.Dispose();
-            }
-            base.Dispose(disposing);
-        }
+        protected ApiService ApiService => ApiServiceHelper.Instance;
 
         /// <summary>
         /// Lấy API Base URL từ config hoặc cache

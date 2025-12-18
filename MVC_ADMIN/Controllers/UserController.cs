@@ -27,7 +27,7 @@ namespace MVC_ADMIN.Controllers
                 ViewBag.Title = "Quản lý người dùng";
 
                 // Gọi API lấy danh sách user
-                var response = await ApiService.GetWithErrorHandlingAsync<dynamic>("users");
+                var response = await ApiService.GetWithErrorHandlingAsync<dynamic>("NguoiDung");
 
                 if (response.Success)
                 {
@@ -43,6 +43,7 @@ namespace MVC_ADMIN.Controllers
             catch (Exception ex)
             {
                 HandleException(ex, "Đã xảy ra lỗi khi tải danh sách người dùng");
+                ViewBag.ErrorMessage = ex.Message + (ex.InnerException != null ? (" (" + ex.InnerException.Message + ")") : "");
                 return View();
             }
         }
@@ -71,7 +72,7 @@ namespace MVC_ADMIN.Controllers
                     address = form["address"]
                 };
 
-                var response = await ApiService.PostAsync<dynamic, dynamic>("users", userData);
+                var response = await ApiService.PostAsync<dynamic, dynamic>("NguoiDung", userData);
 
                 if (response != null)
                 {
@@ -95,7 +96,7 @@ namespace MVC_ADMIN.Controllers
         {
             try
             {
-                var response = await ApiService.GetWithErrorHandlingAsync<dynamic>($"users/{id}");
+                var response = await ApiService.GetWithErrorHandlingAsync<dynamic>($"NguoiDung/{id}");
 
                 if (response.Success)
                 {
@@ -121,7 +122,7 @@ namespace MVC_ADMIN.Controllers
             {
                 ViewBag.Title = "Chỉnh sửa người dùng";
 
-                var response = await ApiService.GetWithErrorHandlingAsync<dynamic>($"users/{id}");
+                var response = await ApiService.GetWithErrorHandlingAsync<dynamic>($"NguoiDung/{id}");
 
                 if (response.Success)
                 {
@@ -158,7 +159,7 @@ namespace MVC_ADMIN.Controllers
                     isActive = form["isActive"] == "on" || form["isActive"] == "true"
                 };
 
-                var response = await ApiService.PutAsync<dynamic, dynamic>($"users/{userId}", userData);
+                var response = await ApiService.PutAsync<dynamic, dynamic>($"NguoiDung/{userId}", userData);
 
                 if (response != null)
                 {
@@ -181,7 +182,7 @@ namespace MVC_ADMIN.Controllers
         {
             try
             {
-                var success = await ApiService.DeleteAsync($"users/{id}");
+                var success = await ApiService.DeleteAsync($"NguoiDung/{id}");
 
                 if (success)
                 {

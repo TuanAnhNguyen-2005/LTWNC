@@ -22,7 +22,7 @@ namespace MVC_ADMIN.Services
             // Fail fast instead of falling back to an invalid hard-coded server
             if (string.IsNullOrEmpty(_connectionString))
             {
-                _connectionString = "Data Source=DESKTOP-HRB1243;Initial Catalog=NenTangHocLieu;Persist Security Info=True;User ID=sa;Password=12345;TrustServerCertificate=True;MultipleActiveResultSets=True;";
+                _connectionString = "Server=CHAODAIKA\\THAITHANHTU2340;Database=NenTangHocLieu;User ID=sa;Password=12345;TrustServerCertificate=True;MultipleActiveResultSets=True;";
             }
         }
 
@@ -126,7 +126,9 @@ namespace MVC_ADMIN.Services
                         SELECT nd.MaNguoiDung, nd.HoTen, nd.Email, vt.TenVaiTro
                         FROM NguoiDung nd
                         INNER JOIN VaiTro vt ON nd.MaVaiTro = vt.MaVaiTro
-                        WHERE nd.Email = @Email AND nd.MatKhau = @MatKhau AND nd.TrangThai = 1";
+                        WHERE LTRIM(RTRIM(nd.Email)) = LTRIM(RTRIM(@Email))
+                          AND LTRIM(RTRIM(nd.MatKhau)) = LTRIM(RTRIM(@MatKhau))
+                          AND nd.TrangThai = 1";
 
                     using (var cmd = new SqlCommand(sql, connection))
                     {

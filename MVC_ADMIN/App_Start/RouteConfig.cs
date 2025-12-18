@@ -8,6 +8,29 @@ namespace MVC_ADMIN
         public static void RegisterRoutes(RouteCollection routes)
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
+            
+            // Chặn truy cập trực tiếp vào Views folder
+            routes.IgnoreRoute("Views/{*pathInfo}");
+
+            // Route gốc → Login (tránh gõ nhầm đường dẫn file .cshtml gây 404)
+            routes.MapRoute(
+                name: "Root",
+                url: "",
+                defaults: new { controller = "Login", action = "Index", id = UrlParameter.Optional }
+            );
+
+            // Route cho Login và SignUp (public pages)
+            routes.MapRoute(
+                name: "Login",
+                url: "Login/{action}/{id}",
+                defaults: new { controller = "Login", action = "Index", id = UrlParameter.Optional }
+            );
+            
+            routes.MapRoute(
+                name: "SignUp",
+                url: "SignUp/{action}/{id}",
+                defaults: new { controller = "SignUp", action = "Index", id = UrlParameter.Optional }
+            );
 
             // 1. ROUTE ADMIN
             routes.MapRoute(

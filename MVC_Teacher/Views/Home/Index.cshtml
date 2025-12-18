@@ -1,33 +1,908 @@
 ﻿@{
-    ViewBag.Title = "Home Page";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Dashboard - Teach Tech";
 }
 
-<main>
-    <section class="row" aria-labelledby="aspnetTitle">
-        <h1 id="title">ASP.NET</h1>
-        <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-        <p><a href="https://asp.net" class="btn btn-primary btn-md">Learn more &raquo;</a></p>
-    </section>
+<!-- Teacher Welcome Banner -->
+<div class="welcome-banner">
+    <div class="welcome-text">
+        <h1>Chào mừng trở lại, @(Session["FullName"] ?? "Thầy/Cô")! 👨‍🏫</h1>
+        <p>Hôm nay bạn có <strong>3 lớp học</strong> cần giảng dạy. <strong>2 bài tập mới</strong> cần chấm điểm và <strong>5 thông báo</strong> từ học sinh.</p>
 
-    <div class="row">
-        <section class="col-md-4" aria-labelledby="gettingStartedTitle">
-            <h2 id="gettingStartedTitle">Getting started</h2>
-            <p>
-                ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-                enables a clean separation of concerns and gives you full control over markup
-                for enjoyable, agile development.
-            </p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
-        </section>
-        <section class="col-md-4" aria-labelledby="librariesTitle">
-            <h2 id="librariesTitle">Get more libraries</h2>
-            <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
-        </section>
-        <section class="col-md-4" aria-labelledby="hostingTitle">
-            <h2 id="hostingTitle">Web Hosting</h2>
-            <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
-        </section>
+        <!-- Edit profile button -->
+        <a id="editProfileBtn" href="@Url.Action("Index", "Profile")" class="btn btn-outline-primary mt-3">Chỉnh sửa thông tin</a>
     </div>
-</main>
+    <div class="teacher-illustration">
+        <i class="fas fa-chalkboard-teacher"></i>
+    </div>
+</div>
+
+<!-- Teacher Stats Grid -->
+<div class="teacher-stats-grid">
+    <div class="teacher-stat-card">
+        <div class="stat-header">
+            <div>
+                <div class="stat-value">@ViewBag.TotalClasses</div>
+                <div class="stat-label">Lớp học đang dạy</div>
+            </div>
+            <div class="stat-icon" style="background: #ede9fe; color: #7c3aed;">
+                <i class="fas fa-chalkboard"></i>
+            </div>
+        </div>
+        <div class="stat-change">
+            <i class="fas fa-arrow-up"></i> +3 tuần này
+        </div>
+    </div>
+
+    <div class="teacher-stat-card">
+        <div class="stat-header">
+            <div>
+                <div class="stat-value">@ViewBag.TotalStudents</div>
+                <div class="stat-label">Học sinh đang dạy</div>
+            </div>
+            <div class="stat-icon" style="background: #dbeafe; color: #0ea5e9;">
+                <i class="fas fa-user-graduate"></i>
+            </div>
+        </div>
+        <div class="stat-change">
+            <i class="fas fa-arrow-up"></i> +12 tháng này
+        </div>
+    </div>
+
+    <div class="teacher-stat-card">
+        <div class="stat-header">
+            <div>
+                <div class="stat-value">@ViewBag.CompletionRate%</div>
+                <div class="stat-label">Hoàn thành bài tập</div>
+            </div>
+            <div class="stat-icon" style="background: #dcfce7; color: #10b981;">
+                <i class="fas fa-tasks"></i>
+            </div>
+        </div>
+        <div class="stat-change">
+            <i class="fas fa-arrow-up"></i> +5% so với tuần trước
+        </div>
+    </div>
+
+    <div class="teacher-stat-card">
+        <div class="stat-header">
+            <div>
+                <div class="stat-value">@ViewBag.AverageRating</div>
+                <div class="stat-label">Đánh giá trung bình</div>
+            </div>
+            <div class="stat-icon" style="background: #fef3c7; color: #f59e0b;">
+                <i class="fas fa-star"></i>
+            </div>
+        </div>
+        <div class="stat-change">
+            <i class="fas fa-arrow-up"></i> +0.2 tháng này
+        </div>
+    </div>
+</div>
+
+<!-- Today's Schedule -->
+<div class="schedule-section">
+    <div class="section-header">
+        <div class="section-title">
+            <i class="fas fa-calendar-day"></i>
+            <h3>Lịch dạy hôm nay</h3>
+        </div>
+        <a href="@Url.Action("Schedule", "Dashboard")" class="view-all">
+            Xem tất cả
+            <i class="fas fa-arrow-right"></i>
+        </a>
+    </div>
+
+    <div class="schedule-list">
+        <div class="schedule-item">
+            <div class="schedule-time">
+                <div class="time-badge">08:00</div>
+                <div class="duration">- 09:30</div>
+            </div>
+            <div class="schedule-details">
+                <div class="class-name">Toán 12A1</div>
+                <div class="class-topic">Chương 3: Nguyên hàm - Tích phân</div>
+                <div class="class-room">
+                    <i class="fas fa-map-marker-alt"></i>
+                    Phòng 302
+                </div>
+            </div>
+            <button class="join-class-btn">
+                <i class="fas fa-video"></i>
+                Vào lớp
+            </button>
+        </div>
+
+        <div class="schedule-item">
+            <div class="schedule-time">
+                <div class="time-badge">10:00</div>
+                <div class="duration">- 11:30</div>
+            </div>
+            <div class="schedule-details">
+                <div class="class-name">Toán 12A2</div>
+                <div class="class-topic">Ôn tập thi giữa kỳ</div>
+                <div class="class-room">
+                    <i class="fas fa-map-marker-alt"></i>
+                    Phòng 305
+                </div>
+            </div>
+            <button class="join-class-btn">
+                <i class="fas fa-video"></i>
+                Vào lớp
+            </button>
+        </div>
+
+        <div class="schedule-item">
+            <div class="schedule-time">
+                <div class="time-badge">13:30</div>
+                <div class="duration">- 15:00</div>
+            </div>
+            <div class="schedule-details">
+                <div class="class-name">Toán 12A3</div>
+                <div class="class-topic">Bài tập ứng dụng tích phân</div>
+                <div class="class-room">
+                    <i class="fas fa-map-marker-alt"></i>
+                    Phòng 308
+                </div>
+            </div>
+            <button class="join-class-btn">
+                <i class="fas fa-video"></i>
+                Vào lớp
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="quick-actions-section">
+    <div class="section-header">
+        <div class="section-title">
+            <i class="fas fa-bolt"></i>
+            <h3>Hành động nhanh</h3>
+        </div>
+    </div>
+
+    <div class="quick-actions-grid">
+        <a href="@Url.Action("Create", "Lesson")" class="quick-action-card">
+            <div class="action-icon" style="background: #ede9fe; color: #7c3aed;">
+                <i class="fas fa-plus-circle"></i>
+            </div>
+            <div class="action-title">Tạo bài giảng</div>
+            <div class="action-desc">Soạn giáo án mới</div>
+        </a>
+
+        <a href="@Url.Action("Assign", "Assignment")" class="quick-action-card">
+            <div class="action-icon" style="background: #dbeafe; color: #0ea5e9;">
+                <i class="fas fa-clipboard-check"></i>
+            </div>
+            <div class="action-title">Giao bài tập</div>
+            <div class="action-desc">Phân công bài tập mới</div>
+        </a>
+
+        <a href="@Url.Action("Create", "Quiz")" class="quick-action-card">
+            <div class="action-icon" style="background: #dcfce7; color: #10b981;">
+                <i class="fas fa-question-circle"></i>
+            </div>
+            <div class="action-title">Tạo Quiz</div>
+            <div class="action-desc">Tạo bài kiểm tra nhanh</div>
+        </a>
+
+        <a href="@Url.Action("Grade", "Assignment")" class="quick-action-card">
+            <div class="action-icon" style="background: #fef3c7; color: #f59e0b;">
+                <i class="fas fa-graduation-cap"></i>
+            </div>
+            <div class="action-title">Chấm điểm</div>
+            <div class="action-desc">Chấm bài tập học sinh</div>
+        </a>
+
+        <a href="@Url.Action("Index", "Materials")" class="quick-action-card">
+            <div class="action-icon" style="background: #e0e7ff; color: #4f46e5;">
+                <i class="fas fa-folder-plus"></i>
+            </div>
+            <div class="action-title">Thêm tài liệu</div>
+            <div class="action-desc">Upload tài liệu học tập</div>
+        </a>
+
+        <a href="@Url.Action("Schedule", "Calendar")" class="quick-action-card">
+            <div class="action-icon" style="background: #f3e8ff; color: #8b5cf6;">
+                <i class="fas fa-calendar-plus"></i>
+            </div>
+            <div class="action-title">Lên lịch lớp</div>
+            <div class="action-desc">Sắp xếp lịch học mới</div>
+        </a>
+    </div>
+</div>
+
+<!-- Recent Activities -->
+<div class="recent-activity-section">
+    <div class="section-header">
+        <div class="section-title">
+            <i class="fas fa-history"></i>
+            <h3>Hoạt động gần đây</h3>
+        </div>
+        <a href="@Url.Action("Activity", "Dashboard")" class="view-all">
+            Xem tất cả
+            <i class="fas fa-arrow-right"></i>
+        </a>
+    </div>
+
+    <div class="activity-list">
+        <div class="activity-item">
+            <div class="activity-icon" style="background: #7c3aed;">
+                <i class="fas fa-book"></i>
+            </div>
+            <div class="activity-content">
+                <div class="activity-title">Đã tạo bài giảng mới: "Đạo hàm và ứng dụng"</div>
+                <div class="activity-meta">
+                    <span class="activity-class">Lớp 12A1</span>
+                    <span class="activity-time">2 giờ trước</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="activity-item">
+            <div class="activity-icon" style="background: #0ea5e9;">
+                <i class="fas fa-clipboard-check"></i>
+            </div>
+            <div class="activity-content">
+                <div class="activity-title">Đã chấm xong bài kiểm tra giữa kỳ</div>
+                <div class="activity-meta">
+                    <span class="activity-class">Lớp 12A2</span>
+                    <span class="activity-time">Hôm qua, 15:30</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="activity-item">
+            <div class="activity-icon" style="background: #10b981;">
+                <i class="fas fa-comments"></i>
+            </div>
+            <div class="activity-content">
+                <div class="activity-title">Nhận được 5 câu hỏi từ học sinh về bài tập</div>
+                <div class="activity-meta">
+                    <span class="activity-class">Lớp 12A3</span>
+                    <span class="activity-time">Hôm qua, 11:20</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="activity-item">
+            <div class="activity-icon" style="background: #f59e0b;">
+                <i class="fas fa-video"></i>
+            </div>
+            <div class="activity-content">
+                <div class="activity-title">Đã upload video bài giảng "Tích phân"</div>
+                <div class="activity-meta">
+                    <span class="activity-class">Tất cả các lớp</span>
+                    <span class="activity-time">2 ngày trước</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="activity-item">
+            <div class="activity-icon" style="background: #ef4444;">
+                <i class="fas fa-bell"></i>
+            </div>
+            <div class="activity-content">
+                <div class="activity-title">Nhắc nhở: 3 bài tập chưa chấm</div>
+                <div class="activity-meta">
+                    <span class="activity-class">Cần hoàn thành trước 18:00</span>
+                    <span class="activity-time">Sắp đến hạn</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Upcoming Deadlines -->
+<div class="deadlines-section">
+    <div class="section-header">
+        <div class="section-title">
+            <i class="fas fa-clock"></i>
+            <h3>Công việc sắp đến hạn</h3>
+        </div>
+    </div>
+
+    <div class="deadlines-list">
+        <div class="deadline-item urgent">
+            <div class="deadline-info">
+                <div class="deadline-title">Chấm bài kiểm tra Toán 12A1</div>
+                <div class="deadline-class">Hạn: Hôm nay, 18:00</div>
+            </div>
+            <div class="deadline-action">
+                <a href="#" class="btn btn-sm btn-danger">Xử lý ngay</a>
+            </div>
+        </div>
+
+        <div class="deadline-item warning">
+            <div class="deadline-info">
+                <div class="deadline-title">Soạn giáo án tuần sau</div>
+                <div class="deadline-class">Hạn: Ngày mai, 09:00</div>
+            </div>
+            <div class="deadline-action">
+                <a href="#" class="btn btn-sm btn-warning">Bắt đầu</a>
+            </div>
+        </div>
+
+        <div class="deadline-item normal">
+            <div class="deadline-info">
+                <div class="deadline-title">Gửi báo cáo tháng</div>
+                <div class="deadline-class">Hạn: 3 ngày nữa</div>
+            </div>
+            <div class="deadline-action">
+                <a href="#" class="btn btn-sm btn-primary">Lên lịch</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Custom CSS for Home Page */
+    .welcome-banner {
+        background: linear-gradient(135deg, var(--primary-light), #e0e7ff);
+        border-radius: var(--radius-lg);
+        padding: 40px;
+        margin-bottom: 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+    }
+
+    .welcome-text h1 {
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: var(--primary-dark);
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .welcome-text p {
+        font-size: 16px;
+        color: var(--text-light);
+        max-width: 600px;
+    }
+
+    .teacher-illustration {
+        width: 120px;
+        height: 120px;
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 48px;
+        color: white;
+        box-shadow: 0 10px 30px rgba(124, 58, 237, 0.3);
+    }
+
+    /* Stats Grid */
+    .teacher-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 24px;
+        margin-bottom: 40px;
+    }
+
+    .teacher-stat-card {
+        background: white;
+        padding: 24px;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .teacher-stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .teacher-stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+    .stat-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+    }
+
+    .stat-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+    }
+
+    .stat-value {
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 4px;
+        color: var(--primary-dark);
+    }
+
+    .stat-label {
+        color: var(--text-light);
+        font-size: 14px;
+    }
+
+    .stat-change {
+        font-size: 12px;
+        font-weight: 500;
+        padding: 4px 10px;
+        border-radius: 12px;
+        background: var(--success);
+        color: white;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    /* Schedule Section */
+    .schedule-section,
+    .quick-actions-section,
+    .recent-activity-section,
+    .deadlines-section {
+        background: white;
+        border-radius: var(--radius-lg);
+        padding: 30px;
+        box-shadow: var(--shadow);
+        margin-bottom: 30px;
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+    }
+
+    .section-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 20px;
+        font-weight: 600;
+        color: var(--text);
+    }
+
+        .section-title i {
+            color: var(--primary);
+            font-size: 24px;
+        }
+
+    .view-all {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+    }
+
+        .view-all:hover {
+            color: var(--primary-dark);
+            gap: 12px;
+        }
+
+    .schedule-list {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .schedule-item {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        padding: 20px;
+        border-radius: var(--radius);
+        background: var(--bg);
+        transition: all 0.3s ease;
+        border: 1px solid var(--border);
+    }
+
+        .schedule-item:hover {
+            background: var(--primary-light);
+            transform: translateX(5px);
+            border-color: var(--primary);
+        }
+
+    .schedule-time {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-width: 80px;
+    }
+
+    .time-badge {
+        background: var(--primary);
+        color: white;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 18px;
+    }
+
+    .duration {
+        font-size: 12px;
+        color: var(--text-light);
+        margin-top: 4px;
+    }
+
+    .schedule-details {
+        flex: 1;
+    }
+
+    .class-name {
+        font-weight: 600;
+        font-size: 16px;
+        margin-bottom: 4px;
+        color: var(--text);
+    }
+
+    .class-topic {
+        font-size: 14px;
+        color: var(--text-light);
+        margin-bottom: 8px;
+    }
+
+    .class-room {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        color: var(--primary);
+    }
+
+    .join-class-btn {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: var(--radius);
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .join-class-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+    /* Quick Actions */
+    .quick-actions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+    }
+
+    .quick-action-card {
+        background: white;
+        padding: 24px;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow);
+        text-align: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: 2px solid transparent;
+        text-decoration: none;
+        color: inherit;
+    }
+
+        .quick-action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-light);
+        }
+
+    .action-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+        font-size: 24px;
+    }
+
+    .action-title {
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: var(--text);
+        font-size: 16px;
+    }
+
+    .action-desc {
+        font-size: 13px;
+        color: var(--text-light);
+        line-height: 1.4;
+    }
+
+    /* Recent Activities */
+    .activity-list {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .activity-item {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 16px;
+        border-radius: var(--radius);
+        background: var(--bg);
+        transition: all 0.3s ease;
+        border: 1px solid var(--border);
+    }
+
+        .activity-item:hover {
+            background: var(--primary-light);
+            transform: translateX(5px);
+            border-color: var(--primary);
+        }
+
+    .activity-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        color: white;
+        flex-shrink: 0;
+    }
+
+    .activity-content {
+        flex: 1;
+    }
+
+    .activity-title {
+        font-weight: 500;
+        margin-bottom: 4px;
+        color: var(--text);
+        font-size: 15px;
+    }
+
+    .activity-meta {
+        display: flex;
+        gap: 16px;
+        font-size: 12px;
+        color: var(--text-light);
+    }
+
+    .activity-class {
+        background: var(--primary-light);
+        color: var(--primary);
+        padding: 2px 8px;
+        border-radius: 4px;
+    }
+
+    /* Deadlines */
+    .deadlines-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .deadline-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px;
+        border-radius: var(--radius);
+        background: var(--bg);
+        border-left: 4px solid var(--border);
+    }
+
+        .deadline-item.urgent {
+            border-left-color: var(--danger);
+            background: rgba(239, 68, 68, 0.05);
+        }
+
+        .deadline-item.warning {
+            border-left-color: var(--warning);
+            background: rgba(245, 158, 11, 0.05);
+        }
+
+        .deadline-item.normal {
+            border-left-color: var(--primary);
+            background: rgba(124, 58, 237, 0.05);
+        }
+
+    .deadline-title {
+        font-weight: 500;
+        margin-bottom: 4px;
+        color: var(--text);
+    }
+
+    .deadline-class {
+        font-size: 12px;
+        color: var(--text-light);
+    }
+
+    .btn {
+        padding: 6px 16px;
+        border-radius: 6px;
+        font-weight: 500;
+        font-size: 13px;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-sm {
+        padding: 4px 12px;
+        font-size: 12px;
+    }
+
+    .btn-danger {
+        background: var(--danger);
+        color: white;
+    }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+    .btn-warning {
+        background: var(--warning);
+        color: white;
+    }
+
+        .btn-warning:hover {
+            background: #d97706;
+        }
+
+    .btn-primary {
+        background: var(--primary);
+        color: white;
+    }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .welcome-banner {
+            flex-direction: column;
+            text-align: center;
+            gap: 24px;
+            padding: 30px 20px;
+        }
+
+        .teacher-stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .quick-actions-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .schedule-item {
+            flex-direction: column;
+            text-align: center;
+            gap: 15px;
+        }
+
+        .schedule-time {
+            flex-direction: row;
+            gap: 10px;
+        }
+
+        .deadline-item {
+            flex-direction: column;
+            gap: 12px;
+            text-align: center;
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .quick-actions-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .section-header {
+            flex-direction: column;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .view-all {
+            align-self: flex-end;
+        }
+    }
+</style>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Tạo thông báo thành công
+            const notification = document.createElement('div');
+            notification.className = 'alert alert-success show';
+            notification.innerHTML = `
+                <i class="fas fa-check-circle"></i>
+                <span>@TempData["SuccessMessage"]</span>
+            `;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #10b981;
+                color: white;
+                padding: 16px 24px;
+                border-radius: var(--radius);
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                box-shadow: var(--shadow-lg);
+                z-index: 9999;
+                animation: slideIn 0.3s ease;
+            `;
+
+            document.body.appendChild(notification);
+
+            // Tự động ẩn sau 5 giây
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease forwards';
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 5000);
+
+            // Thêm keyframes animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @@keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                @@keyframes slideOut {
+                    from { transform: translateX(0); opacity: 1; }
+                    to { transform: translateX(100%); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+}
+
+@section Scripts {
+    <script>
+        (function(){
+            var btn = document.getElementById('editProfileBtn');
+            if (!btn) return;
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                // ensure redirect to profile index
+                window.location.href = '@Url.Action("Index","Profile")';
+            });
+        })();
+    </script>
+}
