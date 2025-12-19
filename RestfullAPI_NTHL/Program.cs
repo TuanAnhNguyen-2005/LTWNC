@@ -1,6 +1,6 @@
-﻿// Program.cs – RESTfulAPI_NTHL
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using RestfullAPI_NTHL.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,7 +12,16 @@ builder.Services.AddDbContext<NenTangDbContext>(options =>
     options.UseSqlServer(connection);
 });
 
-// Controllers + JSON tránh vòng tham chiếu
+// CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod());
+});
+
+// Controllers + JSON
 builder.Services.AddControllers()
     .AddJsonOptions(opt =>
     {
@@ -34,8 +43,22 @@ app.UseSwaggerUI(c =>
     c.RoutePrefix = "swagger";
 });
 
+// 🔴 FIX CHÍNH: CẤU HÌNH STATIC FILES EXPLICIT VÀ ĐẶT LÊN ĐẦU
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(builder.Environment.ContentRootPath, "wwwroot")),
+    RequestPath = ""
+});
+
 app.UseHttpsRedirection();
+app.UseCors("AllowAll");
+
+// Nếu bạn có JWT authentication
+// app.UseAuthentication();
+
 app.UseAuthorization();
+
 app.MapControllers();
 
 app.Run();
