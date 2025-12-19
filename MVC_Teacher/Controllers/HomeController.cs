@@ -1,50 +1,31 @@
 ﻿using System;
 using System.Web.Mvc;
 
-namespace MVC_Teacher.Controllers
+public class HomeController : Controller
 {
-    /// <summary>
-    /// Controller cho trang chủ của Teacher
-    /// </summary>
-    public class HomeController : Controller
+    public ActionResult Index()
     {
-        // GET: Home
-        public ActionResult Index()
+        try
         {
-            try
-            {
-                // Kiểm tra đăng nhập đơn giản (dùng Session như các project khác)
-                if (Session == null || Session["UserId"] == null)
-                    return RedirectToAction("Index", "Login");
+            if (Session == null || Session["UserId"] == null)
+                return RedirectToAction("Index", "Login");
 
-                ViewBag.Title = "Trang chủ";
-                ViewBag.UserName = Session["FullName"]?.ToString() ?? string.Empty;
-                ViewBag.UserRole = Session["Role"]?.ToString() ?? string.Empty;
+            ViewBag.Title = "Trang chủ";
+            ViewBag.UserName = Session["FullName"]?.ToString() ?? string.Empty;
+            ViewBag.UserRole = Session["Role"]?.ToString() ?? string.Empty;
 
-                return View();
-            }
-            catch (Exception ex)
-            {
-                // Ghi log để debug, hiển thị view với thông báo lỗi nhẹ
-                System.Diagnostics.Debug.WriteLine($"HomeController.Index error: {ex.Message}");
-                TempData["Error"] = "Đã xảy ra lỗi. Vui lòng thử lại sau.";
-                return View();
-            }
-        }
+            // Thêm các ViewBag cho Dashboard stats
+            ViewBag.TotalClasses = 12;
+            ViewBag.TotalStudents = 154;
+            ViewBag.CompletionRate = 87;
+            ViewBag.AverageRating = 4.8;
 
-        // GET: Home/About
-        public ActionResult About()
-        {
-            ViewBag.Title = "Giới thiệu";
-            ViewBag.Message = "Mô tả ứng dụng.";
             return View();
         }
-
-        // GET: Home/Contact
-        public ActionResult Contact()
+        catch (Exception ex)
         {
-            ViewBag.Title = "Liên hệ";
-            ViewBag.Message = "Thông tin liên hệ.";
+            System.Diagnostics.Debug.WriteLine($"HomeController.Index error: {ex.Message}");
+            TempData["Error"] = "Đã xảy ra lỗi. Vui lòng thử lại sau.";
             return View();
         }
     }
