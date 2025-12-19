@@ -95,10 +95,35 @@ CREATE TABLE KhoaHoc (
     IsActive BIT NOT NULL DEFAULT 1
 );
 
+USE [NenTangHocLieu];
+GO
+SELECT MaKhoaHoc, TenKhoaHoc, AnhBia 
+FROM dbo.KhoaHoc 
+WHERE MaKhoaHoc IN (9,10,11,12)
+
+-- Kiểm tra nếu cột chưa tồn tại thì mới thêm (tránh lỗi nếu chạy lại nhiều lần)
+IF NOT EXISTS (
+    SELECT 1 
+    FROM sys.columns 
+    WHERE object_id = OBJECT_ID('dbo.KhoaHoc') 
+      AND name = 'AnhBia'
+)
+BEGIN
+    ALTER TABLE dbo.KhoaHoc
+    ADD AnhBia NVARCHAR(500) NULL;  -- Lưu đường dẫn ảnh, ví dụ: /images/courses/abc123.jpg
+    
+    PRINT 'Đã thêm cột AnhBia thành công!';
+END
+ELSE
+BEGIN
+    PRINT 'Cột AnhBia đã tồn tại rồi, không cần thêm lại.';
+END
+GO
 -- FK: giáo viên (NguoiDung)
 ALTER TABLE KhoaHoc
 ADD CONSTRAINT FK_KhoaHoc_GiaoVien
 FOREIGN KEY (MaGiaoVien) REFERENCES NguoiDung(MaNguoiDung);
+
 
 -- FK: người duyệt (Admin - cũng là NguoiDung)
 ALTER TABLE KhoaHoc
@@ -135,13 +160,6 @@ SET TrangThaiDuyet = N'DaDuyet',
     LyDoTuChoi = NULL
 WHERE MaKhoaHoc = 1;
 
--- Học sinh đăng ký khóa đã duyệt (ví dụ học sinh id = 3)
-INSERT INTO DangKyKhoaHoc (MaKhoaHoc, MaHocSinh)
-VALUES (1, 3);
-INSERT INTO KhoaHoc (TenKhoaHoc, Slug, MoTa, MaGiaoVien, TrangThaiDuyet, NgayGuiDuyet)
-VALUES
-(N'Lập trình C# cơ bản', N'lap-trinh-csharp-co-ban', N'Khóa học cho người mới bắt đầu', 2, N'ChoDuyet', GETDATE()),
-(N'SQL Server nền tảng', N'sql-server-nen-tang', N'Học từ cơ bản đến thực hành', 2, N'Draft', NULL);
 
 SELECT TOP 50 MaNguoiDung, Email, MaVaiTro, TrangThai
 FROM NguoiDung
@@ -239,7 +257,25 @@ INSERT INTO NguoiDung (MaNguoiDung, HoTen, Email, MatKhau, MaVaiTro, GioiTinh, D
 (5, N'SV Hoàng E', N'sv2@example.com', N'123456', 3, N'Nam', N'Huế');
 SET IDENTITY_INSERT NguoiDung OFF;
 
--- BÂY GIỜ MỚI INSERT HỌC LIỆU (sau khi các bảng cha đã có dữ liệu)
+-- Insert KhoaHoc SAU NguoiDung (để MaGiaoVien=2 tồn tại)
+INSERT INTO KhoaHoc (TenKhoaHoc, Slug, MoTa, MaGiaoVien, TrangThaiDuyet, NgayGuiDuyet)
+VALUES
+(N'Lập trình C# cơ bản', N'lap-trinh-csharp-co-ban', N'Khóa học cho người mới bắt đầu', 2, N'ChoDuyet', GETDATE()),
+(N'SQL Server nền tảng', N'sql-server-nen-tang', N'Học từ cơ bản đến thực hành', 2, N'Draft', NULL);
+
+-- Duyệt khóa học MaKhoaHoc=1
+UPDATE KhoaHoc
+SET TrangThaiDuyet = N'DaDuyet',
+    NgayDuyet = GETDATE(),
+    NguoiDuyetId = 1,
+    LyDoTuChoi = NULL
+WHERE MaKhoaHoc = 1;
+
+-- Insert đăng ký SAU KHI KhoaHoc đã tồn tại
+INSERT INTO DangKyKhoaHoc (MaKhoaHoc, MaHocSinh)
+VALUES (1, 3);
+
+-- Insert HocLieu (sau các bảng cha)
 SET IDENTITY_INSERT HocLieu ON;
 INSERT INTO HocLieu (MaHocLieu, TieuDe, MoTa, DuongDanTep, LoaiTep, KichThuocTep, DoKho, MaChuDe, MaNguoiDung, MaMonHoc, MaLopHoc, DaDuyet, TrangThaiDuyet) VALUES
 (1, N'Bài giảng OOP Cơ bản', N'Nội dung OOP', N'/files/oop.pdf', N'PDF', 1024000, N'Dễ', 1, 2, 1, 1, 1, N'Đã duyệt'),
@@ -249,14 +285,25 @@ INSERT INTO HocLieu (MaHocLieu, TieuDe, MoTa, DuongDanTep, LoaiTep, KichThuocTep
 (5, N'HTML cơ bản', NULL, N'/files/html.pdf', N'PDF', 204800, N'Dễ', 5, 3, 3, 1, 1, N'Đã duyệt');
 SET IDENTITY_INSERT HocLieu OFF;
 
--- BÌNH LUẬN (sau khi có Học liệu)
+-- Insert BinhLuan
 INSERT INTO BinhLuan (MaHocLieu, MaNguoiDung, NoiDung, DanhGia, MaBinhLuanCha) VALUES
 (1, 4, N'Rất dễ hiểu ạ!', 5, NULL),
 (1, 5, N'Giảng hay quá thầy ơi', 5, NULL),
 (2, 4, N'Video chất lượng cao', 4, NULL),
 (1, 2, N'Cảm ơn các em đã góp ý', NULL, 1); -- reply của giáo viên
-GO
 
+PRINT N'=== NHẬP DỮ LIỆU MẪU THÀNH CÔNG 100% ===';
+
+-- Cập nhật điểm trung bình
+UPDATE HocLieu 
+SET DiemTrungBinh = (
+    SELECT AVG(CAST(DanhGia AS FLOAT)) 
+    FROM BinhLuan 
+    WHERE BinhLuan.MaHocLieu = HocLieu.MaHocLieu AND DanhGia IS NOT NULL
+)
+WHERE EXISTS (SELECT 1 FROM BinhLuan WHERE BinhLuan.MaHocLieu = HocLieu.MaHocLieu AND DanhGia IS NOT NULL);
+GO
+SELECT * FROM NguoiDung;
 PRINT N'=== NHẬP DỮ LIỆU MẪU THÀNH CÔNG 100% ===';
 -- Cập nhật điểm trung bình
 UPDATE HocLieu 

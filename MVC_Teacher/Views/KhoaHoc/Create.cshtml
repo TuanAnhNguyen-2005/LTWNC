@@ -1,0 +1,37 @@
+﻿@model MVC_TEACHER.Controllers.CreateKhoaHocVm
+
+@{
+    ViewBag.Title = "Tạo khóa học";
+}
+
+<h2>Tạo khóa học mới</h2>
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger" style="white-space:pre-line">
+        @ViewBag.Error
+    </div>
+}
+
+@using (Html.BeginForm("Create", "KhoaHoc", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <div class="form-group">
+        <label>Tên khóa học <span class="text-danger">*</span></label>
+        @Html.TextBoxFor(m => m.TenKhoaHoc, new { @class = "form-control", required = "required" })
+    </div>
+
+    <div class="form-group">
+        <label>Mô tả</label>
+        @Html.TextAreaFor(m => m.MoTa, new { @class = "form-control", rows = 4 })
+    </div>
+
+    <div class="form-group">
+        <label>Ảnh bìa khóa học</label>
+        <input type="file" name="anhBiaFile" accept="image/*" class="form-control" />
+        <small class="text-muted">Định dạng: JPG, PNG, GIF, WEBP. Để trống nếu chưa có.</small>
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+        <i class="fas fa-save"></i> Lưu (Draft)
+    </button>
+}

@@ -1,0 +1,389 @@
+﻿@model IEnumerable<MVC_TEACHER.Controllers.KhoaHocListVm>
+@{
+    ViewBag.Title = "Khóa học của tôi";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .course-container {
+        background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+        min-height: 100vh;
+        padding: 40px 15px;
+    }
+
+    .page-title {
+        font-weight: 800;
+        color: #2c3e50;
+        font-size: 2.2rem;
+        margin-bottom: 30px;
+        position: relative;
+    }
+
+    .page-title::after {
+        content: '';
+        position: absolute;
+        bottom: -12px;
+        left: 0;
+        width: 100px;
+        height: 5px;
+        background: linear-gradient(to right, #3498db, #2980b9);
+        border-radius: 3px;
+    }
+
+    .create-btn {
+        background: linear-gradient(120deg, #00c6a7, #1e8f7e);
+        border: none;
+        padding: 14px 30px;
+        font-weight: 700;
+        border-radius: 50px;
+        box-shadow: 0 6px 20px rgba(0, 198, 167, 0.4);
+        transition: all 0.25s ease;
+        white-space: nowrap;
+    }
+
+    .create-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 26px rgba(0, 198, 167, 0.55);
+    }
+
+    .custom-table {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+    }
+
+    .custom-table thead {
+        background: linear-gradient(120deg, #6a11cb, #2575fc);
+        color: white;
+    }
+
+    .custom-table th {
+        font-weight: 700;
+        padding: 18px;
+        text-align: center;
+    }
+
+    /* Hover giữ như bạn đang dùng, nhưng dùng top thay transform để tránh lỗi click trên table */
+    .custom-table tbody tr {
+        position: relative;
+        transition: all 0.3s ease;
+    }
+
+    .custom-table tbody tr:hover {
+        background-color: #f0f8ff;
+        top: -2px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+
+    .badge-status {
+        padding: 10px 20px;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 0.95rem;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 80px 20px;
+        color: #95a5a6;
+    }
+
+    .empty-state i {
+        font-size: 100px;
+        margin-bottom: 20px;
+        opacity: 0.6;
+    }
+
+    /* Checkbox wrap */
+    .checkbox-wrap {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .checkbox-wrap:hover {
+        background: rgba(0,0,0,0.04);
+    }
+
+    .course-checkbox {
+        cursor: pointer !important;
+        width: 22px !important;
+        height: 22px !important;
+        margin: 0 !important;
+        pointer-events: auto !important;
+        position: relative;
+        z-index: 10;
+    }
+
+    /* Thanh nút */
+    .action-bar {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 28px;
+    }
+
+    .action-right {
+        margin-left: auto;
+    }
+
+    @@media (max-width: 768px) {
+        .page-title { font-size: 1.9rem; }
+
+        .action-bar {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .action-right {
+            margin-left: 0;
+            width: 100%;
+        }
+
+        .action-right .create-btn {
+            width: 100%;
+            justify-content: center;
+            display: inline-flex;
+        }
+
+        #deleteSelectedBtn { width: 100%; }
+    }
+</style>
+
+<div class="container-fluid course-container">
+    <div class="row">
+        <div class="col-12">
+
+            <h2 class="page-title">Khóa học của tôi</h2>
+
+            @if (TempData["msg"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show rounded-4 shadow-sm mb-4" role="alert">
+                    <strong>Thành công!</strong> @TempData["msg"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            @if (TempData["error"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show rounded-4 shadow-sm mb-4" role="alert">
+                    <strong>Lỗi!</strong> @TempData["error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            <div class="action-bar">
+                <div class="action-left">
+                    <button id="deleteSelectedBtn"
+                            class="btn btn-danger shadow-lg rounded-pill px-4 py-3 fw-bold"
+                            style="display:none;">
+                        <i class="fas fa-trash-alt me-2"></i> Xóa đã chọn (<span id="selectedCount">0</span>)
+                    </button>
+                </div>
+
+                <div class="action-right">
+                    <a href="@Url.Action("Create", "KhoaHoc")"
+                       class="btn create-btn text-white shadow-lg rounded-pill px-5 py-3 fw-bold btn-lg">
+                        <i class="fas fa-plus-circle me-2"></i> Tạo khóa học mới
+                    </a>
+                </div>
+            </div>
+
+            @if (!Model.Any())
+            {
+                <div class="empty-state">
+                    <i class="fas fa-book-open"></i>
+                    <h4 class="mt-4 text-muted">Bạn chưa có khóa học nào</h4>
+                    <p class="lead text-muted">Hãy bắt đầu hành trình giảng dạy của bạn ngay hôm nay!</p>
+                    <a href="@Url.Action("Create", "KhoaHoc")"
+                       class="btn create-btn text-white mt-4 shadow-lg rounded-pill px-5 py-3">
+                        <i class="fas fa-plus-circle me-2"></i> Tạo khóa học đầu tiên
+                    </a>
+                </div>
+            }
+            else
+            {
+                using (Html.BeginForm("DeleteMultiple", "KhoaHoc", FormMethod.Post,
+                    new { id = "deleteMultipleForm", style = "display:none;" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <div id="idsContainer"></div>
+                }
+
+                <div class="table-responsive">
+                    <table class="table custom-table mb-0">
+                        <thead>
+                            <tr>
+                                <th class="text-center">Chọn</th>
+                                <th class="text-center">Mã</th>
+                                <th>Ảnh bìa</th>
+                                <th>Tên khóa học</th>
+                                <th>Trạng thái</th>
+                                <th class="text-center">Ngày tạo</th>
+                                <th class="text-center">Hành động</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                var st = (item.TrangThaiDuyet ?? "").Trim();
+                                var canSelect =
+                                    st.Equals("Draft", StringComparison.OrdinalIgnoreCase) ||
+                                    st.Equals("TuChoi", StringComparison.OrdinalIgnoreCase) ||
+                                    st.Equals("Nháp", StringComparison.OrdinalIgnoreCase) ||
+                                    st.Equals("Từ chối", StringComparison.OrdinalIgnoreCase);
+
+                                <tr>
+                                    <td class="text-center align-middle">
+                                        <label class="checkbox-wrap">
+                                            <input type="checkbox"
+                                                   class="form-check-input course-checkbox"
+                                                   value="@item.MaKhoaHoc" />
+
+                                        </label>
+                                    </td>
+
+
+                                    <td class="text-center align-middle fw-bold">#@item.MaKhoaHoc</td>
+
+                                    <td class="align-middle text-center">
+                                        @if (!string.IsNullOrEmpty(item.AnhBia))
+                                        {
+                                            <img src="@item.AnhBia" alt="Ảnh bìa"
+                                                 class="rounded-3 shadow-sm"
+                                                 style="width:130px; height:90px; object-fit:cover;" />
+                                        }
+                                        else
+                                        {
+                                            <div class="bg-light rounded-3 d-flex align-items-center justify-content-center text-muted"
+                                                 style="width:130px; height:90px; border:2px dashed #ccc;">
+                                                <i class="fas fa-image fa-2x"></i>
+                                            </div>
+                                        }
+                                    </td>
+
+                                    <td class="align-middle fw-bold fs-5">@item.TenKhoaHoc</td>
+
+                                    <td class="align-middle">
+                                        <span class="badge-status @(item.TrangThaiDuyet == "DaDuyet" ? "bg-success" :
+                                                                    item.TrangThaiDuyet == "ChoDuyet" ? "bg-warning text-dark" :
+                                                                    item.TrangThaiDuyet == "TuChoi" ? "bg-danger" : "bg-secondary")">
+                                            @switch (item.TrangThaiDuyet)
+                                            {
+                                                case "Draft":<text>Nháp</text>; break;
+                                            case "ChoDuyet": <text>Chờ duyệt</text>; break;
+                                        case "DaDuyet": <text>Đã duyệt</text>; break;
+                                    case "TuChoi": <text>Bị từ chối</text>; break;
+                                default: <text>@item.TrangThaiDuyet</text>; break;
+                        }
+                                        </span>
+
+                                        @if (item.TrangThaiDuyet == "TuChoi")
+                                        {
+                                            <br /><small class="text-danger mt-1">Lý do: (sẽ bổ sung sau)</small>
+                                        }
+                                    </td>
+
+                                    <td class="text-center align-middle">@item.NgayTao.ToString("dd/MM/yyyy")</td>
+
+                                    <td class="text-center align-middle">
+                                        @if (item.TrangThaiDuyet == "Draft" || item.TrangThaiDuyet == "TuChoi")
+                                        {
+                                            <div class="d-flex gap-2 justify-content-center flex-wrap">
+                                                @using (Html.BeginForm("Submit", "KhoaHoc", new { id = item.MaKhoaHoc }, FormMethod.Post, new { @class = "d-inline" }))
+                                                {
+                                                    <button type="submit"
+                                                            class="btn btn-success btn-sm btn-submit text-white rounded-pill px-4"
+                                                            onclick="return confirm('Gửi khóa học này để chờ duyệt?')">
+                                                        <i class="fas fa-paper-plane me-1"></i> Gửi duyệt
+                                                    </button>
+                                                }
+                                            </div>
+                                        }
+                                        else if (item.TrangThaiDuyet == "ChoDuyet")
+                                        {
+                                            <span class="text-warning fw-bold">
+                                                <i class="fas fa-hourglass-half me-1"></i> Đang chờ duyệt
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-success fw-bold">
+                                                <i class="fas fa-check-circle me-1"></i> Đã duyệt
+                                            </span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+
+                    </table>
+                </div>
+            }
+
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const checkboxes = document.querySelectorAll('.course-checkbox');
+        const deleteBtn = document.getElementById('deleteSelectedBtn');
+        const countSpan = document.getElementById('selectedCount');
+        const deleteForm = document.getElementById('deleteMultipleForm');
+        const idsContainer = document.getElementById('idsContainer');
+
+        updateDeleteButton();
+        checkboxes.forEach(cb => cb.addEventListener('change', updateDeleteButton));
+
+        function updateDeleteButton() {
+            const selected = document.querySelectorAll('.course-checkbox:checked');
+            const count = selected.length;
+
+            if (count > 0) {
+                deleteBtn.style.display = 'block';
+                countSpan.textContent = count;
+            } else {
+                deleteBtn.style.display = 'none';
+                countSpan.textContent = '0';
+            }
+        }
+
+        deleteBtn.addEventListener('click', function () {
+            const selectedCheckboxes = document.querySelectorAll('.course-checkbox:checked');
+            const selectedIds = Array.from(selectedCheckboxes).map(cb => cb.value);
+            if (selectedIds.length === 0) return;
+
+            const courseNames = Array.from(selectedCheckboxes).map(cb => {
+                const row = cb.closest('tr');
+                return row.querySelector('td:nth-child(4)').textContent.trim();
+            });
+
+            const message =
+                `⚠️ Bạn có chắc chắn muốn XÓA vĩnh viễn ${selectedIds.length} khóa học?\n\n` +
+                courseNames.join('\n') +
+                `\n\nHành động này KHÔNG THỂ HOÀN TÁC!`;
+
+            if (!confirm(message)) return;
+
+            idsContainer.innerHTML = '';
+            selectedIds.forEach(id => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'ids';
+                input.value = id;
+                idsContainer.appendChild(input);
+            });
+
+            deleteForm.submit();
+        });
+    });
+</script>
