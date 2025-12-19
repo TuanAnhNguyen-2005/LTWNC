@@ -34,6 +34,7 @@ namespace MVC_Teacher
 
             // Route mặc định - PHẢI ĐỂ CUỐI CÙNG
             routes.MapRoute(
+
                 name: "Default",
                 url: "{controller}/{action}/{id}",
                 defaults: new

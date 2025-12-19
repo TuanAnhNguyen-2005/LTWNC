@@ -16,9 +16,13 @@ public class ChuDeController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<ChuDe>>> GetAll()
+    public async Task<ActionResult<IEnumerable<ChuDe>>> GetAll([FromQuery] int skip = 0, [FromQuery] int take = 20)
     {
-        var data = await _db.ChuDe.AsNoTracking().ToListAsync();
+        if (take < 1) take = 20;
+        if (take > 100) take = 100; // Bảo vệ query to quá
+        var total = await _db.ChuDe.CountAsync();
+        var data = await _db.ChuDe.AsNoTracking().Skip(skip).Take(take).ToListAsync();
+        Response.Headers.Add("X-Total-Count", total.ToString());
         return Ok(data);
     }
 
@@ -62,4 +66,5 @@ public class ChuDeController : ControllerBase
         return NoContent();
     }
 }
+
 

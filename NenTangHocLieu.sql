@@ -58,6 +58,58 @@ CREATE TABLE NguoiDung (
 GO
 
 -- ==============================
+-- BẢNG CATEGORY
+-- ==============================
+CREATE TABLE Category (
+    CategoryId INT IDENTITY(1,1) PRIMARY KEY,
+    CategoryName NVARCHAR(150) NOT NULL,
+    Slug NVARCHAR(200) NOT NULL UNIQUE,
+    Description NVARCHAR(500) NULL,
+    IsActive BIT NOT NULL DEFAULT 1,
+    CreatedAt DATETIME NOT NULL DEFAULT GETDATE()
+);
+GO
+
+-- ==============================
+-- BẢNG KHÓA HỌC
+-- ==============================
+CREATE TABLE KhoaHoc (
+    MaKhoaHoc INT IDENTITY(1,1) PRIMARY KEY,
+    TenKhoaHoc NVARCHAR(200) NOT NULL,
+    Slug NVARCHAR(200) NULL,
+    MoTa NVARCHAR(1000) NULL,
+    AnhBia NVARCHAR(500) NULL,  -- ✅ Đã thêm ngay từ đầu
+    MaGiaoVien INT NOT NULL,
+    TrangThaiDuyet NVARCHAR(20) NOT NULL DEFAULT N'Draft',
+    NgayTao DATETIME NOT NULL DEFAULT GETDATE(),
+    NgayGuiDuyet DATETIME NULL,
+    NgayDuyet DATETIME NULL,
+    NguoiDuyetId INT NULL,
+    LyDoTuChoi NVARCHAR(500) NULL,
+    IsActive BIT NOT NULL DEFAULT 1,
+    CONSTRAINT FK_KhoaHoc_GiaoVien FOREIGN KEY (MaGiaoVien) REFERENCES NguoiDung(MaNguoiDung),
+    CONSTRAINT FK_KhoaHoc_NguoiDuyet FOREIGN KEY (NguoiDuyetId) REFERENCES NguoiDung(MaNguoiDung)
+);
+GO
+
+-- ==============================
+-- BẢNG ĐĂNG KÝ KHÓA HỌC
+-- ==============================
+CREATE TABLE DangKyKhoaHoc (
+    MaDangKy INT IDENTITY(1,1) PRIMARY KEY,
+    MaKhoaHoc INT NOT NULL,
+    MaHocSinh INT NOT NULL,
+    NgayDangKy DATETIME NOT NULL DEFAULT GETDATE(),
+    TrangThai NVARCHAR(20) NOT NULL DEFAULT N'DangHoc',
+    CONSTRAINT FK_DangKy_KhoaHoc FOREIGN KEY (MaKhoaHoc) REFERENCES KhoaHoc(MaKhoaHoc),
+    CONSTRAINT FK_DangKy_HocSinh FOREIGN KEY (MaHocSinh) REFERENCES NguoiDung(MaNguoiDung)
+);
+GO
+
+CREATE UNIQUE INDEX UX_DangKy_Unique ON DangKyKhoaHoc(MaKhoaHoc, MaHocSinh);
+GO
+
+-- ==============================
 -- BẢNG HỌC LIỆU
 -- ==============================
 CREATE TABLE HocLieu (
@@ -106,8 +158,9 @@ CREATE TABLE BinhLuan (
     CONSTRAINT FK_BinhLuan_Cha FOREIGN KEY (MaBinhLuanCha) REFERENCES BinhLuan(MaBinhLuan)
 );
 GO
+
 -- ==============================
--- DỮ LIỆU MẪU (CHẠY SAU KHI ĐÃ TẠO XONG TẤT CẢ BẢNG)
+-- DỮ LIỆU MẪU
 -- ==============================
 SET IDENTITY_INSERT VaiTro ON;
 INSERT INTO VaiTro (MaVaiTro, TenVaiTro) VALUES (1, N'Admin'), (2, N'Giảng viên'), (3, N'Sinh viên');
@@ -140,7 +193,34 @@ INSERT INTO NguoiDung (MaNguoiDung, HoTen, Email, MatKhau, MaVaiTro, GioiTinh, D
 (5, N'SV Hoàng E', N'sv2@example.com', N'123456', 3, N'Nam', N'Huế');
 SET IDENTITY_INSERT NguoiDung OFF;
 
--- BÂY GIỜ MỚI INSERT HỌC LIỆU (sau khi các bảng cha đã có dữ liệu)
+-- Insert Category
+INSERT INTO Category (CategoryName, Slug, Description, IsActive)
+VALUES
+(N'Lập trình Web', 'lap-trinh-web', N'HTML, CSS, JavaScript, ASP.NET', 1),
+(N'Lập trình Mobile', 'lap-trinh-mobile', N'Android, iOS, Flutter', 1),
+(N'Cơ sở dữ liệu', 'co-so-du-lieu', N'SQL Server, MySQL, MongoDB', 1),
+(N'Trí tuệ nhân tạo', 'tri-tue-nhan-tao', N'Machine Learning, AI', 1),
+(N'Thiết kế đồ họa', 'thiet-ke-do-hoa', N'Photoshop, Illustrator', 0);
+
+-- Insert KhoaHoc
+INSERT INTO KhoaHoc (TenKhoaHoc, Slug, MoTa, MaGiaoVien, TrangThaiDuyet, NgayGuiDuyet)
+VALUES
+(N'Lập trình C# cơ bản', N'lap-trinh-csharp-co-ban', N'Khóa học cho người mới bắt đầu', 2, N'ChoDuyet', GETDATE()),
+(N'SQL Server nền tảng', N'sql-server-nen-tang', N'Học từ cơ bản đến thực hành', 2, N'Draft', NULL);
+
+-- Duyệt khóa học MaKhoaHoc=1
+UPDATE KhoaHoc
+SET TrangThaiDuyet = N'DaDuyet',
+    NgayDuyet = GETDATE(),
+    NguoiDuyetId = 1,
+    LyDoTuChoi = NULL
+WHERE MaKhoaHoc = 1;
+
+-- Insert đăng ký
+INSERT INTO DangKyKhoaHoc (MaKhoaHoc, MaHocSinh)
+VALUES (1, 4);
+
+-- Insert HocLieu
 SET IDENTITY_INSERT HocLieu ON;
 INSERT INTO HocLieu (MaHocLieu, TieuDe, MoTa, DuongDanTep, LoaiTep, KichThuocTep, DoKho, MaChuDe, MaNguoiDung, MaMonHoc, MaLopHoc, DaDuyet, TrangThaiDuyet) VALUES
 (1, N'Bài giảng OOP Cơ bản', N'Nội dung OOP', N'/files/oop.pdf', N'PDF', 1024000, N'Dễ', 1, 2, 1, 1, 1, N'Đã duyệt'),
@@ -150,15 +230,13 @@ INSERT INTO HocLieu (MaHocLieu, TieuDe, MoTa, DuongDanTep, LoaiTep, KichThuocTep
 (5, N'HTML cơ bản', NULL, N'/files/html.pdf', N'PDF', 204800, N'Dễ', 5, 3, 3, 1, 1, N'Đã duyệt');
 SET IDENTITY_INSERT HocLieu OFF;
 
--- BÌNH LUẬN (sau khi có Học liệu)
+-- Insert BinhLuan
 INSERT INTO BinhLuan (MaHocLieu, MaNguoiDung, NoiDung, DanhGia, MaBinhLuanCha) VALUES
 (1, 4, N'Rất dễ hiểu ạ!', 5, NULL),
 (1, 5, N'Giảng hay quá thầy ơi', 5, NULL),
 (2, 4, N'Video chất lượng cao', 4, NULL),
-(1, 2, N'Cảm ơn các em đã góp ý', NULL, 1); -- reply của giáo viên
-GO
+(1, 2, N'Cảm ơn các em đã góp ý', NULL, 1);
 
-PRINT N'=== NHẬP DỮ LIỆU MẪU THÀNH CÔNG 100% ===';
 -- Cập nhật điểm trung bình
 UPDATE HocLieu 
 SET DiemTrungBinh = (
@@ -169,18 +247,21 @@ SET DiemTrungBinh = (
 WHERE EXISTS (SELECT 1 FROM BinhLuan WHERE BinhLuan.MaHocLieu = HocLieu.MaHocLieu AND DanhGia IS NOT NULL);
 GO
 
-PRINT N'=== TẠO DATABASE NenTangHocLieu THÀNH CÔNG 100% ===';
-USE NenTangHocLieu;
+PRINT N'=== NHẬP DỮ LIỆU MẪU THÀNH CÔNG 100% ===';
 GO
 
+-- ==============================
+-- STORED PROCEDURES
+-- ==============================
+
 -- XÓA PROC NẾU ĐÃ TỒN TẠI
-IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'psDeleteHocLieu') DROP PROC psDeleteHocLieu;
-IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'psLoginNguoiDung') DROP PROC psLoginNguoiDung;
-IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'psInsertHocLieu') DROP PROC psInsertHocLieu;
-IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'psUpdateHocLieu') DROP PROC psUpdateHocLieu;
-IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'psGetMonHoc') DROP PROC psGetMonHoc;
-IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'psGetHocLieu') DROP PROC psGetHocLieu;
-IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'psUpdateNguoiDung') DROP PROC psUpdateNguoiDung;
+IF OBJECT_ID('psDeleteHocLieu', 'P') IS NOT NULL DROP PROC psDeleteHocLieu;
+IF OBJECT_ID('psLoginNguoiDung', 'P') IS NOT NULL DROP PROC psLoginNguoiDung;
+IF OBJECT_ID('psInsertHocLieu', 'P') IS NOT NULL DROP PROC psInsertHocLieu;
+IF OBJECT_ID('psUpdateHocLieu', 'P') IS NOT NULL DROP PROC psUpdateHocLieu;
+IF OBJECT_ID('psGetMonHoc', 'P') IS NOT NULL DROP PROC psGetMonHoc;
+IF OBJECT_ID('psGetHocLieu', 'P') IS NOT NULL DROP PROC psGetHocLieu;
+IF OBJECT_ID('psUpdateNguoiDung', 'P') IS NOT NULL DROP PROC psUpdateNguoiDung;
 GO
 
 -- 1. XÓA HỌC LIỆU
@@ -196,18 +277,19 @@ BEGIN
 END
 GO
 
--- 2. ĐĂNG NHẬP
-CREATE PROC psLoginNguoiDung (@Email NVARCHAR(100), @MatKhau NVARCHAR(255))
+-- 2. ĐĂNG NHẬP (CHỈ CHO ADMIN)
+CREATE PROC psLoginNguoiDung 
+    @Email NVARCHAR(100), 
+    @MatKhau NVARCHAR(255)
 AS
 BEGIN
-    BEGIN TRAN
-        SELECT MaNguoiDung, HoTen, Email, MaVaiTro, TenVaiTro = (SELECT TenVaiTro FROM VaiTro WHERE VaiTro.MaVaiTro = NguoiDung.MaVaiTro)
-        FROM NguoiDung 
-        WHERE Email = @Email AND MatKhau = @MatKhau;
-    IF (@@ERROR <> 0)
-        ROLLBACK TRAN
-    ELSE
-        COMMIT TRAN
+    SELECT MaNguoiDung, HoTen, Email, MaVaiTro,
+           TenVaiTro = (SELECT TenVaiTro FROM VaiTro WHERE VaiTro.MaVaiTro = NguoiDung.MaVaiTro)
+    FROM NguoiDung
+    WHERE Email = @Email
+      AND MatKhau = @MatKhau
+      AND MaVaiTro = 1      -- Chỉ Admin
+      AND TrangThai = 1;    -- Chỉ tài khoản active
 END
 GO
 
@@ -266,7 +348,11 @@ BEGIN
             MaMonHoc = @MaMonHoc,
             MaLopHoc = @MaLopHoc,
             DaDuyet = ISNULL(@DaDuyet, DaDuyet),
-            TrangThaiDuyet = CASE WHEN @DaDuyet = 1 THEN N'Đã duyệt' WHEN @DaDuyet = 0 THEN N'Chờ duyệt' ELSE TrangThaiDuyet END
+            TrangThaiDuyet = CASE 
+                WHEN @DaDuyet = 1 THEN N'Đã duyệt' 
+                WHEN @DaDuyet = 0 THEN N'Chờ duyệt' 
+                ELSE TrangThaiDuyet 
+            END
         WHERE MaHocLieu = @MaHocLieu;
     IF (@@ERROR <> 0)
         ROLLBACK TRAN
@@ -331,3 +417,5 @@ END
 GO
 
 PRINT N'=== TẤT CẢ STORED PROCEDURE ĐÃ ĐƯỢC TẠO THÀNH CÔNG! ===';
+PRINT N'=== TẠO DATABASE NenTangHocLieu THÀNH CÔNG 100% ===';
+GO

@@ -9,18 +9,14 @@
         <h1>Chào mừng trở lại, @(Session["FullName"] ?? "Thầy/Cô")! 👨‍🏫</h1>
         <p>Hôm nay bạn có <strong>3 lớp học</strong> cần giảng dạy. <strong>2 bài tập mới</strong> cần chấm điểm và <strong>5 thông báo</strong> từ học sinh.</p>
 
-        <!-- Nút chỉnh sửa thông tin -->
-        <a href="@Url.Action("Index", "Profile")" class="btn btn-outline-primary mt-3">
-            <i class="fas fa-user-edit me-2"></i>
-            Chỉnh sửa thông tin
-        </a>
+        <!-- Edit profile button -->
+        <a id="editProfileBtn" href="@Url.Action("Index", "Profile")" class="btn btn-outline-primary mt-3">Chỉnh sửa thông tin</a>
     </div>
     <div class="teacher-illustration">
         <i class="fas fa-chalkboard-teacher"></i>
     </div>
 </div>
 
-<!-- ... Phần còn lại của Dashboard (giữ nguyên) ... -->
 <!-- Teacher Stats Grid -->
 <div class="teacher-stats-grid">
     <div class="teacher-stat-card">
@@ -749,38 +745,20 @@
     }
 
     .btn {
-        padding: 10px 24px;
-        border-radius: var(--radius);
+        padding: 6px 16px;
+        border-radius: 6px;
         font-weight: 500;
-        font-size: 14px;
+        font-size: 13px;
         text-decoration: none;
         border: none;
         cursor: pointer;
         transition: all 0.3s ease;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
     }
 
     .btn-sm {
-        padding: 6px 16px;
-        font-size: 13px;
+        padding: 4px 12px;
+        font-size: 12px;
     }
-
-    .btn-outline-primary {
-        background: transparent;
-        color: var(--primary);
-        border: 2px solid var(--primary);
-        text-decoration: none;
-    }
-
-        .btn-outline-primary:hover {
-            background: var(--primary);
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
-        }
 
     .btn-danger {
         background: var(--danger);
@@ -912,5 +890,19 @@
             `;
             document.head.appendChild(style);
         });
+    </script>
+}
+
+@section Scripts {
+    <script>
+        (function(){
+            var btn = document.getElementById('editProfileBtn');
+            if (!btn) return;
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                // ensure redirect to profile index
+                window.location.href = '@Url.Action("Index","Profile")';
+            });
+        })();
     </script>
 }
