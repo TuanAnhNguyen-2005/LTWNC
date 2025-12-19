@@ -12,6 +12,15 @@ builder.Services.AddDbContext<NenTangDbContext>(options =>
     options.UseSqlServer(connection);
 });
 
+// ✅ CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod());
+});
+
 // Controllers + JSON tránh vòng tham chiếu
 builder.Services.AddControllers()
     .AddJsonOptions(opt =>
@@ -35,6 +44,10 @@ app.UseSwaggerUI(c =>
 });
 
 app.UseHttpsRedirection();
+
+// ✅ Quan trọng: UseCors trước MapControllers (và trước Authorization càng tốt)
+app.UseCors("AllowAll");
+
 app.UseAuthorization();
 app.MapControllers();
 

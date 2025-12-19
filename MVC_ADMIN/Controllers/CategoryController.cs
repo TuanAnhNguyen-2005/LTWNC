@@ -2,196 +2,134 @@
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using MVC_ADMIN.Filters;
+using MVC_ADMIN.Services;
+using Newtonsoft.Json;
 
 namespace MVC_ADMIN.Controllers
 {
     [AuthorizeRole("Admin")]
     public class CategoryController : BaseController
     {
-        // Temporary debug endpoint — remove after debugging
-        [AllowAnonymous]
-        public ActionResult DebugSession()
-        {
-            var userId = Session["UserId"] ?? "null";
-            var email = Session["Email"] ?? "null";
-            var role = Session["Role"] ?? "null";
-            return Content($"UserId={userId}, Email={email}, Role={role}");
-        }
+        private readonly ApiService _api = ApiServiceHelper.Instance;
 
-        // annotate the Index action for testing
-        [AllowAnonymous]
+        // GET: /Category
         public async Task<ActionResult> Index()
         {
             try
             {
                 ViewBag.Title = "Quản lý danh mục";
-                
-                // Gọi API lấy danh sách danh mục
-                var response = await ApiService.GetWithErrorHandlingAsync<dynamic>("categories");
-                
-                if (response.Success)
-                {
-                    ViewBag.Categories = response.Data;
-                }
+
+                var res = await _api.GetWithErrorHandlingAsync<dynamic>("categories");
+
+                if (res.Success)
+                    ViewBag.Categories = res.Data;
                 else
-                {
-                    SetErrorMessage(response.Error ?? "Không thể tải danh sách danh mục");
-                }
-                
+                    SetErrorMessage(res.Error);
+
                 return View();
             }
             catch (Exception ex)
             {
-                HandleException(ex, "Đã xảy ra lỗi khi tải danh sách danh mục");
+                HandleException(ex, "Không tải được danh mục");
                 return View();
             }
         }
 
+        // GET: /Category/Create
         public ActionResult Create()
         {
-            ViewBag.Title = "Thêm danh mục mới";
+            ViewBag.Title = "Thêm danh mục";
             return View();
         }
 
+        // POST: /Category/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(FormCollection form)
         {
             try
             {
-                var categoryData = new
+                var data = new
                 {
                     categoryName = form["categoryName"],
                     slug = form["slug"],
                     description = form["description"],
-                    parentCategoryId = !string.IsNullOrEmpty(form["parentCategoryId"]) ? int.Parse(form["parentCategoryId"]) : (int?)null,
-                    displayOrder = !string.IsNullOrEmpty(form["displayOrder"]) ? int.Parse(form["displayOrder"]) : 0,
-                    isActive = form["isActive"] == "on" || form["isActive"] == "true"
+                    isActive = form["isActive"] == "on"
                 };
 
-                var response = await ApiService.PostAsync<dynamic, dynamic>("categories", categoryData);
-                
-                if (response != null)
-                {
-                    SetSuccessMessage("Thêm danh mục thành công!");
-                    return RedirectToAction("Index");
-                }
-                
-                SetErrorMessage("Thêm danh mục thất bại!");
-                return View();
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex, "Đã xảy ra lỗi khi thêm danh mục");
-                return View();
-            }
-        }
-
-        public async Task<ActionResult> Details(int id)
-        {
-            try
-            {
-                var response = await ApiService.GetWithErrorHandlingAsync<dynamic>($"categories/{id}");
-                
-                if (response.Success)
-                {
-                    ViewBag.Category = response.Data;
-                    return View();
-                }
-                
-                SetErrorMessage(response.Error ?? "Không tìm thấy danh mục");
+                await _api.PostAsync<dynamic, dynamic>("categories", data);
+                SetSuccessMessage("Thêm danh mục thành công!");
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
-                HandleException(ex, "Đã xảy ra lỗi khi tải thông tin danh mục");
-                return RedirectToAction("Index");
+                HandleException(ex, "Thêm danh mục thất bại");
+                return View();
             }
         }
 
+        // GET: /Category/Edit/5
         public async Task<ActionResult> Edit(int id)
         {
             try
             {
+                var res = await _api.GetWithErrorHandlingAsync<dynamic>($"categories/{id}");
+                if (!res.Success) return RedirectToAction("Index");
+
+                ViewBag.Category = res.Data;
                 ViewBag.Title = "Chỉnh sửa danh mục";
-                
-                var response = await ApiService.GetWithErrorHandlingAsync<dynamic>($"categories/{id}");
-                
-                if (response.Success)
-                {
-                    ViewBag.Category = response.Data;
-                    return View();
-                }
-                
-                SetErrorMessage(response.Error ?? "Không tìm thấy danh mục");
-                return RedirectToAction("Index");
+                return View();
             }
-            catch (Exception ex)
+            catch
             {
-                HandleException(ex, "Đã xảy ra lỗi khi tải thông tin danh mục");
                 return RedirectToAction("Index");
             }
         }
 
+        // POST: /Category/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Edit(FormCollection form)
         {
             try
             {
-                int categoryId = int.Parse(form["categoryId"]);
-                
-                var categoryData = new
+                int id = int.Parse(form["categoryId"]);
+
+                var data = new
                 {
                     categoryName = form["categoryName"],
                     slug = form["slug"],
                     description = form["description"],
-                    parentCategoryId = !string.IsNullOrEmpty(form["parentCategoryId"]) ? int.Parse(form["parentCategoryId"]) : (int?)null,
-                    displayOrder = !string.IsNullOrEmpty(form["displayOrder"]) ? int.Parse(form["displayOrder"]) : 0,
-                    isActive = form["isActive"] == "on" || form["isActive"] == "true"
+                    isActive = form["isActive"] == "on"
                 };
 
-                var response = await ApiService.PutAsync<dynamic, dynamic>($"categories/{categoryId}", categoryData);
-                
-                if (response != null)
-                {
-                    SetSuccessMessage("Cập nhật danh mục thành công!");
-                    return RedirectToAction("Index");
-                }
-                
-                SetErrorMessage("Cập nhật danh mục thất bại!");
-                return RedirectToAction("Edit", new { id = categoryId });
+                await _api.PutAsync<dynamic, dynamic>($"categories/{id}", data);
+                SetSuccessMessage("Cập nhật danh mục thành công!");
+                return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
-                HandleException(ex, "Đã xảy ra lỗi khi cập nhật danh mục");
+                HandleException(ex, "Cập nhật thất bại");
                 return RedirectToAction("Index");
             }
         }
 
+        // POST: /Category/Delete
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<ActionResult> Delete(int id)
         {
             try
             {
-                var success = await ApiService.DeleteAsync($"categories/{id}");
-                
-                if (success)
-                {
-                    SetSuccessMessage("Xóa danh mục thành công!");
-                }
-                else
-                {
-                    SetErrorMessage("Xóa danh mục thất bại!");
-                }
-                
-                return RedirectToAction("Index");
+                await _api.DeleteAsync($"categories/{id}");
+                SetSuccessMessage("Xóa danh mục thành công!");
             }
             catch (Exception ex)
             {
-                HandleException(ex, "Đã xảy ra lỗi khi xóa danh mục");
-                return RedirectToAction("Index");
+                HandleException(ex, "Xóa danh mục thất bại");
             }
+
+            return RedirectToAction("Index");
         }
     }
 }

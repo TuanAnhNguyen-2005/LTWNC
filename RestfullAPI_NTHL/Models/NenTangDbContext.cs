@@ -21,6 +21,8 @@ public partial class NenTangDbContext : DbContext
 
     public virtual DbSet<HocLieu> HocLieu { get; set; }
 
+    public virtual DbSet<Category> Categories { get; set; }
+
     public virtual DbSet<LopHoc> LopHoc { get; set; }
 
     public virtual DbSet<MonHoc> MonHoc { get; set; }

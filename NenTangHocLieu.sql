@@ -58,8 +58,103 @@ CREATE TABLE NguoiDung (
 GO
 USE NenTangHocLieu;
 GO
+
+
+CREATE TABLE Category (
+    CategoryId INT IDENTITY(1,1) PRIMARY KEY,
+    CategoryName NVARCHAR(150) NOT NULL,
+    Slug NVARCHAR(200) NOT NULL UNIQUE,
+    Description NVARCHAR(500) NULL,
+    IsActive BIT NOT NULL DEFAULT 1,
+    CreatedAt DATETIME NOT NULL DEFAULT GETDATE()
+);
+INSERT INTO Category (CategoryName, Slug, Description, IsActive)
+VALUES
+(N'Lập trình Web',       'lap-trinh-web',       N'HTML, CSS, JavaScript, ASP.NET', 1),
+(N'Lập trình Mobile',    'lap-trinh-mobile',    N'Android, iOS, Flutter', 1),
+(N'Cơ sở dữ liệu',       'co-so-du-lieu',       N'SQL Server, MySQL, MongoDB', 1),
+(N'Trí tuệ nhân tạo',    'tri-tue-nhan-tao',    N'Machine Learning, AI', 1),
+(N'Thiết kế đồ họa',     'thiet-ke-do-hoa',     N'Photoshop, Illustrator', 0);
+CREATE TABLE KhoaHoc (
+    MaKhoaHoc INT IDENTITY(1,1) PRIMARY KEY,
+    TenKhoaHoc NVARCHAR(200) NOT NULL,
+    Slug NVARCHAR(200) NULL,
+    MoTa NVARCHAR(1000) NULL,
+
+    -- Teacher tạo khóa học
+    MaGiaoVien INT NOT NULL,
+
+    -- Workflow duyệt
+    TrangThaiDuyet NVARCHAR(20) NOT NULL DEFAULT N'Draft',  -- Draft | ChoDuyet | DaDuyet | TuChoi
+    NgayTao DATETIME NOT NULL DEFAULT GETDATE(),
+    NgayGuiDuyet DATETIME NULL,
+    NgayDuyet DATETIME NULL,
+    NguoiDuyetId INT NULL,
+    LyDoTuChoi NVARCHAR(500) NULL,
+
+    IsActive BIT NOT NULL DEFAULT 1
+);
+
+-- FK: giáo viên (NguoiDung)
+ALTER TABLE KhoaHoc
+ADD CONSTRAINT FK_KhoaHoc_GiaoVien
+FOREIGN KEY (MaGiaoVien) REFERENCES NguoiDung(MaNguoiDung);
+
+-- FK: người duyệt (Admin - cũng là NguoiDung)
+ALTER TABLE KhoaHoc
+ADD CONSTRAINT FK_KhoaHoc_NguoiDuyet
+FOREIGN KEY (NguoiDuyetId) REFERENCES NguoiDung(MaNguoiDung);
+CREATE TABLE DangKyKhoaHoc (
+    MaDangKy INT IDENTITY(1,1) PRIMARY KEY,
+    MaKhoaHoc INT NOT NULL,
+    MaHocSinh INT NOT NULL,
+    NgayDangKy DATETIME NOT NULL DEFAULT GETDATE(),
+    TrangThai NVARCHAR(20) NOT NULL DEFAULT N'DangHoc' -- DangHoc | Huy
+);
+
+ALTER TABLE DangKyKhoaHoc
+ADD CONSTRAINT FK_DangKy_KhoaHoc
+FOREIGN KEY (MaKhoaHoc) REFERENCES KhoaHoc(MaKhoaHoc);
+
+ALTER TABLE DangKyKhoaHoc
+ADD CONSTRAINT FK_DangKy_HocSinh
+FOREIGN KEY (MaHocSinh) REFERENCES NguoiDung(MaNguoiDung);
+
+-- 1 học sinh không đăng ký trùng 1 khóa
+CREATE UNIQUE INDEX UX_DangKy_Unique
+ON DangKyKhoaHoc(MaKhoaHoc, MaHocSinh);
+-- Ví dụ: Teacher tạo 2 khóa, 1 cái đang chờ duyệt, 1 cái draft
+
+
+
+-- Admin duyệt khóa học 1 (ví dụ admin id = 1)
+UPDATE KhoaHoc
+SET TrangThaiDuyet = N'DaDuyet',
+    NgayDuyet = GETDATE(),
+    NguoiDuyetId = 1,
+    LyDoTuChoi = NULL
+WHERE MaKhoaHoc = 1;
+
+-- Học sinh đăng ký khóa đã duyệt (ví dụ học sinh id = 3)
+INSERT INTO DangKyKhoaHoc (MaKhoaHoc, MaHocSinh)
+VALUES (1, 3);
+INSERT INTO KhoaHoc (TenKhoaHoc, Slug, MoTa, MaGiaoVien, TrangThaiDuyet, NgayGuiDuyet)
+VALUES
+(N'Lập trình C# cơ bản', N'lap-trinh-csharp-co-ban', N'Khóa học cho người mới bắt đầu', 2, N'ChoDuyet', GETDATE()),
+(N'SQL Server nền tảng', N'sql-server-nen-tang', N'Học từ cơ bản đến thực hành', 2, N'Draft', NULL);
+
+SELECT TOP 50 MaNguoiDung, Email, MaVaiTro, TrangThai
+FROM NguoiDung
+ORDER BY MaNguoiDung;
+
+
 UPDATE NguoiDung
-SET MaVaiTro = '2'
+SET TrangThai = '1'
+WHERE Email = 'thanhtu98912@gmail.com';
+USE NenTangHocLieu;
+GO
+UPDATE NguoiDung
+SET NgayTao = '2025-12-08 14:39:30.133'
 WHERE Email = 'thanhtu98912@gmail.com';
 -- ==============================
 -- BẢNG HỌC LIỆU
