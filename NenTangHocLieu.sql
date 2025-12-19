@@ -356,6 +356,22 @@ BEGIN
         COMMIT TRAN
 END
 GO
+USE [NenTangHocLieu];
+GO
+ALTER PROC psLoginNguoiDung
+    @Email NVARCHAR(100),
+    @MatKhau NVARCHAR(255)
+AS
+BEGIN
+    SELECT MaNguoiDung, HoTen, Email, MaVaiTro,
+           TenVaiTro = (SELECT TenVaiTro FROM VaiTro WHERE VaiTro.MaVaiTro = NguoiDung.MaVaiTro)
+    FROM NguoiDung
+    WHERE Email = @Email
+      AND MatKhau = @MatKhau
+      AND MaVaiTro = 1      -- ✅ chỉ Admin
+      AND TrangThai = 1;    -- ✅ (tuỳ bạn) chỉ cho tài khoản đang active
+END
+
 
 -- 3. THÊM HỌC LIỆU MỚI
 CREATE PROC psInsertHocLieu
