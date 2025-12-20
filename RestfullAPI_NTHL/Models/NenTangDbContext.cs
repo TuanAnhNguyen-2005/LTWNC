@@ -27,6 +27,12 @@ public partial class NenTangDbContext : DbContext
 
     public virtual DbSet<DangKyKhoaHoc> DangKyKhoaHoc { get; set; }
 
+    public DbSet<Quiz> Quizzes { get; set; }
+
+    public DbSet<CauHoi> CauHois { get; set; }
+
+    public DbSet<LuaChon> LuaChons { get; set; }
+
     public virtual DbSet<LopHoc> LopHoc { get; set; }
 
     public virtual DbSet<MonHoc> MonHoc { get; set; }
@@ -36,9 +42,24 @@ public partial class NenTangDbContext : DbContext
     public virtual DbSet<VaiTro> VaiTro { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code.
-        => optionsBuilder.UseSqlServer("Server=CHAODAIKA\\THAITHANHTU2340;Database=NenTangHocLieu;User Id=sa;Password=12345;TrustServerCertificate=true;");
+    {
+        if (!optionsBuilder.IsConfigured)
+        {
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "..", "..")) 
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .Build();
 
+            var connectionString = configuration.GetConnectionString("DefaultConnection");
+
+            if (string.IsNullOrEmpty(connectionString))
+            {
+                throw new InvalidOperationException("Connection string 'DefaultConnection' not found in appsettings.json");
+            }
+
+            optionsBuilder.UseSqlServer(connectionString);
+        }
+    }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
 
@@ -168,7 +189,75 @@ public partial class NenTangDbContext : DbContext
                 .OnDelete(DeleteBehavior.SetNull)
                 .HasConstraintName("FK_DangKyKhoaHoc_NguoiDung");
         });
+        // Cấu hình tên bảng chính xác cho Quiz, CauHoi, LuaChon
+        modelBuilder.Entity<Quiz>(entity =>
+        {
+            entity.ToTable("Quiz");
 
+            entity.HasKey(e => e.MaQuiz);
+            entity.Property(e => e.MaQuiz).ValueGeneratedOnAdd();
+
+            entity.Property(e => e.TenQuiz)
+                  .IsRequired()
+                  .HasMaxLength(200);
+
+            entity.Property(e => e.MoTa).HasMaxLength(500);
+
+            entity.Property(e => e.TrangThai)
+                  .HasMaxLength(20)
+                  .HasDefaultValue("Draft");
+
+            entity.Property(e => e.NgayTao)
+                  .HasDefaultValueSql("(getdate())");
+
+            // === QUAN TRỌNG: Chỉ định rõ FK bằng property scalar ===
+            entity.HasOne(d => d.GiaoVien)
+                  .WithMany(gv => gv.Quizzes)  // nếu bạn thêm ICollection<Quiz> Quizzes vào NguoiDung
+                  .HasForeignKey(d => d.MaGiaoVien)  // <-- Dùng đúng property MaGiaoVien
+                  .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(d => d.KhoaHoc)
+                  .WithMany(kh => kh.Quizzes)  // <-- Đã có trong KhoaHoc
+                  .HasForeignKey(d => d.MaKhoaHoc)   // <-- Dùng đúng property MaKhoaHoc
+                  .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<CauHoi>(entity =>
+        {
+            entity.ToTable("CauHoi"); // Tên bảng thực tế
+
+            entity.HasKey(e => e.MaCauHoi);
+            entity.Property(e => e.MaCauHoi).ValueGeneratedOnAdd();
+
+            entity.Property(e => e.NoiDung).IsRequired();
+            entity.Property(e => e.LoaiCauHoi)
+                  .IsRequired()
+                  .HasMaxLength(50);
+
+            entity.Property(e => e.Diem).HasDefaultValue(1);
+
+            entity.HasOne(d => d.Quiz)
+                  .WithMany(q => q.CauHois)
+                  .HasForeignKey(d => d.MaQuiz)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<LuaChon>(entity =>
+        {
+            entity.ToTable("LuaChon"); // Tên bảng thực tế
+
+            entity.HasKey(e => e.MaLuaChon);
+            entity.Property(e => e.MaLuaChon).ValueGeneratedOnAdd();
+
+            entity.Property(e => e.NoiDung)
+                  .IsRequired()
+                  .HasMaxLength(500);
+
+            entity.HasOne(d => d.CauHoi)
+                  .WithMany(ch => ch.LuaChons)
+                  .HasForeignKey(d => d.MaCauHoi)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
         OnModelCreatingPartial(modelBuilder);
     }
 
