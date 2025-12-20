@@ -4,6 +4,8 @@ using Microsoft.Extensions.FileProviders;
 using RestfullAPI_NTHL.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+var cs = builder.Configuration.GetConnectionString("DefaultConnection");
+Console.WriteLine(">>> DefaultConnection = " + cs);
 
 // DbContext
 builder.Services.AddDbContext<NenTangDbContext>(options =>
@@ -62,3 +64,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
