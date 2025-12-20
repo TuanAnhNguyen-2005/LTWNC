@@ -23,7 +23,7 @@ namespace MVC_Teacher.Services
                 ?? ConfigurationManager.ConnectionStrings["NenTangHocLieuEntities"]?.ConnectionString;
 
             _connectionString = string.IsNullOrEmpty(conn)
-                ? "Data Source=DESKTOP-HRB1243;Initial Catalog=NenTangHocLieu;Persist Security Info=True;User ID=sa;Password=12345;TrustServerCertificate=True;MultipleActiveResultSets=True;"
+                ? "Data Source=LEPS\\NGUYENHUYNH;Initial Catalog=NenTangHocLieu;Persist Security Info=True;User ID=sa;Password=123;TrustServerCertificate=True;MultipleActiveResultSets=True;"
                 : conn;
         }
 
