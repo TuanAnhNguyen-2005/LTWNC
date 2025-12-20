@@ -122,6 +122,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\CategoryController.cs" />
     <Compile Include="Controllers\FavoritesController.cs" />
+    <Compile Include="Controllers\KhoaHocController.cs" />
     <Compile Include="Controllers\LearningHistoryController.cs" />
     <Compile Include="Controllers\LearningMaterialController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
@@ -293,6 +294,8 @@
     <Content Include="Views\Shared\_StudentLayout.cshtml" />
     <Content Include="Views\SignUp\Index.cshtml" />
     <Content Include="Views\Quiz\Take.cshtml" />
+    <Content Include="Views\KhoaHoc\Index.cshtml" />
+    <Content Include="Views\KhoaHoc\Detail.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

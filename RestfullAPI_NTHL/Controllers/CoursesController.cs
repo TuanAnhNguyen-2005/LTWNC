@@ -249,7 +249,50 @@ namespace RestfullAPI_NTHL.Controllers
                 deletedIds = courses.Select(c => c.MaKhoaHoc).ToList()
             });
         }
+        // GET: api/Courses/{id} - Lấy chi tiết 1 khóa học (dành cho học sinh xem)
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var course = await _db.KhoaHoc
+                .AsNoTracking()
+                .Where(kh => kh.MaKhoaHoc == id && kh.IsActive == true && kh.TrangThaiDuyet == "DaDuyet")
+                .Select(kh => new
+                {
+                    kh.MaKhoaHoc,
+                    kh.TenKhoaHoc,
+                    kh.MoTa,
+                    kh.AnhBia,
+                    kh.NgayTao,
+                    kh.MaGiaoVien
+                    // Thêm field nào cần thiết
+                })
+                .FirstOrDefaultAsync();
 
+            if (course == null)
+                return NotFound("Không tìm thấy khóa học hoặc chưa được duyệt.");
 
+            return Ok(course);
+        }
+
+        // GET: api/Courses/published
+        // Lấy danh sách khóa học đã được duyệt (công khai cho học sinh)
+        [HttpGet("published")]
+        public async Task<IActionResult> GetPublishedCourses()
+        {
+            var data = await _db.KhoaHoc
+                .Where(kh => kh.IsActive == true && kh.TrangThaiDuyet == "DaDuyet")
+                .OrderByDescending(kh => kh.NgayTao)
+                .Select(kh => new
+                {
+                    kh.MaKhoaHoc,
+                    kh.TenKhoaHoc,
+                    kh.MoTa,
+                    kh.AnhBia,
+                    kh.NgayTao
+                })
+                .ToListAsync();
+
+            return Ok(data);
+        }
     }
 }

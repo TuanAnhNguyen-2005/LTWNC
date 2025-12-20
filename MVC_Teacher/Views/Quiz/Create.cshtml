@@ -77,35 +77,39 @@
                 </div>
 
                 <div class="row mb-4">
-
                     <div class="col-md-6">
+                        <label class="fw-bold">Thuộc khóa học <span class="text-danger">*</span></label>
 
-                        <label>Thuộc khóa học</label>
-
-                        <select name="MaKhoaHoc" class="form-control">
-
-                            <option value="">-- Không thuộc khóa học nào --</option>
-
-                            @foreach (var kh in ViewBag.KhoaHocList as List<SelectListItem>)
-
-                            {
-
-                                <option value="@kh.Value" selected="@(kh.Value == Model.MaKhoaHoc?.ToString())">@kh.Text</option>
-
-                            }
-
-                        </select>
-
+                        @if (ViewBag.CoKhoaHoc == true)
+                        {
+                            <div class="alert alert-info p-3 mb-0">
+                                <i class="fas fa-book me-2"></i>
+                                <strong>@ViewBag.TenKhoaHocHienTai</strong>
+                                <p class="mb-0 mt-2 small text-muted">
+                                    Quiz này sẽ được gắn tự động vào khóa học trên.<br>
+                                    Học sinh trong khóa học sẽ thấy và làm được bài kiểm tra.
+                                </p>
+                                @Html.HiddenFor(m => m.MaKhoaHoc) <!-- Rất quan trọng: giữ giá trị MaKhoaHoc để submit -->
+                            </div>
+                        }
+                        else
+                        {
+                            <select name="MaKhoaHoc" class="form-control" required>
+                                <option value="">-- Chọn khóa học --</option>
+                                @foreach (var kh in ViewBag.KhoaHocList as List<SelectListItem>)
+                                {
+                                    <option value="@kh.Value" @(kh.Selected ? "selected" : "")>@kh.Text</option>
+                                }
+                            </select>
+                            <small class="text-muted">Chọn khóa học mà quiz này thuộc về</small>
+                        }
                     </div>
 
                     <div class="col-md-6">
-
-                        <label>Thời gian làm bài (phút)</label>
-
+                        <label class="fw-bold">Thời gian làm bài (phút)</label>
                         @Html.TextBoxFor(m => m.ThoiGianLamBai, new { @class = "form-control", type = "number", min = "1", max = "300", value = "30" })
-
+                        <small class="text-muted">Để trống hoặc 0 nếu không giới hạn</small>
                     </div>
-
                 </div>
 
                 <hr class="my-5">

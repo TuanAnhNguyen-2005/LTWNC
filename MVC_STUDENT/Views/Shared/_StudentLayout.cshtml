@@ -208,8 +208,8 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Quiz" ? "active" : "")" href="/Quiz">
-                            <i class="fas fa-question-circle me-1"></i>Quiz
+                        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "KhoaHoc" ? "active" : "")" href="@Url.Action("Index", "KhoaHoc")">
+                            <i class="fas fa-book me-1"></i> Khóa học của tôi
                         </a>
                     </li>
                 </ul>
