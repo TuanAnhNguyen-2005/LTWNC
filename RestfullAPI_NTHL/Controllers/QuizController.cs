@@ -263,6 +263,21 @@ namespace RestfullAPI_NTHL.Controllers
 
             return Ok(result);
         }
+        // GET: api/Quiz/khoahoc/{maKhoaHoc}/published
+        // Lấy tất cả quiz đang Published của một khóa học cụ thể (dành cho học sinh xem)
+        [HttpGet("khoahoc/{maKhoaHoc:int}/published")]
+        public async Task<ActionResult<IEnumerable<Quiz>>> GetQuizzesByKhoaHocPublished(int maKhoaHoc)
+        {
+            var quizzes = await _db.Quizzes
+                .AsNoTracking()
+                .Where(q => q.MaKhoaHoc == maKhoaHoc && q.TrangThai == "Published")
+                .Include(q => q.CauHois)
+                    .ThenInclude(ch => ch.LuaChons)
+                .OrderByDescending(q => q.NgayTao)
+                .ToListAsync();
+
+            return Ok(quizzes);
+        }
     }
 
     // ==================== DTOs ====================
