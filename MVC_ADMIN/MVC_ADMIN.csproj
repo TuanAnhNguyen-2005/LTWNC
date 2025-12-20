@@ -2143,7 +2143,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>64761</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>https://localhost:44320/</IISUrl>
+          <IISUrl>http://localhost:44320/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

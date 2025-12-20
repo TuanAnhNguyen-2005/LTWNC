@@ -22,7 +22,7 @@ namespace MVC_ADMIN.Services
             // Fail fast instead of falling back to an invalid hard-coded server
             if (string.IsNullOrEmpty(_connectionString))
             {
-                _connectionString = "Server=CHAODAIKA\\THAITHANHTU2340;Database=NenTangHocLieu;User ID=sa;Password=12345;TrustServerCertificate=True;MultipleActiveResultSets=True;";
+                _connectionString = "Data Source=CUATUI;Initial Catalog=NenTangHocLieu;Integrated Security=True;TrustServerCertificate=True;";
             }
         }
 

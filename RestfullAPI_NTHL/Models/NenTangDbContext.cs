@@ -37,7 +37,7 @@ public partial class NenTangDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code.
-        => optionsBuilder.UseSqlServer("Server=CHAODAIKA\\THAITHANHTU2340;Database=NenTangHocLieu;User Id=sa;Password=12345;TrustServerCertificate=true;");
+        => optionsBuilder.UseSqlServer("Data Source=CUATUI;Initial Catalog=NenTangHocLieu;Integrated Security=True;TrustServerCertificate=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

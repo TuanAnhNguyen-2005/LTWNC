@@ -13,20 +13,41 @@ namespace MVC_ADMIN
     {
         protected void Application_Start()
         {
-            System.Web.Mvc.AreaRegistration.RegisterAllAreas();
-            FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
-            RouteConfig.RegisterRoutes(RouteTable.Routes);
-            BundleConfig.RegisterBundles(BundleTable.Bundles);
-
-            // Tạo user mẫu khi ứng dụng khởi động
             try
             {
-                var userService = new MVC_ADMIN.Services.UserDataService();
-                userService.CreateSampleUser();
+                System.Web.Mvc.AreaRegistration.RegisterAllAreas();
+                FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
+                RouteConfig.RegisterRoutes(RouteTable.Routes);
+                BundleConfig.RegisterBundles(BundleTable.Bundles);
+
+                // Tạo user mẫu khi ứng dụng khởi động - tạm thời tắt
+                // TODO: Uncomment sau khi đảm bảo database connection hoạt động
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error creating sample user on startup: {ex.Message}");
+                // Log lỗi nhưng không throw để có thể debug
+                System.Diagnostics.Debug.WriteLine($"Error in Application_Start: {ex.Message}");
+                if (ex.InnerException != null)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Inner Exception: {ex.InnerException.Message}");
+                    System.Diagnostics.Debug.WriteLine($"Stack Trace: {ex.InnerException.StackTrace}");
+                }
+                System.Diagnostics.Debug.WriteLine($"Stack Trace: {ex.StackTrace}");
+                // Không throw để tránh crash
+            }
+        }
+
+        protected void Application_Error(object sender, EventArgs e)
+        {
+            Exception lastError = Server.GetLastError();
+            if (lastError != null)
+            {
+                System.Diagnostics.Debug.WriteLine($"Application Error: {lastError.Message}");
+                if (lastError.InnerException != null)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Inner Exception: {lastError.InnerException.Message}");
+                }
+                System.Diagnostics.Debug.WriteLine($"Stack Trace: {lastError.StackTrace}");
             }
         }
     }
