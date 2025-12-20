@@ -5,6 +5,8 @@ using System.Configuration;
 using System.Linq;
 using MVC_Teacher.Helpers;
 using MVC_Teacher.Models;
+using Newtonsoft.Json;
+using System.IO;
 
 namespace MVC_Teacher.Services
 {
@@ -18,13 +20,30 @@ namespace MVC_Teacher.Services
 
         public UserDataService()
         {
-            var conn = ConfigurationManager.ConnectionStrings["NenTangHocLieu"]?.ConnectionString
-                ?? ConfigurationManager.ConnectionStrings["DefaultConnection"]?.ConnectionString
-                ?? ConfigurationManager.ConnectionStrings["NenTangHocLieuEntities"]?.ConnectionString;
+            try
+            {
+                // Đọc file appsettings.json ngay trong thư mục project MVC hiện tại (cùng cấp Web.config)
+                string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
 
-            _connectionString = string.IsNullOrEmpty(conn)
-                ? "Data Source=DESKTOP-HRB1243;Initial Catalog=NenTangHocLieu;Persist Security Info=True;User ID=sa;Password=12345;TrustServerCertificate=True;MultipleActiveResultSets=True;"
-                : conn;
+                if (!File.Exists(filePath))
+                {
+                    throw new FileNotFoundException($"Không tìm thấy file appsettings.json tại: {filePath}. Hãy tạo file này trong thư mục project MVC.");
+                }
+
+                string json = File.ReadAllText(filePath);
+                dynamic config = JsonConvert.DeserializeObject(json);
+
+                _connectionString = config?.ConnectionStrings?.DefaultConnection;
+
+                if (string.IsNullOrEmpty(_connectionString))
+                {
+                    throw new InvalidOperationException("Không tìm thấy 'DefaultConnection' trong appsettings.json");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Lỗi đọc appsettings.json: {ex.Message}", ex);
+            }
         }
 
         public bool TestConnection(out string error)
