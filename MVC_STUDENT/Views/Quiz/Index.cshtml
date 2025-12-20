@@ -1,113 +1,55 @@
+@model List<MVC_STUDENT.Models.QuizDto>
+
 @{
+    ViewBag.Title = "Quiz & Kiểm tra";
     Layout = "~/Views/Shared/_StudentLayout.cshtml";
-    ViewBag.Title = "Quiz";
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2>
         <i class="fas fa-question-circle text-primary me-2"></i>Quiz & Kiểm tra
     </h2>
-    <a href="/Quiz/Create" class="btn btn-gradient">
-        <i class="fas fa-plus me-1"></i>Tạo quiz mới
-    </a>
 </div>
 
-<div class="row">
-    <div class="col-md-4 mb-4">
-        <div class="card card-modern">
-            <div class="card-body">
-                <div class="d-flex align-items-center mb-3">
-                    <div class="bg-primary text-white rounded-circle p-3 me-3">
-                        <i class="fas fa-code fa-2x"></i>
+@if (ViewBag.DebugInfo != null)
+{
+    <div class="alert alert-warning">
+        <strong>DEBUG INFO (xóa sau khi fix xong):</strong><br />
+        @Html.Raw(ViewBag.DebugInfo)
+    </div>
+}
+@if (!Model.Any())
+{
+    <div class="text-center py-5">
+        <i class="fas fa-info-circle fa-3x text-muted mb-3"></i>
+        <p class="text-muted">Hiện chưa có quiz nào được mở.</p>
+    </div>
+}
+else
+{
+    <div class="row">
+        @foreach (var quiz in Model)
+        {
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card card-modern h-100">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">@quiz.TenQuiz</h5>
+                        <p class="text-muted flex-grow-1">@(quiz.MoTa ?? "Không có mô tả")</p>
+                        <div class="mt-auto">
+                            <small class="text-muted">
+                                <i class="fas fa-clock"></i> @quiz.ThoiGianLamBai phút |
+                                <i class="fas fa-list"></i> @quiz.SoCauHoi câu hỏi
+                            </small>
+                            <div class="mt-3">
+                                <a href="@Url.Action("Take", "Quiz", new { id = quiz.MaQuiz })"
+                                   class="btn btn-gradient w-100">
+                                    <i class="fas fa-play me-1"></i> Bắt đầu làm bài
+                                </a>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <h5 class="mb-0">Lập trình Java</h5>
-                        <small class="text-muted">10 câu hỏi</small>
-                    </div>
-                </div>
-                <p class="text-muted">Kiểm tra kiến thức về lập trình Java cơ bản</p>
-                <div class="d-flex justify-content-between align-items-center">
-                    <span class="badge bg-success">Dễ</span>
-                    <a href="/Quiz/Details/1" class="btn btn-gradient btn-sm">Bắt đầu</a>
                 </div>
             </div>
-        </div>
+        }
     </div>
-
-    <div class="col-md-4 mb-4">
-        <div class="card card-modern">
-            <div class="card-body">
-                <div class="d-flex align-items-center mb-3">
-                    <div class="bg-success text-white rounded-circle p-3 me-3">
-                        <i class="fas fa-database fa-2x"></i>
-                    </div>
-                    <div>
-                        <h5 class="mb-0">Cơ sở dữ liệu</h5>
-                        <small class="text-muted">15 câu hỏi</small>
-                    </div>
-                </div>
-                <p class="text-muted">Kiểm tra kiến thức về SQL và database</p>
-                <div class="d-flex justify-content-between align-items-center">
-                    <span class="badge bg-warning">Trung bình</span>
-                    <a href="/Quiz/Details/2" class="btn btn-gradient btn-sm">Bắt đầu</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-4 mb-4">
-        <div class="card card-modern">
-            <div class="card-body">
-                <div class="d-flex align-items-center mb-3">
-                    <div class="bg-info text-white rounded-circle p-3 me-3">
-                        <i class="fas fa-network-wired fa-2x"></i>
-                    </div>
-                    <div>
-                        <h5 class="mb-0">Mạng máy tính</h5>
-                        <small class="text-muted">20 câu hỏi</small>
-                    </div>
-                </div>
-                <p class="text-muted">Kiểm tra kiến thức về mạng và giao thức</p>
-                <div class="d-flex justify-content-between align-items-center">
-                    <span class="badge bg-danger">Khó</span>
-                    <a href="/Quiz/Details/3" class="btn btn-gradient btn-sm">Bắt đầu</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Quiz History -->
-<div class="mt-5">
-    <h3 class="mb-4">
-        <i class="fas fa-history text-secondary me-2"></i>Lịch sử làm bài
-    </h3>
-    <div class="card card-modern">
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>Quiz</th>
-                            <th>Điểm số</th>
-                            <th>Thời gian</th>
-                            <th>Ngày làm</th>
-                            <th>Hành động</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td colspan="5" class="text-center text-muted">
-                                <i class="fas fa-info-circle me-2"></i>Chưa có lịch sử làm bài
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-
-
+}
