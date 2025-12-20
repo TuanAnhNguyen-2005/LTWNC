@@ -46,11 +46,12 @@
             opacity: 0.97;
             transform: translateX(-100%);
         }
-        .sidebar.active {
-            transform: translateX(0);
-            opacity: 1;
-            box-shadow: 8px 0 32px 0 rgba(31,38,135,0.16),0 2px 10px 0 rgba(0,0,0,0.07);
-        }
+
+            .sidebar.active {
+                transform: translateX(0);
+                opacity: 1;
+                box-shadow: 8px 0 32px 0 rgba(31,38,135,0.16),0 2px 10px 0 rgba(0,0,0,0.07);
+            }
 
             .sidebar.collapsed {
                 width: 70px;
@@ -129,6 +130,7 @@
             transition: left 0.5s cubic-bezier(.77,0,.18,1), box-shadow 0.25s;
             box-shadow: 0 2px 10px rgba(0,0,0,0.18);
         }
+
         .sidebar.active ~ .hamburger-btn {
             left: 278px; /* 260 + 18 khoảng cách */
         }
@@ -234,23 +236,25 @@
             transition: box-shadow 0.25s, transform 0.18s;
             cursor: pointer;
         }
-        .user-avatar:hover {
-            box-shadow: 0 8px 24px 0 #5ac8f5a0, 0 2px 8px 0 #3949bae0;
-            transform: scale(1.08) rotate(-2deg);
-        }
-        .user-avatar::after {
-            content: '';
-            display: block;
-            position: absolute;
-            right: 4px;
-            bottom: 4px;
-            width: 12px;
-            height: 12px;
-            background: linear-gradient(135deg,#37e019,#0bd074);
-            border-radius: 50%;
-            border: 2.2px solid #fff;
-            box-shadow: 0 1.5px 3px #60a5fa44;
-        }
+
+            .user-avatar:hover {
+                box-shadow: 0 8px 24px 0 #5ac8f5a0, 0 2px 8px 0 #3949bae0;
+                transform: scale(1.08) rotate(-2deg);
+            }
+
+            .user-avatar::after {
+                content: '';
+                display: block;
+                position: absolute;
+                right: 4px;
+                bottom: 4px;
+                width: 12px;
+                height: 12px;
+                background: linear-gradient(135deg,#37e019,#0bd074);
+                border-radius: 50%;
+                border: 2.2px solid #fff;
+                box-shadow: 0 1.5px 3px #60a5fa44;
+            }
     </style>
 </head>
 <body>
@@ -341,9 +345,9 @@
             </div>
         </nav>
 
-        <div class="content-area">
-            @RenderBody()
-        </div>
+        <!-- ĐÃ XÓA PHẦN CONTENT AREA -->
+        <!-- Nếu muốn giữ content area trống, bạn có thể để như sau: -->
+        <!-- <div class="content-area"></div> -->
     </div>
     <script src="~/Scripts/jquery.validate.min.js"></script>
     <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
