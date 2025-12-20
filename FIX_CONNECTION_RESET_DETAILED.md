@@ -78,3 +78,4 @@ Sau khi build, kiểm tra:
 2. Build lại từ Visual Studio
 3. Xem chi tiết lỗi trong Output window hoặc trang lỗi khi chạy
 
+

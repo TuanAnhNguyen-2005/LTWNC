@@ -121,3 +121,5 @@ Nếu muốn bật lại tính năng tạo user mẫu:
 3. **Kiểm tra Event Viewer** (Windows + R → `eventvwr`) → Windows Logs → Application
 4. **Clean và Rebuild** lại solution
 
+
+

@@ -35,3 +35,4 @@ Sau khi khởi động, mở browser và truy cập:
 ## Sau khi ứng dụng chạy được
 Nếu muốn bật lại tính năng tạo user mẫu, uncomment phần code trong `Global.asax.cs` sau khi đã đảm bảo database connection hoạt động đúng.
 
+
