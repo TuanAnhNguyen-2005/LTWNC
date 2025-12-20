@@ -46,6 +46,7 @@ public partial class KhoaHoc
     // =========================
     public virtual NguoiDung MaGiaoVienNavigation { get; set; } = null!;
     public virtual NguoiDung? NguoiDuyetNavigation { get; set; }
+    public ICollection<Quiz> Quizzes { get; set; } = new List<Quiz>();
 
     public virtual ICollection<DangKyKhoaHoc> DangKyKhoaHoc { get; set; }
         = new List<DangKyKhoaHoc>();

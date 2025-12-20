@@ -5,9 +5,8 @@ using System.Web;
 
 namespace MVC_STUDENT.Models
 {
-    public class AuthLoginRequest
+    public class QuizTakeDto : QuizDto
     {
-        public string UserName { get; set; }
-        public string Password { get; set; }
+        public string TrangThai { get; set; }
     }
 }

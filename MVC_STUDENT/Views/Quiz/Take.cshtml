@@ -1,0 +1,106 @@
+﻿@model MVC_STUDENT.Models.QuizTakeDto
+
+@{
+    ViewBag.Title = Model.TenQuiz;
+}
+@if (ViewBag.DebugInfo != null)
+{
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>DEBUG INFO (xóa sau khi xong):</strong><br />
+        @Html.Raw(ViewBag.DebugInfo)
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="container py-4">
+    <div class="card shadow-lg">
+        <div class="card-header bg-gradient-primary text-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">@Model.TenQuiz</h4>
+                <div id="timer" class="badge bg-light text-dark fs-5 px-4 py-2">
+                    Thời gian: <span id="countdown">--:--</span>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <p class="text-muted mb-4">@Model.MoTa</p>
+            <p><strong>Số câu:</strong> @Model.CauHois.Count | <strong>Thời gian:</strong> @Model.ThoiGianLamBai phút</p>
+
+            <form id="quizForm" method="post" action="@Url.Action("Submit")">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="MaQuiz" value="@Model.MaQuiz" />
+                <input type="hidden" name="ThoiGianBatDau" value="@DateTime.Now" />
+
+                @for (int i = 0; i < Model.CauHois.Count; i++)
+                {
+                    var ch = Model.CauHois[i];
+                    <div class="mb-4 p-4 border rounded bg-light">
+                        <h5 class="mb-3">
+                            Câu @(i+1): @ch.NoiDung
+                            <small class="text-muted float-end">(@ch.Diem điểm)</small>
+                        </h5>
+
+                        @if (ch.LoaiCauHoi == "ShortAnswer")
+                        {
+                            <textarea name="TraLois[@i].TraLoi" class="form-control" rows="4" required></textarea>
+                            <input type="hidden" name="TraLois[@i].MaCauHoi" value="@ch.MaCauHoi" />
+                        }
+                        else if (ch.LoaiCauHoi == "TrueFalse" || ch.LoaiCauHoi == "MultipleChoice")
+                        {
+                            for (int j = 0; j < ch.LuaChons.Count; j++)
+                            {
+                                var lc = ch.LuaChons[j];
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio"
+                                           name="TraLois[@i].TraLoi"
+                                           value="@lc.MaLuaChon"
+                                           id="option_i_@j" required />
+                                    <label class="form-check-label" for="option_i_@j">
+                                        @lc.NoiDung
+                                    </label>
+                                </div>
+                            }
+                            <input type="hidden" name="TraLois[@i].MaCauHoi" value="@ch.MaCauHoi" />
+                        }
+                    </div>
+                }
+
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-gradient btn-lg px-5">
+                        <i class="fas fa-paper-plane"></i> Nộp bài
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+    const timeLimit = @(Model.ThoiGianLamBai ?? 30) * 60; // giây
+    let timeLeft = timeLimit;
+
+    const countdown = document.getElementById('countdown');
+    const form = document.getElementById('quizForm');
+
+    function updateTimer() {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        countdown.textContent = `${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+
+        if (timeLeft <= 60) {
+            countdown.parentElement.classList.add('bg-danger', 'text-white');
+        }
+
+        if (timeLeft <= 0) {
+            alert('Hết giờ! Bài làm sẽ tự động được nộp.');
+            form.submit();
+        } else {
+            timeLeft--;
+            setTimeout(updateTimer, 1000);
+        }
+    }
+
+    updateTimer();
+    </script>
+}

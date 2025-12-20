@@ -1,0 +1,108 @@
+﻿@model MVC_Teacher.Models.CauHoiViewModel
+@{
+    var index = ViewData["Index"] != null ? (int)ViewData["Index"] : 0;
+}
+
+<div class="cau-hoi-item card mb-4" data-index="@index">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+            <h5>Câu hỏi @(index + 1)</h5>
+            <button type="button" class="btn btn-sm btn-danger" onclick="xoaCauHoi(this)">
+                <i class="fas fa-trash"></i> Xóa
+            </button>
+        </div>
+
+        <!-- Hidden field lưu loại câu hỏi -->
+        <input type="hidden" name="CauHois[@index].LoaiCauHoi" value="@Model.LoaiCauHoi" />
+
+        <div class="form-group mb-3">
+            <label>Nội dung câu hỏi <span class="text-danger">*</span></label>
+            <input type="text"
+                   name="CauHois[@index].NoiDung"
+                   value="@Model.NoiDung"
+                   class="form-control"
+                   placeholder="Nhập nội dung câu hỏi..."
+                   required />
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label>Điểm số</label>
+                <input type="number"
+                       name="CauHois[@index].Diem"
+                       value="@Model.Diem"
+                       class="form-control"
+                       min="0.5"
+                       step="0.5"
+                       style="width:120px;"
+                       required />
+            </div>
+            <div class="col-md-6">
+                <label>Loại câu hỏi</label>
+                <select class="form-control" onchange="changeQuestionType(this, @index)">
+                    <option value="MultipleChoice" @(Model.LoaiCauHoi == "MultipleChoice" ? "selected" : "")>
+                        Trắc nghiệm (nhiều lựa chọn)
+                    </option>
+                    <option value="TrueFalse" @(Model.LoaiCauHoi == "TrueFalse" ? "selected" : "")>
+                        Đúng/Sai
+                    </option>
+                    <option value="ShortAnswer" @(Model.LoaiCauHoi == "ShortAnswer" ? "selected" : "")>
+                        Tự luận
+                    </option>
+                </select>
+            </div>
+        </div>
+
+        <div id="options-@index" class="mt-3">
+            @if (Model.LoaiCauHoi == "ShortAnswer")
+            {
+                <small class="text-muted">Học sinh sẽ nhập câu trả lời tự do (không cần lựa chọn)</small>
+            }
+            else if (Model.LoaiCauHoi == "TrueFalse")
+            {
+                <div class="lua-chon-item mb-2 d-flex align-items-center">
+                    <input type="radio" name="CauHois[@index].DapAnDungIndex" @(Model.LuaChons[0].LaDapAnDung ? "checked" : "") />
+                    <label class="ms-2 fw-bold">Đúng</label>
+                    <input type="hidden" name="CauHois[@index].LuaChons[0].NoiDung" value="Đúng" />
+                    <input type="hidden" name="CauHois[@index].LuaChons[0].LaDapAnDung" value="@Model.LuaChons[0].LaDapAnDung.ToString().ToLower()" />
+                </div>
+                <div class="lua-chon-item mb-2 d-flex align-items-center">
+                    <input type="radio" name="CauHois[@index].DapAnDungIndex" @(Model.LuaChons[1].LaDapAnDung ? "checked" : "") />
+                    <label class="ms-2 fw-bold">Sai</label>
+                    <input type="hidden" name="CauHois[@index].LuaChons[1].NoiDung" value="Sai" />
+                    <input type="hidden" name="CauHois[@index].LuaChons[1].LaDapAnDung" value="@Model.LuaChons[1].LaDapAnDung.ToString().ToLower()" />
+                </div>
+            }
+            else
+            {
+                <!-- MultipleChoice -->
+                for (int j = 0; j < Model.LuaChons.Count; j++)
+                {
+                    <div class="lua-chon-item mb-2 d-flex align-items-center">
+                        <input type="radio"
+                               name="CauHois[@index].DapAnDungIndex"
+                               @(Model.LuaChons[j].LaDapAnDung ? "checked" : "") />
+                        <input type="text"
+                               name="CauHois[@index].LuaChons[@j].NoiDung"
+                               value="@Model.LuaChons[j].NoiDung"
+                               class="form-control ms-2"
+                               placeholder="Lựa chọn @(j+1)"
+                               required />
+                        <input type="hidden"
+                               name="CauHois[@index].LuaChons[@j].LaDapAnDung"
+                               value="@Model.LuaChons[j].LaDapAnDung.ToString().ToLower()" />
+                        @if (j >= 2) // Chỉ cho xóa từ lựa chọn thứ 3 trở đi
+                        {
+                            <button type="button" class="btn btn-sm btn-danger ms-2" onclick="this.closest('.lua-chon-item').remove()">
+                                ×
+                            </button>
+                        }
+                    </div>
+                }
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="themLuaChon(@index)">
+                    <i class="fas fa-plus"></i> Thêm lựa chọn
+                </button>
+            }
+        </div>
+    </div>
+</div>

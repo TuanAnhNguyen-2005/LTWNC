@@ -1,7 +1,10 @@
 using System;
+using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
 using MVC_ADMIN.Helpers;
+using Newtonsoft.Json;
 
 namespace MVC_ADMIN.Services
 {
@@ -14,18 +17,31 @@ namespace MVC_ADMIN.Services
 
         public UserDataService()
         {
-            // Try common names used in the codebase
-            _connectionString = ConfigurationHelper.GetConnectionString("NenTangHocLieu")
-                ?? ConfigurationHelper.GetConnectionString("DefaultConnection")
-                ?? ConfigurationHelper.GetConnectionString("NenTangHocLieuEntities");
-
-            // Fail fast instead of falling back to an invalid hard-coded server
-            if (string.IsNullOrEmpty(_connectionString))
+            try
             {
-                _connectionString = "Server=LEPS\\NGUYENHUYNH;Database=NenTangHocLieu;User ID=sa;Password=12345;TrustServerCertificate=True;MultipleActiveResultSets=True;";
+                // Đọc từ file appsettings.json trong chính thư mục project MVC_ADMIN
+                string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "appsettings.json");
+
+                if (!File.Exists(filePath))
+                {
+                    throw new FileNotFoundException($"Không tìm thấy file appsettings.json tại: {filePath}. Hãy copy file vào thư mục MVC_ADMIN.");
+                }
+
+                string json = File.ReadAllText(filePath);
+                dynamic config = JsonConvert.DeserializeObject(json);
+
+                _connectionString = config?.ConnectionStrings?.DefaultConnection;
+
+                if (string.IsNullOrEmpty(_connectionString))
+                {
+                    throw new InvalidOperationException("Không tìm thấy 'DefaultConnection' trong appsettings.json");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Lỗi đọc appsettings.json: {ex.Message}", ex);
             }
         }
-
         /// <summary>
         /// Quick test helper to verify DB connectivity (useful for diagnostics)
         /// </summary>
