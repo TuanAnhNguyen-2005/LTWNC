@@ -35,9 +35,15 @@ namespace MVC_Teacher.Services
 
                 _connectionString = config?.ConnectionStrings?.DefaultConnection;
 
-            _connectionString = string.IsNullOrEmpty(conn)
-                ? "Data Source=LEPS\\NGUYENHUYNH;Initial Catalog=NenTangHocLieu;Persist Security Info=True;User ID=sa;Password=123;TrustServerCertificate=True;MultipleActiveResultSets=True;"
-                : conn;
+                if (string.IsNullOrEmpty(_connectionString))
+                {
+                    throw new InvalidOperationException("Không tìm thấy 'DefaultConnection' trong appsettings.json");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Lỗi đọc appsettings.json: {ex.Message}", ex);
+            }
         }
 
         public bool TestConnection(out string error)

@@ -184,77 +184,49 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-custom">
         <div class="container">
-            <a class="navbar-brand" href="@Url.Action("Index","TrangChu")">
+            <a class="navbar-brand" href="/TrangChu">
                 <i class="fas fa-graduation-cap me-2"></i>HocLieu Student
             </a>
-
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
-
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "TrangChu" ? "active" : "")"
-                           href="@Url.Action("Index","TrangChu")">
+                        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "TrangChu" ? "active" : "")" href="/TrangChu">
                             <i class="fas fa-home me-1"></i>Trang chủ
                         </a>
                     </li>
-
                     <li class="nav-item">
-                        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "LearningMaterial" ? "active" : "")"
-                           href="@Url.Action("Index","LearningMaterial")">
+                        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "LearningMaterial" ? "active" : "")" href="/LearningMaterial">
                             <i class="fas fa-book me-1"></i>Học liệu
                         </a>
                     </li>
-
                     <li class="nav-item">
-                        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Category" ? "active" : "")"
-                           href="@Url.Action("Index","Category")">
+                        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Category" ? "active" : "")" href="/Category">
                             <i class="fas fa-folder me-1"></i>Danh mục
                         </a>
                     </li>
-
                     <li class="nav-item">
-                        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Quiz" ? "active" : "")"
-                           href="@Url.Action("Index","Quiz")">
+                        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Quiz" ? "active" : "")" href="/Quiz">
                             <i class="fas fa-question-circle me-1"></i>Quiz
                         </a>
                     </li>
                 </ul>
-
                 @if (isAuthenticated)
                 {
                     <div class="d-flex align-items-center">
                         <div class="user-avatar">@firstChar</div>
-
                         <div class="dropdown">
                             <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown">
                                 @userName
                             </a>
-
                             <ul class="dropdown-menu dropdown-menu-end">
-                                <li>
-                                    <a class="dropdown-item" href="@Url.Action("Index","Profile")">
-                                        <i class="fas fa-user me-2"></i>Thông tin cá nhân
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="@Url.Action("Index","LearningHistory")">
-                                        <i class="fas fa-history me-2"></i>Lịch sử học tập
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="@Url.Action("Index","Favorites")">
-                                        <i class="fas fa-heart me-2"></i>Yêu thích
-                                    </a>
-                                </li>
+                                <li><a class="dropdown-item" href="/Profile"><i class="fas fa-user me-2"></i>Thông tin cá nhân</a></li>
+                                <li><a class="dropdown-item" href="/LearningHistory"><i class="fas fa-history me-2"></i>Lịch sử học tập</a></li>
+                                <li><a class="dropdown-item" href="/Favorites"><i class="fas fa-heart me-2"></i>Yêu thích</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <a class="dropdown-item" href="@Url.Action("Logout","Login")">
-                                        <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
-                                    </a>
-                                </li>
+                                <li><a class="dropdown-item" href="/Login/Logout"><i class="fas fa-sign-out-alt me-2"></i>Đăng xuất</a></li>
                             </ul>
                         </div>
                     </div>
@@ -262,10 +234,10 @@
                 else
                 {
                     <div>
-                        <a href="@Url.Action("Index","Login")" class="btn btn-outline-light btn-sm me-2">
+                        <a href="/Login" class="btn btn-outline-light btn-sm me-2">
                             <i class="fas fa-sign-in-alt me-1"></i>Đăng nhập
                         </a>
-                        <a href="@Url.Action("Index","SignUp")" class="btn btn-light btn-sm">
+                        <a href="/SignUp" class="btn btn-light btn-sm">
                             <i class="fas fa-user-plus me-1"></i>Đăng ký
                         </a>
                     </div>
@@ -273,7 +245,6 @@
             </div>
         </div>
     </nav>
-    
 
     <!-- Main Content -->
     <main class="main-content">
