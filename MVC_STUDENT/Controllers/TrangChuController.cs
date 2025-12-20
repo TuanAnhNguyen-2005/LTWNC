@@ -8,8 +8,13 @@ namespace MVC_STUDENT.Controllers
 {
     public class TrangChuController : Controller
     {
+        [AllowAnonymous]
         public ActionResult Index()
         {
+            System.Diagnostics.Debug.WriteLine("=== TRANG CHỦ INDEX ĐƯỢC GỌI ===");
+            System.Diagnostics.Debug.WriteLine($"User.Identity.IsAuthenticated: {User.Identity.IsAuthenticated}");
+
+            ViewBag.Message = "Chào mừng đến Trang Chủ!";
             return View();
         }
 

@@ -14,6 +14,18 @@ public class NguoiDungController : ControllerBase
     {
         _db = db;
     }
+    [HttpGet("debug/db")]
+    public IActionResult DebugDb()
+    {
+        var conn = _db.Database.GetDbConnection();
+        return Ok(new
+        {
+            dataSource = conn.DataSource,
+            database = conn.Database,
+            connectionString = _db.Database.GetConnectionString()
+        });
+    }
+
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<NguoiDung>>> GetAll()
@@ -33,12 +45,29 @@ public class NguoiDungController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<NguoiDung>> Create(NguoiDung model)
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] NguoiDung model)
     {
+        if (model == null) return BadRequest("Body is null.");
+
+        model.Email = model.Email?.Trim();
+
+        // ✅ check trùng email
+        var exists = await _db.NguoiDung.AnyAsync(x => x.Email == model.Email);
+        if (exists)
+            return Conflict(new { message = "Email đã tồn tại." }); // 409
+
         _db.NguoiDung.Add(model);
         await _db.SaveChangesAsync();
-        return CreatedAtAction(nameof(GetById), new { id = model.MaNguoiDung }, model);
+
+        return Ok(model);
     }
+
+        /*
+        return Ok(model);
+        _db.NguoiDung.Add(model);
+        await _db.SaveChangesAsync();
+        return CreatedAtAction(nameof(GetById), new { id = model.MaNguoiDung }, model);*/
 
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(int id, NguoiDung model)
