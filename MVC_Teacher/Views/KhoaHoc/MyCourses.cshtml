@@ -295,31 +295,43 @@
                                     <td class="text-center align-middle">@item.NgayTao.ToString("dd/MM/yyyy")</td>
 
                                     <td class="text-center align-middle">
-                                        @if (item.TrangThaiDuyet == "Draft" || item.TrangThaiDuyet == "TuChoi")
-                                        {
-                                            <div class="d-flex gap-2 justify-content-center flex-wrap">
-                                                @using (Html.BeginForm("Submit", "KhoaHoc", new { id = item.MaKhoaHoc }, FormMethod.Post, new { @class = "d-inline" }))
+                                        <div class="d-flex gap-2 justify-content-center flex-wrap">
+                                            <!-- Nút Tạo Quiz - chỉ hiển thị nếu khóa học đã duyệt -->
+                                            @if (item.TrangThaiDuyet == "DaDuyet")
+                                            {
+                                                <a href="@Url.Action("Create", "Quiz", new { maKhoaHoc = item.MaKhoaHoc })"
+                                                   class="btn btn-primary btn-sm rounded-pill px-4 text-white"
+                                                   title="Tạo bài kiểm tra cho khóa học này">
+                                                    <i class="fas fa-plus me-1"></i> Tạo Quiz
+                                                </a>
+                                            }
+
+                                            <!-- Các nút hiện tại (Gửi duyệt nếu là Draft/TuChoi) -->
+                                            @if (item.TrangThaiDuyet == "Draft" || item.TrangThaiDuyet == "TuChoi" ||
+                                                 item.TrangThaiDuyet == "Nháp" || item.TrangThaiDuyet == "Từ chối")
+                                            {
+                                                using (Html.BeginForm("Submit", "KhoaHoc", new { id = item.MaKhoaHoc }, FormMethod.Post, new { @class = "d-inline" }))
                                                 {
                                                     <button type="submit"
-                                                            class="btn btn-success btn-sm btn-submit text-white rounded-pill px-4"
+                                                            class="btn btn-success btn-sm rounded-pill px-4"
                                                             onclick="return confirm('Gửi khóa học này để chờ duyệt?')">
                                                         <i class="fas fa-paper-plane me-1"></i> Gửi duyệt
                                                     </button>
                                                 }
-                                            </div>
-                                        }
-                                        else if (item.TrangThaiDuyet == "ChoDuyet")
-                                        {
-                                            <span class="text-warning fw-bold">
-                                                <i class="fas fa-hourglass-half me-1"></i> Đang chờ duyệt
-                                            </span>
-                                        }
-                                        else
-                                        {
-                                            <span class="text-success fw-bold">
-                                                <i class="fas fa-check-circle me-1"></i> Đã duyệt
-                                            </span>
-                                        }
+                                            }
+                                            else if (item.TrangThaiDuyet == "ChoDuyet")
+                                            {
+                                                <span class="text-warning fw-bold">
+                                                    <i class="fas fa-hourglass-half me-1"></i> Đang chờ duyệt
+                                                </span>
+                                            }
+                                            else if (item.TrangThaiDuyet == "DaDuyet")
+                                            {
+                                                <span class="text-success fw-bold">
+                                                    <i class="fas fa-check-circle me-1"></i> Đã duyệt
+                                                </span>
+                                            }
+                                        </div>
                                     </td>
                                 </tr>
                             }

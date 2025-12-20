@@ -1,0 +1,58 @@
+﻿@model List<MVC_Student.Controllers.KhoaHocDto>
+@{
+    ViewBag.Title = "Khóa học của tôi";
+}
+
+<div class="container py-5">
+    <h2 class="text-center mb-5 fw-bold" style="color: #4a148c;">
+        <i class="fas fa-book-open me-2"></i> Danh sách khóa học
+    </h2>
+
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5">
+            <i class="fas fa-folder-open fa-5x text-muted mb-3"></i>
+            <p class="lead text-muted">Chưa có khóa học nào được công khai.</p>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var kh in Model)
+            {
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 shadow-sm hover-shadow">
+                        @if (!string.IsNullOrEmpty(kh.AnhBia))
+                        {
+                            <img src="@kh.AnhBia" class="card-img-top" style="height:180px; object-fit:cover;" alt="@kh.TenKhoaHoc">
+                        }
+                        else
+                        {
+                            <div class="bg-light d-flex align-items-center justify-content-center" style="height:180px;">
+                                <i class="fas fa-image fa-3x text-muted"></i>
+                            </div>
+                        }
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title fw-bold">@kh.TenKhoaHoc</h5>
+                            <p class="card-text flex-grow-1 text-muted small">@kh.MoTa</p>
+                            <a href="@Url.Action("Detail", "KhoaHoc", new { id = kh.MaKhoaHoc })" class="btn btn-primary mt-auto">
+                                <i class="fas fa-eye me-1"></i> Xem chi tiết
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<style>
+    .hover-shadow {
+        transition: all 0.3s;
+    }
+
+        .hover-shadow:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+        }
+</style>
