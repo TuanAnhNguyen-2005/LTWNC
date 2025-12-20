@@ -43,6 +43,7 @@
         padding: 15px;
         margin-bottom: 20px;
         background: white;
+        position: relative;
     }
 
         .input-box:focus-within {
@@ -112,11 +113,13 @@
         margin-bottom: 15px;
     }
 
-    /* Input field styling */
+    /* Input field styling - SỬA LẠI */
     .form-control {
         border: none;
         padding: 0;
         box-shadow: none;
+        width: 100%;
+        height: 24px;
     }
 
         .form-control:focus {
@@ -126,18 +129,35 @@
 
     .password-wrapper {
         position: relative;
+        width: 100%;
     }
 
+    /* Nút hiển thị mật khẩu - SỬA LẠI VỊ TRÍ */
     .password-toggle-btn {
         position: absolute;
-        right: 0;
-        top: 0;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
         background: none;
         border: none;
         color: #6b7280;
-        padding: 10px 15px;
         cursor: pointer;
+        padding: 5px 8px;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        z-index: 10;
+        transition: all 0.2s;
     }
+
+        .password-toggle-btn:hover {
+            background-color: #f3f4f6;
+            color: #4b5563;
+        }
+
+        .password-toggle-btn:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+        }
 
     .email-input-wrapper {
         position: relative;
@@ -149,6 +169,24 @@
             top: 50%;
             transform: translateY(-50%);
             color: #6b7280;
+        }
+
+    /* Đảm bảo input password có padding cho nút */
+    .password-input {
+        padding-right: 45px !important;
+        width: 100%;
+    }
+
+    /* Fix cho input trong khung */
+    .input-box input {
+        width: 100%;
+        padding: 0;
+        border: none;
+        background: transparent;
+    }
+
+        .input-box input:focus {
+            outline: none;
         }
 </style>
 
@@ -164,10 +202,19 @@
                 <p class="teacher-subtitle">Hệ thống quản lý học liệu HocLieu</p>
             </div>
 
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    @ViewBag.Error
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
             <form method="post" id="teacherLoginForm">
                 @Html.AntiForgeryToken()
 
-                <!-- Khung Email - SỬA LẠI THÀNH INPUT CÓ THỂ NHẬP -->
+                <!-- Khung Email -->
                 <div class="mb-4">
                     <div class="box-title">EMAIL ĐĂNG NHẬP</div>
                     <div class="input-box">
@@ -184,7 +231,7 @@
                     </div>
                 </div>
 
-                <!-- Khung Mật khẩu - SỬA LẠI ĐỂ HIỆN MẬT KHẨU -->
+                <!-- Khung Mật khẩu - ĐÃ SỬA VỊ TRÍ NÚT HIỆN/ẨN -->
                 <div class="mb-4">
                     <div class="box-title">MẬT KHẨU</div>
                     <div class="input-box">
@@ -192,7 +239,7 @@
                             <input type="password"
                                    name="password"
                                    id="password"
-                                   class="form-control"
+                                   class="form-control password-input"
                                    placeholder="Nhập mật khẩu"
                                    required>
                             <button type="button" class="password-toggle-btn" id="passwordToggle">
@@ -241,7 +288,7 @@
                 <div class="footer-box">
                     <p class="text-center mb-3">
                         <span class="text-muted">Chưa có tài khoản giáo viên?</span>
-                        <a href="/SignUp/Teacher" class="text-decoration-none fw-bold text-primary ms-1">
+                        <a href="/SignUp/Index" class="text-decoration-none fw-bold text-primary ms-1">
                             <i class="fas fa-user-plus me-1"></i>Đăng ký ngay
                         </a>
                     </p>
@@ -296,44 +343,116 @@
 </div>
 
 <script>
-    $(document).ready(function () {
-        // Password visibility toggle - SỬA LẠI ĐỂ HIỆN/ẨN MẬT KHẨU
-        $('#passwordToggle').click(function () {
-            const input = $('#password');
-            const icon = $(this).find('i');
+    // GIẢI PHÁP ĐƠN GIẢN NHẤT - LUÔN HOẠT ĐỘNG
+    document.addEventListener('DOMContentLoaded', function () {
+        console.log("DOM loaded - Setting up password toggle");
 
-            if (input.attr('type') === 'password') {
-                input.attr('type', 'text');
-                icon.removeClass('fa-eye').addClass('fa-eye-slash');
-                $(this).attr('title', 'Ẩn mật khẩu');
+        const passwordToggle = document.getElementById('passwordToggle');
+        const passwordInput = document.getElementById('password');
+
+        if (!passwordToggle || !passwordInput) {
+            console.error("Missing elements for password toggle");
+            return;
+        }
+
+        console.log("✓ Found password toggle elements");
+
+        // Đảm bảo nút có đúng HTML
+        passwordToggle.innerHTML = '<i class="fas fa-eye"></i>';
+        passwordToggle.title = 'Hiện mật khẩu';
+
+        // Xóa tất cả event listeners cũ
+        const newToggle = passwordToggle.cloneNode(true);
+        passwordToggle.parentNode.replaceChild(newToggle, passwordToggle);
+
+        // Thêm event listener đơn giản
+        newToggle.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            console.log("Password toggle clicked");
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                this.innerHTML = '<i class="fas fa-eye-slash"></i>';
+                this.title = 'Ẩn mật khẩu';
+                console.log("Password shown");
             } else {
-                input.attr('type', 'password');
-                icon.removeClass('fa-eye-slash').addClass('fa-eye');
-                $(this).attr('title', 'Hiện mật khẩu');
-            }
-        });
-
-        // Form submission loading
-        $('#teacherLoginForm').submit(function () {
-            const submitBtn = $('#loginBtn');
-            const originalText = submitBtn.html();
-            submitBtn.html('<i class="fas fa-spinner fa-spin me-2"></i>ĐANG XÁC THỰC...');
-            submitBtn.prop('disabled', true);
-
-            // Auto focus vào email field nếu có lỗi
-            const email = $('#email').val();
-            if (!email || email.trim() === '') {
-                $('#email').focus();
+                passwordInput.type = 'password';
+                this.innerHTML = '<i class="fas fa-eye"></i>';
+                this.title = 'Hiện mật khẩu';
+                console.log("Password hidden");
             }
 
-            // Re-enable after 5 seconds (in case of error)
-            setTimeout(() => {
-                submitBtn.html(originalText);
-                submitBtn.prop('disabled', false);
-            }, 5000);
+            // Focus lại vào input
+            passwordInput.focus();
         });
 
-        // Auto focus vào email field khi trang load
-        $('#email').focus();
+        console.log("✓ Password toggle setup completed");
+
+        // Test function
+        window.testPassword = function () {
+            console.log("Testing password toggle...");
+            newToggle.click();
+        };
+    });
+
+    // Backup với jQuery (nếu cần)
+    $(document).ready(function () {
+        console.log("jQuery ready - Double-checking password toggle");
+
+        // Kiểm tra lại và thêm backup
+        setTimeout(function () {
+            const toggleBtn = $('#passwordToggle');
+            const passwordInput = $('#password');
+
+            if (toggleBtn.length && passwordInput.length) {
+                console.log("✓ jQuery also found the elements");
+
+                // Thêm backup event handler
+                toggleBtn.off('click.toggle').on('click.toggle', function (e) {
+                    e.preventDefault();
+
+                    if (passwordInput.attr('type') === 'password') {
+                        passwordInput.attr('type', 'text');
+                        $(this).html('<i class="fas fa-eye-slash"></i>');
+                        $(this).attr('title', 'Ẩn mật khẩu');
+                    } else {
+                        passwordInput.attr('type', 'password');
+                        $(this).html('<i class="fas fa-eye"></i>');
+                        $(this).attr('title', 'Hiện mật khẩu');
+                    }
+                });
+            }
+        }, 500);
+    });
+
+    // GIẢI PHÁP CUỐI CÙNG - Event delegation (luôn hoạt động)
+    document.addEventListener('click', function (e) {
+        // Kiểm tra nếu click vào nút toggle hoặc icon bên trong
+        if (e.target &&
+            (e.target.id === 'passwordToggle' ||
+                e.target.closest('#passwordToggle'))) {
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            const passwordInput = document.getElementById('password');
+            if (!passwordInput) return;
+
+            const toggleBtn = e.target.closest('#passwordToggle') || e.target;
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleBtn.innerHTML = '<i class="fas fa-eye-slash"></i>';
+                toggleBtn.title = 'Ẩn mật khẩu';
+            } else {
+                passwordInput.type = 'password';
+                toggleBtn.innerHTML = '<i class="fas fa-eye"></i>';
+                toggleBtn.title = 'Hiện mật khẩu';
+            }
+
+            passwordInput.focus();
+        }
     });
 </script>

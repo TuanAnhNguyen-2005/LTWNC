@@ -3,137 +3,217 @@
     ViewBag.Title = "Đăng ký tài khoản";
 }
 
-<div class="card-body p-4">
+<div class="card-body p-4 p-md-5">
+    <!-- Header -->
+    <div class="text-center mb-4">
+        <h2 class="fw-bold text-gradient-primary mb-2">Tạo tài khoản mới</h2>
+        <p class="text-muted">Điền thông tin bên dưới để bắt đầu</p>
+    </div>
+
     @if (ViewBag.Error != null)
     {
-        <div class="alert alert-danger">@ViewBag.Error</div>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            @ViewBag.Error
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
     }
 
-    <form method="post" action="/SignUp/Index">
+    <form method="post" action="/SignUp/Index" id="signupForm" class="needs-validation" novalidate>
         @Html.AntiForgeryToken()
 
-        <div class="mb-3">
-            <label for="FullName" class="form-label">
-                <i class="fas fa-user me-1"></i> Họ và tên <span class="text-danger">*</span>
-            </label>
-            <input type="text" name="FullName" id="FullName" class="form-control form-control-lg"
-                   placeholder="Nhập họ và tên đầy đủ" required />
-        </div>
+        <!-- Two-column layout for better organization -->
+        <div class="row">
+            <!-- Left column: Personal info -->
+            <div class="col-md-6">
+                <h5 class="section-title mb-3"><i class="fas fa-id-card me-2"></i>Thông tin cá nhân</h5>
 
-        <div class="mb-3">
-            <label for="Email" class="form-label">
-                <i class="fas fa-envelope me-1"></i> Email <span class="text-danger">*</span>
-            </label>
-            <input type="email" name="Email" id="Email" class="form-control form-control-lg"
-                   placeholder="example@email.com" required />
-        </div>
+                <!-- Full Name -->
+                <div class="form-floating mb-3">
+                    <input type="text" name="FullName" id="FullName" class="form-control"
+                           placeholder="Nguyễn Văn A" required />
+                    <label for="FullName">
+                        <i class="fas fa-user me-1 text-muted"></i> Họ và tên <span class="text-danger">*</span>
+                    </label>
+                    <div class="invalid-feedback">Vui lòng nhập họ và tên</div>
+                </div>
 
-        <div class="mb-3">
-            <label for="Password" class="form-label">
-                <i class="fas fa-lock me-1"></i> Mật khẩu <span class="text-danger">*</span>
-            </label>
-            <input type="password" name="Password" id="Password" class="form-control form-control-lg"
-                   placeholder="Tối thiểu 6 ký tự" required minlength="6" />
-        </div>
+                <!-- Gender -->
+                <div class="mb-4">
+                    <label class="form-label mb-2">
+                        <i class="fas fa-venus-mars me-1 text-muted"></i> Giới tính
+                    </label>
+                    <div class="btn-group w-100" role="group">
+                        <input type="radio" class="btn-check" name="Gender" id="genderMale" value="Nam" autocomplete="off">
+                        <label class="btn btn-outline-primary" for="genderMale">
+                            <i class="fas fa-male me-1"></i> Nam
+                        </label>
 
-        <div class="mb-3">
-            <label for="ConfirmPassword" class="form-label">
-                <i class="fas fa-lock me-1"></i> Xác nhận mật khẩu <span class="text-danger">*</span>
-            </label>
-            <input type="password" name="ConfirmPassword" id="ConfirmPassword" class="form-control form-control-lg"
-                   placeholder="Nhập lại mật khẩu" required />
-        </div>
+                        <input type="radio" class="btn-check" name="Gender" id="genderFemale" value="Nữ" autocomplete="off">
+                        <label class="btn btn-outline-primary" for="genderFemale">
+                            <i class="fas fa-female me-1"></i> Nữ
+                        </label>
 
-        <div class="mb-3">
-            <label for="PhoneNumber" class="form-label">
-                <i class="fas fa-phone me-1"></i> Số điện thoại
-            </label>
-            <input type="text" name="PhoneNumber" id="PhoneNumber" class="form-control form-control-lg"
-                   placeholder="Nhập số điện thoại (tùy chọn)" />
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">
-                <i class="fas fa-venus-mars me-1"></i> Giới tính
-            </label>
-            <div class="row g-2">
-                <div class="col-4">
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="Gender" id="genderMale" value="Nam">
-                        <label class="form-check-label" for="genderMale">Nam</label>
+                        <input type="radio" class="btn-check" name="Gender" id="genderOther" value="Khác" autocomplete="off" checked>
+                        <label class="btn btn-outline-primary" for="genderOther">
+                            <i class="fas fa-user me-1"></i> Khác
+                        </label>
                     </div>
                 </div>
-                <div class="col-4">
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="Gender" id="genderFemale" value="Nữ">
-                        <label class="form-check-label" for="genderFemale">Nữ</label>
-                    </div>
+
+                <!-- Date of Birth -->
+                <div class="form-floating mb-3">
+                    <input type="date" name="DateOfBirth" id="DateOfBirth" class="form-control"
+                           placeholder="Ngày sinh" max="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                    <label for="DateOfBirth">
+                        <i class="fas fa-calendar-alt me-1 text-muted"></i> Ngày sinh
+                    </label>
                 </div>
-                <div class="col-4">
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="Gender" id="genderOther" value="Khác" checked>
-                        <label class="form-check-label" for="genderOther">Khác</label>
-                    </div>
+
+                <!-- Address -->
+                <div class="form-floating mb-3">
+                    <input type="text" name="Address" id="Address" class="form-control"
+                           placeholder="Địa chỉ" />
+                    <label for="Address">
+                        <i class="fas fa-map-marker-alt me-1 text-muted"></i> Địa chỉ
+                    </label>
+                </div>
+            </div>
+
+            <!-- Right column: Account info -->
+            <div class="col-md-6">
+                <h5 class="section-title mb-3"><i class="fas fa-key me-2"></i>Thông tin tài khoản</h5>
+
+                <!-- Email -->
+                <div class="form-floating mb-3">
+                    <input type="email" name="Email" id="Email" class="form-control"
+                           placeholder="name@example.com" required />
+                    <label for="Email">
+                        <i class="fas fa-envelope me-1 text-muted"></i> Email <span class="text-danger">*</span>
+                    </label>
+                    <div class="invalid-feedback">Vui lòng nhập email hợp lệ</div>
+                </div>
+
+                <!-- Phone -->
+                <div class="form-floating mb-3">
+                    <input type="tel" name="PhoneNumber" id="PhoneNumber" class="form-control"
+                           placeholder="Số điện thoại" pattern="[0-9]{10,11}" />
+                    <label for="PhoneNumber">
+                        <i class="fas fa-phone me-1 text-muted"></i> Số điện thoại
+                    </label>
+                    <div class="invalid-feedback">Số điện thoại phải có 10-11 chữ số</div>
+                </div>
+
+                <!-- Password -->
+                <div class="form-floating mb-3 position-relative">
+                    <input type="password" name="Password" id="Password" class="form-control"
+                           placeholder="Mật khẩu" required minlength="6" />
+                    <label for="Password">
+                        <i class="fas fa-lock me-1 text-muted"></i> Mật khẩu <span class="text-danger">*</span>
+                    </label>
+                    <button type="button" class="btn btn-link position-absolute top-50 end-0 translate-middle-y me-2 toggle-password">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <div class="form-text">Tối thiểu 6 ký tự</div>
+                    <div class="invalid-feedback">Mật khẩu phải có ít nhất 6 ký tự</div>
+                </div>
+
+                <!-- Confirm Password -->
+                <div class="form-floating mb-3 position-relative">
+                    <input type="password" name="ConfirmPassword" id="ConfirmPassword" class="form-control"
+                           placeholder="Xác nhận mật khẩu" required />
+                    <label for="ConfirmPassword">
+                        <i class="fas fa-lock me-1 text-muted"></i> Xác nhận mật khẩu <span class="text-danger">*</span>
+                    </label>
+                    <button type="button" class="btn btn-link position-absolute top-50 end-0 translate-middle-y me-2 toggle-password">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <div class="invalid-feedback">Mật khẩu xác nhận không khớp</div>
                 </div>
             </div>
         </div>
 
-        <div class="mb-3">
-            <label for="DateOfBirth" class="form-label">
-                <i class="fas fa-calendar me-1"></i> Ngày sinh
-            </label>
-            <input type="date" name="DateOfBirth" id="DateOfBirth" class="form-control form-control-lg" />
-        </div>
-
-        <div class="mb-3">
-            <label for="Address" class="form-label">
-                <i class="fas fa-map-marker-alt me-1"></i> Địa chỉ
-            </label>
-            <input type="text" name="Address" id="Address" class="form-control form-control-lg"
-                   placeholder="Nhập địa chỉ (tùy chọn)" />
-        </div>
-
-        <div class="mb-4">
-            <label class="form-label">
-                <i class="fas fa-user-tag me-1"></i> Vai trò <span class="text-danger">*</span>
-            </label>
-            <div class="row g-2">
-                <div class="col-6">
-                    <div class="form-check">
+        <!-- Role Selection -->
+        <div class="mt-4">
+            <h5 class="section-title mb-3"><i class="fas fa-user-tag me-2"></i>Vai trò</h5>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="form-check card-option">
                         <input class="form-check-input" type="radio" name="Role" id="roleStudent" value="Student" checked required>
-                        <label class="form-check-label w-100 p-3 border rounded" for="roleStudent">
-                            <i class="fas fa-graduation-cap d-block mb-2 text-primary"></i>
-                            <strong>Học viên</strong>
-                            <small class="d-block text-muted">Sinh viên</small>
+                        <label class="form-check-label card p-3 h-100" for="roleStudent">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="icon-circle bg-primary-light text-primary">
+                                    <i class="fas fa-graduation-cap"></i>
+                                </div>
+                                <div class="ms-3">
+                                    <h6 class="mb-0 fw-bold">Học viên</h6>
+                                    <small class="text-muted">Sinh viên</small>
+                                </div>
+                            </div>
+                            <ul class="list-unstyled small mt-2 mb-0">
+                                <li><i class="fas fa-check text-success me-1"></i> Tham gia khóa học</li>
+                                <li><i class="fas fa-check text-success me-1"></i> Làm bài tập và bài kiểm tra</li>
+                                <li><i class="fas fa-check text-success me-1"></i> Theo dõi tiến độ học tập</li>
+                            </ul>
                         </label>
                     </div>
                 </div>
-                <div class="col-6">
-                    <div class="form-check">
+                <div class="col-md-6">
+                    <div class="form-check card-option">
                         <input class="form-check-input" type="radio" name="Role" id="roleTeacher" value="Teacher" required>
-                        <label class="form-check-label w-100 p-3 border rounded" for="roleTeacher">
-                            <i class="fas fa-chalkboard-teacher d-block mb-2 text-success"></i>
-                            <strong>Giáo viên</strong>
-                            <small class="d-block text-muted">Giảng viên</small>
+                        <label class="form-check-label card p-3 h-100" for="roleTeacher">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="icon-circle bg-success-light text-success">
+                                    <i class="fas fa-chalkboard-teacher"></i>
+                                </div>
+                                <div class="ms-3">
+                                    <h6 class="mb-0 fw-bold">Giáo viên</h6>
+                                    <small class="text-muted">Giảng viên</small>
+                                </div>
+                            </div>
+                            <ul class="list-unstyled small mt-2 mb-0">
+                                <li><i class="fas fa-check text-success me-1"></i> Tạo và quản lý khóa học</li>
+                                <li><i class="fas fa-check text-success me-1"></i> Đăng tài liệu học tập</li>
+                                <li><i class="fas fa-check text-success me-1"></i> Chấm điểm và đánh giá</li>
+                            </ul>
                         </label>
                     </div>
                 </div>
             </div>
         </div>
 
-        <button type="submit" class="btn btn-success btn-lg w-100 mb-3">
-            <i class="fas fa-user-plus me-2"></i>
-            Đăng ký ngay
-        </button>
+        <!-- Terms and Conditions -->
+        <div class="form-check mt-4">
+            <input class="form-check-input" type="checkbox" id="terms" required>
+            <label class="form-check-label" for="terms">
+                Tôi đồng ý với <a href="#" class="text-decoration-none">Điều khoản dịch vụ</a> và <a href="#" class="text-decoration-none">Chính sách bảo mật</a>
+            </label>
+            <div class="invalid-feedback">Bạn phải đồng ý với điều khoản để tiếp tục</div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="d-grid mt-4">
+            <button type="submit" class="btn btn-primary btn-lg py-3 fw-bold">
+                <i class="fas fa-user-plus me-2"></i>
+                Đăng ký tài khoản
+            </button>
+        </div>
     </form>
 
-    <hr class="my-4">
-    <p class="text-center mb-0">
-        Đã có tài khoản?
-        <a href="/Login" class="text-decoration-none fw-bold">
-            <i class="fas fa-sign-in-alt me-1"></i>Đăng nhập ngay
-        </a>
-    </p>
+    <!-- Divider -->
+    <div class="divider my-4">
+        <span class="px-3 bg-white text-muted">hoặc</span>
+    </div>
+
+    <!-- Login link -->
+    <div class="text-center">
+        <p class="mb-0">
+            Đã có tài khoản?
+            <a href="/Login" class="text-decoration-none fw-bold text-primary">
+                <i class="fas fa-sign-in-alt me-1"></i>Đăng nhập ngay
+            </a>
+        </p>
+    </div>
 </div>
 
 <style>
@@ -142,7 +222,204 @@
         min-height: 100vh;
     }
 
-    .form-control-lg {
+    /* Card styling */
+    .card {
+        border: 1px solid #e0e0e0;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+
+    .card-option:hover .card {
+        border-color: #4e73df;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .card-option .form-check-input:checked + .card {
+        border-color: #4e73df;
+        background-color: rgba(78, 115, 223, 0.05);
+    }
+
+    /* Icon circle */
+    .icon-circle {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+    }
+
+    .bg-primary-light {
+        background-color: rgba(78, 115, 223, 0.1);
+    }
+
+    .bg-success-light {
+        background-color: rgba(40, 167, 69, 0.1);
+    }
+
+    /* Section titles */
+    .section-title {
+        color: #495057;
+        font-size: 1rem;
+        font-weight: 600;
+        border-bottom: 2px solid #4e73df;
+        padding-bottom: 0.5rem;
+    }
+
+    /* Form styling */
+    .form-floating > .form-control {
         border-radius: 8px;
+        border: 1px solid #ced4da;
+        padding: 1rem 0.75rem;
+    }
+
+    .form-floating > label {
+        padding: 1rem 0.75rem;
+    }
+
+    .form-floating > .form-control:focus {
+        border-color: #4e73df;
+        box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+    }
+
+    /* Button group for gender */
+    .btn-group .btn {
+        border-radius: 6px !important;
+        margin: 0 2px;
+    }
+
+    .btn-group .btn-outline-primary.active,
+    .btn-group .btn-check:checked + .btn-outline-primary {
+        background-color: #4e73df;
+        color: white;
+    }
+
+    /* Divider */
+    .divider {
+        display: flex;
+        align-items: center;
+        text-align: center;
+    }
+
+    .divider::before,
+    .divider::after {
+        content: '';
+        flex: 1;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .divider span {
+        padding: 0 10px;
+    }
+
+    /* Toggle password button */
+    .toggle-password {
+        z-index: 5;
+        color: #6c757d;
+    }
+
+    .toggle-password:hover {
+        color: #495057;
+    }
+
+    /* Responsive adjustments */
+    @@media (max-width: 768px) {
+        .card-body {
+            padding: 1.5rem !important;
+        }
+
+        .row {
+            flex-direction: column;
+        }
+
+        .btn-group {
+            flex-wrap: wrap;
+        }
+
+        .btn-group .btn {
+            flex: 1;
+            margin-bottom: 5px;
+        }
     }
 </style>
+
+<script>
+    // Form validation
+    (function () {
+        'use strict'
+
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+        var forms = document.querySelectorAll('.needs-validation')
+
+        // Loop over them and prevent submission
+        Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+
+                    // Custom validation for password confirmation
+                    var password = document.getElementById('Password')
+                    var confirmPassword = document.getElementById('ConfirmPassword')
+
+                    if (password.value !== confirmPassword.value) {
+                        confirmPassword.setCustomValidity('Mật khẩu xác nhận không khớp')
+                        confirmPassword.classList.add('is-invalid')
+                    } else {
+                        confirmPassword.setCustomValidity('')
+                        confirmPassword.classList.remove('is-invalid')
+                    }
+
+                    form.classList.add('was-validated')
+                }, false)
+            })
+    })()
+
+    // Toggle password visibility
+    document.querySelectorAll('.toggle-password').forEach(function (button) {
+        button.addEventListener('click', function () {
+            var input = this.closest('.form-floating').querySelector('input')
+            var icon = this.querySelector('i')
+
+            if (input.type === 'password') {
+                input.type = 'text'
+                icon.classList.remove('fa-eye')
+                icon.classList.add('fa-eye-slash')
+            } else {
+                input.type = 'password'
+                icon.classList.remove('fa-eye-slash')
+                icon.classList.add('fa-eye')
+            }
+        })
+    })
+
+    // Real-time password confirmation check
+    document.getElementById('ConfirmPassword').addEventListener('input', function () {
+        var password = document.getElementById('Password')
+        var confirmPassword = this
+
+        if (password.value !== confirmPassword.value) {
+            confirmPassword.classList.add('is-invalid')
+            confirmPassword.classList.remove('is-valid')
+        } else {
+            confirmPassword.classList.remove('is-invalid')
+            confirmPassword.classList.add('is-valid')
+        }
+    })
+
+    // Real-time password strength indicator (optional enhancement)
+    document.getElementById('Password').addEventListener('input', function () {
+        var password = this.value
+        var strength = 0
+
+        if (password.length >= 6) strength++
+        if (/[A-Z]/.test(password)) strength++
+        if (/[0-9]/.test(password)) strength++
+        if (/[^A-Za-z0-9]/.test(password)) strength++
+
+        // You could add a visual strength indicator here
+    })
+</script>
