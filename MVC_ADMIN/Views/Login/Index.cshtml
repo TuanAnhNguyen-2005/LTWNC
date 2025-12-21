@@ -3,443 +3,85 @@
     ViewBag.Title = "Đăng nhập Admin";
 }
 
-<style>
-    /* Khung đăng nhập admin */
-    .admin-login-container {
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 20px;
-    }
-
-    .admin-login-box {
-        background: white;
-        border-radius: 20px;
-        padding: 50px 40px;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        border: 3px solid #fff;
-        width: 100%;
-        max-width: 450px;
-        position: relative;
-        overflow: hidden;
-    }
-
-        /* Góc trang trí */
-        .admin-login-box::before {
-            content: '';
-            position: absolute;
-            top: -3px;
-            left: -3px;
-            right: -3px;
-            bottom: -3px;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57);
-            border-radius: 23px;
-            z-index: -1;
-            animation: adminGradient 8s ease infinite;
-            background-size: 400% 400%;
-        }
-
-    /* Khung header */
-    .admin-login-header {
-        text-align: center;
-        margin-bottom: 40px;
-        position: relative;
-        padding-bottom: 20px;
-    }
-
-        .admin-login-header::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 25%;
-            width: 50%;
-            height: 3px;
-            background: linear-gradient(to right, transparent, #667eea, transparent);
-        }
-
-    .admin-icon {
-        width: 80px;
-        height: 80px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 20px;
-        border: 4px solid white;
-        box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
-    }
-
-        .admin-icon i {
-            font-size: 2.5rem;
-            color: white;
-        }
-
-    /* Khung input */
-    .admin-input-group {
-        margin-bottom: 25px;
-    }
-
-    .admin-input-label {
-        display: block;
-        margin-bottom: 8px;
-        font-weight: 600;
-        color: #2d3748;
-        font-size: 0.95rem;
-    }
-
-    .admin-input-frame {
-        border: 2px solid #e2e8f0;
-        border-radius: 12px;
-        padding: 15px;
-        background: white;
-        transition: all 0.3s;
-        position: relative;
-    }
-
-        .admin-input-frame:focus-within {
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-            transform: translateY(-2px);
-        }
-
-        .admin-input-frame input {
-            width: 100%;
-            border: none;
-            outline: none;
-            font-size: 1rem;
-            color: #2d3748;
-        }
-
-            .admin-input-frame input::placeholder {
-                color: #a0aec0;
-            }
-
-    /* Khung nút đăng nhập */
-    .admin-login-btn-frame {
-        border: 2px solid transparent;
-        background: linear-gradient(white, white) padding-box, linear-gradient(135deg, #667eea, #764ba2) border-box;
-        border-radius: 12px;
-        margin: 30px 0;
-        overflow: hidden;
-        transition: all 0.3s;
-    }
-
-        .admin-login-btn-frame:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
-        }
-
-    .admin-login-btn {
-        width: 100%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border: none;
-        padding: 16px;
-        font-size: 1.1rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-    }
-
-    /* Khung thông báo lỗi */
-    .admin-error-frame {
-        border: 2px solid #fed7d7;
-        border-radius: 10px;
-        padding: 15px;
-        background: #fff5f5;
-        margin-bottom: 25px;
-        display: none;
-    }
-
-        .admin-error-frame.show {
-            display: block;
-        }
-
-    /* Khung bảo mật */
-    .admin-security-frame {
-        border: 2px solid #c3dafe;
-        border-radius: 12px;
-        padding: 20px;
-        background: #ebf4ff;
-        margin-top: 30px;
-        text-align: center;
-    }
-
-    .admin-security-text {
-        color: #2d3748;
-        font-size: 0.9rem;
-        margin: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-    }
-
-    /* Animation */
-    @@keyframes adminGradient {
-        0% {
-            background-position: 0% 50%;
-        }
-
-        50% {
-            background-position: 100% 50%;
-        }
-
-        100% {
-            background-position: 0% 50%;
-        }
-    }
-
-    /* Responsive */
-    @@media (max-width: 576px) {
-        .admin-login-box {
-            padding: 30px 20px;
-        }
-
-        .admin-icon {
-            width: 70px;
-            height: 70px;
-        }
-
-            .admin-icon i {
-                font-size: 2rem;
-            }
-    }
-
-    /* Password toggle - SỬA LẠI CHO ĐÚNG */
-    .password-toggle-admin {
-        position: absolute;
-        right: 15px;
-        top: 50%;
-        transform: translateY(-50%);
-        background: none;
-        border: none;
-        color: #718096;
-        cursor: pointer;
-        padding: 5px 10px;
-        border-radius: 4px;
-        transition: all 0.2s;
-    }
-
-        .password-toggle-admin:hover {
-            background-color: #f7fafc;
-            color: #4a5568;
-        }
-
-        .password-toggle-admin:focus {
-            outline: none;
-            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.3);
-        }
-
-    /* Đảm bảo input không bị che bởi nút */
-    .admin-input-frame input {
-        padding-right: 40px !important;
-        width: calc(100% - 40px);
-    }
-</style>
-
-<div class="admin-login-container">
-    <div class="admin-login-box">
-        <!-- Header -->
-        <div class="admin-login-header">
-            <div class="admin-icon">
-                <i class="fas fa-user-shield"></i>
+<div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px;">
+    <div style="background: white; border-radius: 20px; padding: 40px; width: 100%; max-width: 450px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; border: 4px solid white;">
+                <i class="fas fa-user-shield" style="font-size: 2.5rem; color: white;"></i>
             </div>
-            <h3 class="teacher-title mb-2">Đăng nhập Quản trị viên</h3>
-            <p class="teacher-subtitle text-muted">Hệ thống quản lý HocLieu</p>
+            <h3 style="color: #2d3748; font-weight: 700;">Đăng nhập Quản trị viên</h3>
+            <p style="color: #6b7280;">Hệ thống quản lý HocLieu</p>
         </div>
 
-        <!-- Error Frame -->
         @if (ViewBag.Error != null)
         {
-            <div class="admin-error-frame show">
-                <div class="d-flex align-items-center">
-                    <i class="fas fa-exclamation-circle text-red-500 me-3"></i>
+            <div style="border: 2px solid #fed7d7; border-radius: 10px; padding: 15px; background: #fff5f5; margin-bottom: 25px;">
+                <div style="display: flex; align-items: center;">
+                    <i class="fas fa-exclamation-circle" style="color: #e53e3e; margin-right: 12px;"></i>
                     <div>
-                        <strong class="text-red-600">Lỗi đăng nhập</strong>
-                        <p class="mb-0 text-red-600">@ViewBag.Error</p>
+                        <strong style="color: #e53e3e;">Lỗi đăng nhập</strong>
+                        <p style="color: #e53e3e; margin: 0;">@ViewBag.Error</p>
                     </div>
                 </div>
             </div>
         }
 
-        <form method="post" id="adminLoginForm">
+        <form method="post" action="/Login/Index" id="adminLoginForm">
             @Html.AntiForgeryToken()
 
-            <!-- Khung Email -->
-            <div class="admin-input-group">
-                <label class="admin-input-label">
-                    <i class="fas fa-envelope me-2"></i>Email quản trị
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #2d3748;">
+                    <i class="fas fa-envelope" style="margin-right: 8px;"></i>Email quản trị
                 </label>
-                <div class="admin-input-frame">
-                    <input type="email"
-                           name="email"
-                           id="adminEmail"
-                           class="form-control-plaintext"
-                           placeholder="admin@hoclieu.edu.vn"
-                           required>
-                </div>
+                <input type="email" name="email" id="adminEmail"
+                       style="width: 100%; padding: 12px 15px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 1rem;"
+                       placeholder="admin@hoclieu.edu.vn" required
+                       value="@(ViewBag.Email != null ? ViewBag.Email : "")">
             </div>
 
-            <!-- Khung Mật khẩu - ĐÃ SỬA ĐỂ HIỆN/ẨN MẬT KHẨU -->
-            <div class="admin-input-group">
-                <label class="admin-input-label">
-                    <i class="fas fa-lock me-2"></i>Mật khẩu
+            <div style="margin-bottom: 20px; position: relative;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #2d3748;">
+                    <i class="fas fa-lock" style="margin-right: 8px;"></i>Mật khẩu
                 </label>
-                <div class="admin-input-frame position-relative">
-                    <input type="password"
-                           name="password"
-                           id="adminPassword"
-                           class="form-control-plaintext"
-                           placeholder="●●●●●●●●"
-                           required
-                           autocomplete="current-password">
-                    <button type="button"
-                            class="password-toggle-admin"
-                            id="adminPasswordToggle"
-                            aria-label="Hiện/ẩn mật khẩu"
-                            title="Hiện mật khẩu">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Khung Nút Đăng nhập -->
-            <div class="admin-login-btn-frame">
-                <button type="submit" class="admin-login-btn" id="adminLoginBtn">
-                    <i class="fas fa-sign-in-alt"></i>
-                    ĐĂNG NHẬP HỆ THỐNG
+                <input type="password" name="password" id="adminPassword"
+                       style="width: 100%; padding: 12px 15px; padding-right: 45px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 1rem;"
+                       placeholder="●●●●●●●●" required>
+                <button type="button" id="passwordToggle"
+                        style="position: absolute; right: 10px; top: 38px; background: none; border: none; color: #718096; cursor: pointer;">
+                    <i class="fas fa-eye"></i>
                 </button>
             </div>
+
+            <button type="submit"
+                    style="width: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 16px; border-radius: 10px; font-size: 1.1rem; font-weight: 600; cursor: pointer; margin-top: 20px;">
+                <i class="fas fa-sign-in-alt" style="margin-right: 8px;"></i>ĐĂNG NHẬP
+            </button>
         </form>
 
-        <!-- Khung Bảo mật -->
-        <div class="admin-security-frame">
-            <p class="admin-security-text">
-                <i class="fas fa-shield-alt"></i>
-                <span>Truy cập dành riêng cho quản trị viên được ủy quyền</span>
-            </p>
-        </div>
-
-        <!-- Footer -->
-        <div class="text-center mt-4">
-            <p class="text-muted small mb-1">
-                <i class="fas fa-info-circle me-1"></i>
+        <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+            <p style="color: #6b7280; font-size: 0.9rem; margin: 0;">
+                <i class="fas fa-info-circle" style="margin-right: 5px;"></i>
                 Liên hệ quản trị hệ thống để được hỗ trợ
-            </p>
-            <p class="text-muted small mb-0">
-                <i class="fas fa-copyright me-1"></i>
-                © @DateTime.Now.Year HocLieu Admin Portal v1.0
             </p>
         </div>
     </div>
 </div>
 
-<!-- ĐẢM BẢO JQUERY ĐƯỢC LOAD TRƯỚC -->
-<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-
 <script>
-    // Đảm bảo DOM đã load xong
-    $(document).ready(function () {
-        console.log("Document ready - Initializing password toggle");
+    // Simple password toggle
+    document.getElementById('passwordToggle')?.addEventListener('click', function () {
+        var passwordInput = document.getElementById('adminPassword');
+        var icon = this.querySelector('i');
 
-        // Password visibility toggle - CHỨC NĂNG ẨN/HIỆN MẬT KHẨU
-        $('#adminPasswordToggle').on('click', function () {
-            console.log("Password toggle clicked");
-
-            const input = $('#adminPassword');
-            const icon = $(this).find('i');
-
-            if (input.attr('type') === 'password') {
-                // Chuyển sang hiển thị mật khẩu
-                input.attr('type', 'text');
-                icon.removeClass('fa-eye').addClass('fa-eye-slash');
-                $(this).attr('title', 'Ẩn mật khẩu');
-                console.log("Password shown");
-            } else {
-                // Chuyển sang ẩn mật khẩu
-                input.attr('type', 'password');
-                icon.removeClass('fa-eye-slash').addClass('fa-eye');
-                $(this).attr('title', 'Hiện mật khẩu');
-                console.log("Password hidden");
-            }
-        });
-
-        // Kiểm tra xem nút toggle có tồn tại không
-        if ($('#adminPasswordToggle').length) {
-            console.log("Password toggle button found");
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            icon.className = 'fas fa-eye-slash';
         } else {
-            console.error("Password toggle button NOT found!");
+            passwordInput.type = 'password';
+            icon.className = 'fas fa-eye';
         }
-
-        // Kiểm tra xem input password có tồn tại không
-        if ($('#adminPassword').length) {
-            console.log("Password input found");
-        } else {
-            console.error("Password input NOT found!");
-        }
-
-        // Form submission loading
-        $('#adminLoginForm').submit(function () {
-            const submitBtn = $('#adminLoginBtn');
-            const originalText = submitBtn.html();
-            submitBtn.html('<i class="fas fa-spinner fa-spin me-2"></i>ĐANG XÁC THỰC...');
-            submitBtn.prop('disabled', true);
-
-            // Auto focus vào email field nếu có lỗi
-            const email = $('#adminEmail').val();
-            if (!email || email.trim() === '') {
-                $('#adminEmail').focus();
-            }
-
-            // Re-enable after 5 seconds (in case of error)
-            setTimeout(() => {
-                submitBtn.html(originalText);
-                submitBtn.prop('disabled', false);
-            }, 5000);
-        });
-
-        // Auto focus vào email field khi trang load
-        $('#adminEmail').focus();
-
-        // Enter key submits form
-        $(document).keypress(function (e) {
-            if (e.which === 13 && !$('#adminLoginBtn').prop('disabled')) {
-                $('#adminLoginForm').submit();
-            }
-        });
     });
 
-    // Fallback nếu jQuery không load được
-    if (typeof jQuery === 'undefined') {
-        console.error("jQuery is not loaded!");
-        alert("Lỗi: jQuery không được tải. Vui lòng tải lại trang.");
-
-        // Thêm fallback JavaScript thuần
-        document.addEventListener('DOMContentLoaded', function () {
-            var toggleBtn = document.getElementById('adminPasswordToggle');
-            var passwordInput = document.getElementById('adminPassword');
-
-            if (toggleBtn && passwordInput) {
-                toggleBtn.addEventListener('click', function () {
-                    if (passwordInput.type === 'password') {
-                        passwordInput.type = 'text';
-                        this.innerHTML = '<i class="fas fa-eye-slash"></i>';
-                        this.title = 'Ẩn mật khẩu';
-                    } else {
-                        passwordInput.type = 'password';
-                        this.innerHTML = '<i class="fas fa-eye"></i>';
-                        this.title = 'Hiện mật khẩu';
-                    }
-                });
-            }
-        });
-    }
+    // Auto focus
+    document.getElementById('adminEmail')?.focus();
 </script>
