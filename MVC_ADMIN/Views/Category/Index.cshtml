@@ -1,41 +1,137 @@
-﻿@{
+﻿@using Newtonsoft.Json.Linq
+
+@{
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
     ViewBag.Title = "Danh mục";
-}
 
+    // 🔥 NHẬN JSON TỪ API (JArray – CHUẨN)
+    var categories = ViewBag.Categories as JArray;
+}
+<style>
+    .slug-badge {
+        background-color: #e9f2ff; /* xanh nhạt */
+        color: #1c3faa; /* chữ xanh đậm */
+        font-weight: 600;
+        border: 1px solid #cfe0ff;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 0.85rem;
+        display: inline-block;
+    }
+
+    /* Badge số khóa học */
+    .course-count-badge {
+        background-color: #e6f4ea; /* xanh lá nhạt */
+        color: #1e7e34; /* xanh lá đậm */
+        font-weight: 700;
+        border: 1px solid #b7e1cd;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        min-width: 48px;
+        display: inline-block;
+        text-align: center;
+    }
+</style>
+
+
+<!-- Header -->
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800">Quản lý danh mục</h1>
-    <a href="/Category/Create" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
-        <i class="fas fa-plus fa-sm text-white-50"></i> Thêm mới
+    <div>
+        <h1 class="h3 mb-1 text-gray-800">Quản lý danh mục</h1>
+        <p class="mb-0 text-muted">Quản lý danh sách danh mục và số lượng khóa học</p>
+    </div>
+
+    <a href="/Category/Create" class="btn btn-sm btn-primary shadow-sm">
+        <i class="fas fa-plus fa-sm text-white-50 mr-1"></i> Thêm mới
     </a>
 </div>
 
-<div class="card shadow mb-4">
-    <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">Danh sách danh mục</h6>
+<!-- Card -->
+<div class="card shadow mb-4 border-left-primary">
+    <div class="card-header py-3 d-flex align-items-center justify-content-between">
+        <h6 class="m-0 font-weight-bold text-primary">
+            <i class="fas fa-list mr-1"></i> Danh sách danh mục
+        </h6>
+
+        <span class="badge badge-info">
+            Tổng: @(categories?.Count ?? 0)
+        </span>
     </div>
+
     <div class="card-body">
         <div class="table-responsive">
-            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                <thead>
+            <table class="table table-bordered table-hover" id="dataTable" width="100%">
+                <thead class="thead-light">
                     <tr>
                         <th>Tên danh mục</th>
-                        <th>Slug</th>
-                        <th>Số khóa học</th>
-                        <th>Hành động</th>
+                        <th>Tên đăng ký</th>
+                        <th class="text-center">Số khóa học</th>
+                        <th class="text-center">Hành động</th>
                     </tr>
                 </thead>
+
                 <tbody>
-                    <tr>
-                        <td>Lập trình Web</td>
-                        <td>lap-trinh-web</td>
-                        <td>45</td>
-                        <td>
-                            <a href="#" class="btn btn-sm btn-warning">Sửa</a>
-                            <a href="#" class="btn btn-sm btn-danger">Xóa</a>
-                        </td>
-                    </tr>
-                    <!-- Thêm dữ liệu từ API sau -->
+                    @if (categories == null || categories.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="4" class="text-center text-muted py-4">
+                                <i class="fas fa-inbox fa-2x mb-2"></i><br />
+                                Chưa có danh mục nào
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var c in categories)
+                        {
+                            <tr>
+                                <!-- Tên -->
+                                <td>
+                                    <strong class="text-gray-800">
+                                        @c["categoryName"]
+                                    </strong>
+                                </td>
+
+                                <!-- Slug -->
+                                <td>
+                                    <span class="slug-badge">
+                                        @c["slug"]
+                                    </span>
+
+                                </td>
+
+                                <!-- Course count -->
+                                <td class="text-center">
+                                    <span class="course-count-badge">
+                                        @c["courseCount"]
+                                    </span>
+                                </td>
+
+                                <!-- Actions -->
+                                <td class="text-center">
+                                    <a href="/Category/Edit/@c["categoryId"]"
+                                       class="btn btn-sm btn-warning mr-1"
+                                       title="Chỉnh sửa">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+
+                                    <form action="/Category/Delete"
+                                          method="post"
+                                          style="display:inline-block"
+                                          onsubmit="return confirm('Bạn có chắc muốn xóa danh mục này?');">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@c["categoryId"]" />
+                                        <button type="submit"
+                                                class="btn btn-sm btn-danger"
+                                                title="Xóa">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    }
                 </tbody>
             </table>
         </div>
@@ -45,9 +141,23 @@
 @section scripts {
     <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
+
     <script>
-        $(document).ready(function() {
-            $('#dataTable').DataTable();
+        $(document).ready(function () {
+            $('#dataTable').DataTable({
+                pageLength: 10,
+                language: {
+                    search: "Tìm kiếm:",
+                    lengthMenu: "Hiển thị _MENU_ dòng",
+                    info: "Đang xem _START_ - _END_ / _TOTAL_",
+                    infoEmpty: "Không có dữ liệu",
+                    zeroRecords: "Không tìm thấy kết quả",
+                    paginate: {
+                        previous: "Trước",
+                        next: "Sau"
+                    }
+                }
+            });
         });
     </script>
 }

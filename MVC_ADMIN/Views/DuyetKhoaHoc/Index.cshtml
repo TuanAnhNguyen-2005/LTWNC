@@ -1,0 +1,75 @@
+﻿@model List<MVC_ADMIN.Controllers.KhoaHocPendingVm>
+@{
+    ViewBag.Title = "Duyệt khóa học";
+}
+
+<h2>Duyệt khóa học (Chờ duyệt)</h2>
+
+@if (TempData["msg"] != null)
+{
+    <div class="alert alert-info">@TempData["msg"]</div>
+}
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Mã</th>
+            <th>Tên khóa học</th>
+            <th>Mô tả</th>
+            <th>Teacher</th>
+            <th>Ngày gửi</th>
+            <th width="320">Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model == null || Model.Count == 0)
+        {
+            <tr>
+                <td colspan="6">Không có khóa học chờ duyệt.</td>
+            </tr>
+        }
+        else
+        {
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.MaKhoaHoc</td>
+                    <td>@item.TenKhoaHoc</td>
+                    <td>@item.MoTa</td>
+                    <td>@item.MaGiaoVien</td>
+                    <td>@(item.NgayGuiDuyet?.ToString("dd/MM/yyyy HH:mm") ?? "—")</td>
+                    <td>
+                        @using (Html.BeginForm("Approve", "DuyetKhoaHoc", FormMethod.Post, new { style = "display:inline;" }))
+                        {
+                            @Html.Hidden("id", item.MaKhoaHoc)
+                            <button type="submit" class="btn btn-success btn-sm">Duyệt</button>
+                        }
+
+                        <button type="button"
+                                class="btn btn-danger btn-sm"
+                                onclick="toggleReject(@item.MaKhoaHoc)">
+                            Từ chối
+                        </button>
+
+                        <div id="rejectBox-@item.MaKhoaHoc" style="display:none;margin-top:6px;">
+                            @using (Html.BeginForm("Reject", "DuyetKhoaHoc", FormMethod.Post))
+                            {
+                                @Html.Hidden("id", item.MaKhoaHoc)
+                                <input name="lyDoTuChoi" class="form-control" placeholder="Lý do từ chối..." />
+                                <button type="submit" class="btn btn-danger btn-sm" style="margin-top:6px;">Xác nhận từ chối</button>
+                            }
+                        </div>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+<script>
+    function toggleReject(id) {
+        var el = document.getElementById('rejectBox-' + id);
+        if (!el) return;
+        el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'block' : 'none';
+    }
+</script>

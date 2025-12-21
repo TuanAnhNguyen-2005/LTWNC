@@ -54,4 +54,9 @@ public partial class NguoiDung
     [ForeignKey("MaVaiTro")]
     [InverseProperty("NguoiDung")]
     public virtual VaiTro? MaVaiTroNavigation { get; set; }
+    public virtual ICollection<KhoaHoc> KhoaHoc { get; set; } = new List<KhoaHoc>();
+
+    public ICollection<Quiz> Quizzes { get; set; } = new List<Quiz>();
+    public virtual ICollection<DangKyKhoaHoc> DangKyKhoaHoc { get; set; } = new List<DangKyKhoaHoc>();
+
 }

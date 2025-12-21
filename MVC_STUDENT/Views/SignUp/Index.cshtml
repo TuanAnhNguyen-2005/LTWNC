@@ -20,10 +20,17 @@
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                 }
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show">
+                        <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
 
                 <form action="/SignUp" method="post">
                     @Html.AntiForgeryToken()
-                    
+
                     <div class="mb-3">
                         <label for="fullName" class="form-label">Họ và tên <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="fullName" name="fullName" required>

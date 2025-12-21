@@ -1048,10 +1048,12 @@
                     <i class="fas fa-calendar"></i>
                     <span>Lịch dạy</span>
                 </button>
-                <button class="header-btn primary">
+                <button class="header-btn primary"
+                        onclick="window.location.href='@Url.Action("Create","KhoaHoc")'">
                     <i class="fas fa-plus"></i>
-                    <span>Tạo mới</span>
+                    <span>Thêm khóa học mới</span>
                 </button>
+
             </div>
 
             <button class="notification-btn">
@@ -1073,6 +1075,7 @@
                 </div>
 
                 <!-- Dropdown Menu -->
+                <!-- Dropdown Menu -->
                 <div class="profile-dropdown" id="profileDropdown">
                     <div class="dropdown-header">
                         <div class="dropdown-user-info">
@@ -1088,6 +1091,17 @@
                             <i class="fas fa-user-edit"></i>
                             <span>Chỉnh sửa thông tin</span>
                         </div>
+
+                        <!-- 🔴 THÊM MỤC MỚI: KHÓA HỌC CỦA TÔI -->
+                        <div class="dropdown-item">
+                            <i class="fas fa-book"></i>
+                            <span>
+                                <a href="@Url.Action("MyCourses", "KhoaHoc")" style="color:inherit; text-decoration:none;">
+                                    Khóa học của tôi
+                                </a>
+                            </span>
+                        </div>
+
                         <div class="dropdown-divider"></div>
                         <div class="dropdown-item" onclick="logout()">
                             <i class="fas fa-sign-out-alt"></i>
@@ -1151,7 +1165,7 @@
                 <span>Bài tập</span>
                 <span class="badge">24</span>
             </a>
-            <a href="#" class="sidebar-item">
+            <a href="@Url.Action("Create", "Quiz")" class="sidebar-item">
                 <i class="fas fa-question-circle"></i>
                 <span>Quiz & Kiểm tra</span>
             </a>
