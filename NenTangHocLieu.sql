@@ -567,6 +567,35 @@ BEGIN
     VALUES (@MaKetQua, @MaCauHoi, @TraLoi);
 END
 GO
+USE NenTangHocLieu;
+GO
+ALTER TABLE HocLieu ADD MaKhoaHoc INT NULL;
+ALTER TABLE HocLieu ADD CONSTRAINT FK_HocLieu_KhoaHoc
+    FOREIGN KEY (MaKhoaHoc) REFERENCES KhoaHoc(MaKhoaHoc) ON DELETE SET NULL;
+CREATE INDEX IX_HocLieu_MaKhoaHoc ON HocLieu(MaKhoaHoc);
+USE NenTangHocLieu;
+GO
+
+-- Thêm cột MaKhoaHoc nếu chưa có
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS 
+               WHERE TABLE_NAME = 'HocLieu' AND COLUMN_NAME = 'MaKhoaHoc')
+BEGIN
+    ALTER TABLE HocLieu ADD MaKhoaHoc INT NULL;
+    
+    -- Tạo foreign key (nếu xóa khóa học thì set null cho tài liệu)
+    ALTER TABLE HocLieu ADD CONSTRAINT FK_HocLieu_KhoaHoc 
+        FOREIGN KEY (MaKhoaHoc) REFERENCES KhoaHoc(MaKhoaHoc) ON DELETE SET NULL;
+    
+    -- Tạo index để tìm nhanh
+    CREATE INDEX IX_HocLieu_MaKhoaHoc ON HocLieu(MaKhoaHoc);
+    
+    PRINT 'Đã thêm cột MaKhoaHoc thành công';
+END
+ELSE
+BEGIN
+    PRINT 'Cột MaKhoaHoc đã tồn tại';
+END
+GO
 
 PRINT N'=== TẤT CẢ STORED PROCEDURES ĐÃ ĐƯỢC TẠO THÀNH CÔNG ===';
 PRINT N'=== TẠO DATABASE NenTangHocLieu HOÀN TẤT 100% ===';
