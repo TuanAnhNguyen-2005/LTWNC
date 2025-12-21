@@ -130,12 +130,15 @@
     <Compile Include="Controllers\QuizResultController.cs" />
     <Compile Include="Controllers\SignUpController.cs" />
     <Compile Include="Controllers\TrangChuController.cs" />
+    <Compile Include="Controllers\UploadFileController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\PasswordHasher.cs" />
+    <Compile Include="Models\HocLieuViewModel.cs" />
     <Compile Include="Models\QuizCreateViewModel.cs" />
     <Compile Include="Models\Teacher.cs" />
+    <Compile Include="Models\UploadHocLieuDto.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\UserDataService.cs" />
   </ItemGroup>
@@ -203,6 +206,8 @@
     <Content Include="Views\Quiz\Index.cshtml" />
     <Content Include="Views\Shared\_CauHoiEditor.cshtml" />
     <Content Include="Views\Quiz\Create.cshtml" />
+    <Content Include="Views\UploadFile\Upload.cshtml" />
+    <Content Include="Views\UploadFile\Success.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

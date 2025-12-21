@@ -24,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="wwwroot\files\hoclieu\" />
     <Folder Include="wwwroot\images\courses\" />
   </ItemGroup>
 
