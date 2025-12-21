@@ -33,6 +33,10 @@ public partial class NenTangDbContext : DbContext
 
     public DbSet<LuaChon> LuaChons { get; set; }
 
+    public virtual DbSet<KetQuaQuiz> KetQuaQuizzes { get; set; }
+
+    public virtual DbSet<TraLoiChiTiet> TraLoiChiTiets { get; set; }
+
     public virtual DbSet<LopHoc> LopHoc { get; set; }
 
     public virtual DbSet<MonHoc> MonHoc { get; set; }
@@ -257,6 +261,24 @@ public partial class NenTangDbContext : DbContext
                   .WithMany(ch => ch.LuaChons)
                   .HasForeignKey(d => d.MaCauHoi)
                   .OnDelete(DeleteBehavior.Cascade);
+        });
+        modelBuilder.Entity<TraLoiChiTiet>(entity =>
+        {
+            entity.ToTable("TraLoiChiTiet");
+
+            entity.HasKey(e => e.MaTraLoi);
+
+            // Khóa ngoại với KetQuaQuiz
+            entity.HasOne(e => e.KetQua)
+                  .WithMany() // không cần collection nếu không có ICollection<TraLoiChiTiet> trong KetQuaQuiz
+                  .HasForeignKey(e => e.MaKetQua)
+                  .HasConstraintName("FK_TraLoiChiTiet_KetQuaQuiz");
+
+            // Khóa ngoại với CauHoi
+            entity.HasOne(e => e.CauHoi)
+                  .WithMany() // không cần collection nếu không có ICollection<TraLoiChiTiet> trong CauHoi
+                  .HasForeignKey(e => e.MaCauHoi)
+                  .HasConstraintName("FK_TraLoiChiTiet_CauHoi");
         });
         OnModelCreatingPartial(modelBuilder);
     }

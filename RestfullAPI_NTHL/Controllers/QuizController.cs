@@ -205,7 +205,7 @@ namespace RestfullAPI_NTHL.Controllers
             return NoContent();
         }
 
-        // POST: api/Quiz/submit - Student nộp bài + chấm điểm tự động
+        // POST: api/Quiz/submit - Nộp bài quiz và chấm điểm
         [HttpPost("submit")]
         public async Task<ActionResult<QuizResultDto>> SubmitQuiz([FromBody] QuizSubmitDto dto)
         {
@@ -216,53 +216,196 @@ namespace RestfullAPI_NTHL.Controllers
                     .ThenInclude(ch => ch.LuaChons)
                 .FirstOrDefaultAsync(q => q.MaQuiz == dto.MaQuiz);
 
-            if (quiz == null) return NotFound("Quiz không tồn tại");
-            if (quiz.TrangThai != "Published") return BadRequest("Quiz chưa được phát hành");
+            if (quiz == null) return NotFound("Không tìm thấy quiz");
 
-            double tongDiem = 0;
-            double diemNhanDuoc = 0;
+            // Tính toán điểm
+            double diem = 0;
             int soCauDung = 0;
+            int tongCau = quiz.CauHois.Count;
+            double tongDiem = quiz.CauHois.Sum(ch => ch.Diem);
 
-            foreach (var traLoi in dto.TraLois)
+            // Tạo KetQuaQuiz
+            var ketQua = new KetQuaQuiz
             {
-                var cauHoi = quiz.CauHois.FirstOrDefault(ch => ch.MaCauHoi == traLoi.MaCauHoi);
+                MaQuiz = dto.MaQuiz,
+                MaHocSinh = dto.MaHocSinh,
+                ThoiGianBatDau = dto.ThoiGianBatDau,
+                ThoiGianKetThuc = dto.ThoiGianKetThuc,
+                NgayNop = DateTime.Now,
+                TongCau = tongCau,
+                TongDiem = tongDiem
+            };
+
+            _db.KetQuaQuizzes.Add(ketQua);
+            await _db.SaveChangesAsync(); // Lưu trước để có MaKetQua
+
+            // Xử lý từng trả lời và lưu TraLoiChiTiet
+            foreach (var traLoiDto in dto.TraLois)
+            {
+                var cauHoi = quiz.CauHois.FirstOrDefault(ch => ch.MaCauHoi == traLoiDto.MaCauHoi);
                 if (cauHoi == null) continue;
 
-                tongDiem += cauHoi.Diem;
+                bool dungSai = false;
+                string traLoi = traLoiDto.TraLoi?.Trim() ?? "";
 
-                bool dung = false;
-
-                if (cauHoi.LoaiCauHoi == "MultipleChoice" || cauHoi.LoaiCauHoi == "TrueFalse")
+                if (cauHoi.LoaiCauHoi == "SingleChoice")
                 {
-                    if (int.TryParse(traLoi.TraLoi, out int maLC))
+                    var dapAnDung = cauHoi.LuaChons.FirstOrDefault(lc => lc.LaDapAnDung)?.NoiDung?.Trim();
+                    if (!string.IsNullOrEmpty(dapAnDung) && string.Equals(traLoi, dapAnDung, StringComparison.OrdinalIgnoreCase))
                     {
-                        dung = cauHoi.LuaChons.Any(lc => lc.MaLuaChon == maLC && lc.LaDapAnDung);
+                        dungSai = true;
+                        diem += cauHoi.Diem;
+                        soCauDung++;
                     }
                 }
-                // ShortAnswer tạm cho 0 điểm (sẽ thêm chấm tự luận sau)
-
-                if (dung)
+                else if (cauHoi.LoaiCauHoi == "MultipleChoice")
                 {
-                    diemNhanDuoc += cauHoi.Diem;
-                    soCauDung++;
+                    // Giả định dapAnDung là comma-separated từ tất cả LuaChon đúng
+                    var dapAnDungList = cauHoi.LuaChons.Where(lc => lc.LaDapAnDung).Select(lc => lc.NoiDung?.Trim()).OrderBy(s => s).ToList();
+                    var traLoiList = traLoi.Split(',').Select(s => s.Trim()).OrderBy(s => s).ToList();
+
+                    if (dapAnDungList.SequenceEqual(traLoiList, StringComparer.OrdinalIgnoreCase))
+                    {
+                        dungSai = true;
+                        diem += cauHoi.Diem;
+                        soCauDung++;
+                    }
                 }
+                else if (cauHoi.LoaiCauHoi == "Essay")
+                {
+                    // Câu mở: mặc định sai, giáo viên chấm thủ công sau
+                    dungSai = false; // Có thể thêm logic AI chấm nếu cần
+                }
+
+                // Lưu chi tiết trả lời
+                var traLoiChiTiet = new TraLoiChiTiet
+                {
+                    MaKetQua = ketQua.MaKetQua,
+                    MaCauHoi = cauHoi.MaCauHoi,
+                    TraLoi = traLoi,
+                    DungSai = dungSai
+                };
+                _db.TraLoiChiTiets.Add(traLoiChiTiet);
             }
 
-            TimeSpan thoiGianLam = dto.ThoiGianKetThuc - dto.ThoiGianBatDau;
+            await _db.SaveChangesAsync();
 
+            // Cập nhật điểm vào KetQuaQuiz
+            ketQua.Diem = diem;
+            ketQua.SoCauDung = soCauDung;
+            await _db.SaveChangesAsync();
+
+            // Trả kết quả
             var result = new QuizResultDto
             {
                 TenQuiz = quiz.TenQuiz,
-                Diem = diemNhanDuoc,
+                Diem = diem,
                 TongDiem = tongDiem,
                 SoCauDung = soCauDung,
-                TongCau = quiz.CauHois.Count,
-                ThoiGianLam = thoiGianLam,
-                NgayNop = dto.ThoiGianKetThuc
+                TongCau = tongCau,
+                ThoiGianLam = (dto.ThoiGianKetThuc - dto.ThoiGianBatDau),
+                NgayNop = ketQua.NgayNop ?? DateTime.Now
             };
 
             return Ok(result);
         }
+
+        // GET: api/Quiz/diem/{maHocSinh} - Lấy danh sách điểm của học sinh
+        [HttpGet("diem/{maHocSinh:int}")]
+        public async Task<ActionResult<IEnumerable<QuizDiemDto>>> GetDiemByHocSinh(int maHocSinh)
+        {
+            var results = await _db.KetQuaQuizzes
+                .Where(kq => kq.MaHocSinh == maHocSinh)
+                .Include(kq => kq.Quiz)
+                .OrderByDescending(kq => kq.NgayNop)
+                .Select(kq => new QuizDiemDto
+                {
+                    MaQuiz = kq.MaQuiz,
+                    TenQuiz = kq.Quiz.TenQuiz,
+                    Diem = kq.Diem ?? 0,
+                    TongDiem = kq.TongDiem ?? 0,
+                    NgayNop = kq.NgayNop ?? DateTime.Now,
+                    ThoiGianLam = kq.ThoiGianKetThuc != null && kq.ThoiGianBatDau != null
+                        ? (kq.ThoiGianKetThuc.Value - kq.ThoiGianBatDau.Value)
+                        : TimeSpan.Zero
+                })
+                .ToListAsync();
+
+            return Ok(results);
+        }
+
+        // GET: api/Quiz/diem/{maHocSinh}/{maQuiz} - Chi tiết điểm chính xác từng câu
+        [HttpGet("diem/{maHocSinh:int}/{maQuiz:int}")]
+        public async Task<ActionResult<QuizDiemChiTietDto>> GetDiemChiTiet(int maHocSinh, int maQuiz)
+        {
+            var ketQua = await _db.KetQuaQuizzes
+                .Include(kq => kq.Quiz)
+                    .ThenInclude(q => q.CauHois)
+                        .ThenInclude(ch => ch.LuaChons)
+                .FirstOrDefaultAsync(kq => kq.MaHocSinh == maHocSinh && kq.MaQuiz == maQuiz);
+
+            if (ketQua == null)
+                return NotFound("Không tìm thấy kết quả bài thi");
+
+            // Lấy chi tiết trả lời thật từ bảng TraLoiChiTiet
+            var traLois = await _db.TraLoiChiTiets
+                .Where(tl => tl.MaKetQua == ketQua.MaKetQua)
+                .ToDictionaryAsync(tl => tl.MaCauHoi);
+
+            var chiTietCauHoi = ketQua.Quiz.CauHois.Select(ch =>
+            {
+                traLois.TryGetValue(ch.MaCauHoi, out var tl);
+
+                // Xử lý đáp án đúng dựa trên loại câu hỏi
+                string dapAn = "Không có đáp án đúng";
+                if (ch.LoaiCauHoi == "SingleChoice" || ch.LoaiCauHoi == "MultipleChoice")
+                {
+                    var luaChonDung = ch.LuaChons.FirstOrDefault(lc => lc.LaDapAnDung);
+                    if (luaChonDung != null)
+                        dapAn = luaChonDung.NoiDung;
+                }
+                else if (ch.LoaiCauHoi == "Essay")
+                {
+                    dapAn = "Câu hỏi mở - chấm thủ công";
+                }
+
+                return new ChiTietCauHoiDto
+                {
+                    NoiDung = ch.NoiDung,
+                    Diem = ch.Diem,
+                    TraLoi = tl?.TraLoi ?? "[Chưa trả lời]",
+                    DapAn = dapAn,
+                    DungSai = tl?.DungSai ?? false
+                };
+            }).ToList();
+
+            // Tính thời gian làm bài
+            TimeSpan thoiGianLam = TimeSpan.Zero;
+            if (ketQua.ThoiGianBatDau != null && ketQua.ThoiGianKetThuc != null)
+            {
+                thoiGianLam = ketQua.ThoiGianKetThuc.Value - ketQua.ThoiGianBatDau.Value;
+            }
+            else if (ketQua.ThoiGianBatDau != null && ketQua.NgayNop != null)
+            {
+                thoiGianLam = ketQua.NgayNop.Value - ketQua.ThoiGianBatDau.Value;
+            }
+
+            var result = new QuizDiemChiTietDto
+            {
+                MaQuiz = maQuiz,
+                TenQuiz = ketQua.Quiz.TenQuiz,
+                Diem = ketQua.Diem ?? 0,
+                TongDiem = ketQua.TongDiem ?? 0,
+                SoCauDung = ketQua.SoCauDung,
+                TongCau = ketQua.TongCau,
+                ThoiGianLam = thoiGianLam,
+                NgayNop = ketQua.NgayNop ?? DateTime.Now,
+                ChiTietCauHoi = chiTietCauHoi
+            };
+
+            return Ok(result);
+        }
+
         // GET: api/Quiz/khoahoc/{maKhoaHoc}/published
         // Lấy tất cả quiz đang Published của một khóa học cụ thể (dành cho học sinh xem)
         [HttpGet("khoahoc/{maKhoaHoc:int}/published")]

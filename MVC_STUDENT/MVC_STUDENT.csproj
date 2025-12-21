@@ -121,6 +121,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\CategoryController.cs" />
+    <Compile Include="Controllers\DiemController.cs" />
     <Compile Include="Controllers\FavoritesController.cs" />
     <Compile Include="Controllers\KhoaHocController.cs" />
     <Compile Include="Controllers\LearningHistoryController.cs" />
@@ -134,6 +135,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\DiemModels.cs" />
     <Compile Include="Models\LoginResult.cs" />
     <Compile Include="Models\QuizDto.cs" />
     <Compile Include="Models\QuizResultDto.cs" />
@@ -298,6 +300,8 @@
     <Content Include="Views\Quiz\Take.cshtml" />
     <Content Include="Views\KhoaHoc\Index.cshtml" />
     <Content Include="Views\KhoaHoc\Detail.cshtml" />
+    <Content Include="Views\Diem\Index.cshtml" />
+    <Content Include="Views\Diem\ChiTiet.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -145,8 +145,10 @@ namespace MVC_Student.Controllers
 
         private int GetCurrentStudentId()
         {
-            // Thay bằng logic thực tế của bạn
-            return Session["MaNguoiDung"] != null ? (int)Session["MaNguoiDung"] : 3; // Test với HS ID = 3
+            // DÙNG CÙNG LOGIC VỚI DIEMCONTROLLER
+            if (Session["UserId"] != null && int.TryParse(Session["UserId"].ToString(), out int id))
+                return id;
+            return 0; // Nếu không có → báo lỗi
         }
     }
 }
