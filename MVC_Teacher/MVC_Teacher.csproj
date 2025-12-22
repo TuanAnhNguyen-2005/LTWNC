@@ -17,7 +17,7 @@
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
-    <Use64BitIISExpress>true</Use64BitIISExpress>
+    <Use64BitIISExpress />
     <IISExpressSSLPort>44306</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
@@ -130,11 +130,15 @@
     <Compile Include="Controllers\QuizResultController.cs" />
     <Compile Include="Controllers\SignUpController.cs" />
     <Compile Include="Controllers\TrangChuController.cs" />
+    <Compile Include="Controllers\UploadFileController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\PasswordHasher.cs" />
+    <Compile Include="Models\HocLieuViewModel.cs" />
+    <Compile Include="Models\QuizCreateViewModel.cs" />
     <Compile Include="Models\Teacher.cs" />
+    <Compile Include="Models\UploadHocLieuDto.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\UserDataService.cs" />
   </ItemGroup>
@@ -165,6 +169,13 @@
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="wwwroot\images\courses\phantichthietkehdt.jpg" />
+    <Content Include="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="appsettings.Development.json">
+      <DependentUpon>appsettings.json</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />
@@ -196,13 +207,17 @@
     <Content Include="Views\Profile\Index.cshtml" />
     <Content Include="Views\KhoaHoc\Create.cshtml" />
     <Content Include="Views\KhoaHoc\MyCourses.cshtml" />
+    <Content Include="Views\Quiz\Index.cshtml" />
+    <Content Include="Views\Shared\_CauHoiEditor.cshtml" />
+    <Content Include="Views\Quiz\Create.cshtml" />
+    <Content Include="Views\UploadFile\Upload.cshtml" />
+    <Content Include="Views\UploadFile\Success.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\Base\" />
     <Folder Include="Views\Material\" />
     <Folder Include="Views\QuizResult\" />
-    <Folder Include="Views\Quiz\" />
     <Folder Include="Views\UserDataService\" />
   </ItemGroup>
   <ItemGroup>

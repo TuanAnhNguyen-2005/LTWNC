@@ -86,6 +86,20 @@ namespace MVC_TEACHER.Controllers
                 return View(data);
             }
         }
+        // GET: /KhoaHoc
+        public async Task<ActionResult> Index()
+        {
+            try
+            {
+                return await MyCourses();
+            }
+            catch
+            {
+                // Nếu API lỗi, trả về view rỗng để tránh crash
+                return View("MyCourses", new KhoaHocListVm[0]);
+            }
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteMultiple(List<int> ids)

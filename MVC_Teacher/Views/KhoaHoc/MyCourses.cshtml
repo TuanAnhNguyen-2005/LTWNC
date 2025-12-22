@@ -196,7 +196,7 @@
                 </div>
             </div>
 
-            @if (!Model.Any())
+            @if (Model == null || !Model.Any())
             {
                 <div class="empty-state">
                     <i class="fas fa-book-open"></i>
@@ -227,7 +227,9 @@
                                 <th>Tên khóa học</th>
                                 <th>Trạng thái</th>
                                 <th class="text-center">Ngày tạo</th>
-                                <th class="text-center">Hành động</th>
+                                <th class="text-center">Quiz</th>              <!-- Cột mới 1 -->
+                                <th class="text-center">Tài liệu</th>           <!-- Cột mới 2 -->
+                                <th class="text-center">Hành động</th>         <!-- Cột cũ -->
                             </tr>
                         </thead>
 
@@ -294,35 +296,71 @@
 
                                     <td class="text-center align-middle">@item.NgayTao.ToString("dd/MM/yyyy")</td>
 
+                                    <!-- Cột Quiz - chỉ hiển thị khi đã duyệt -->
                                     <td class="text-center align-middle">
-                                        @if (item.TrangThaiDuyet == "Draft" || item.TrangThaiDuyet == "TuChoi")
+                                        @if (item.TrangThaiDuyet == "DaDuyet")
                                         {
-                                            <div class="d-flex gap-2 justify-content-center flex-wrap">
-                                                @using (Html.BeginForm("Submit", "KhoaHoc", new { id = item.MaKhoaHoc }, FormMethod.Post, new { @class = "d-inline" }))
+                                            <a href="@Url.Action("Create", "Quiz", new { maKhoaHoc = item.MaKhoaHoc })"
+                                               class="btn btn-primary btn-sm rounded-pill px-4 text-white"
+                                               title="Tạo bài kiểm tra cho khóa học này">
+                                                <i class="fas fa-plus me-1"></i> Tạo Quiz
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted small">—</span>
+                                        }
+                                    </td>
+
+                                    <!-- Cột Tài liệu - mới, chỉ hiển thị khi đã duyệt -->
+                                    <td class="text-center align-middle">
+                                        @if (item.TrangThaiDuyet == "DaDuyet")
+                                        {
+                                            <a href="@Url.Action("Upload", "UploadFile", new { maKhoaHoc = item.MaKhoaHoc })"
+                                               class="btn btn-info btn-sm rounded-pill px-4 text-white"
+                                               title="Tải tài liệu học tập lên cho khóa học này">
+                                                <i class="fas fa-upload me-1"></i> Tải tài liệu
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted small">—</span>
+                                        }
+                                    </td>
+
+                                    <!-- Cột Hành động cũ - giờ chỉ còn Gửi duyệt và trạng thái -->
+                                    <td class="text-center align-middle">
+                                        <div class="d-flex gap-2 justify-content-center flex-wrap">
+                                            @if (item.TrangThaiDuyet == "Draft" || item.TrangThaiDuyet == "TuChoi" ||
+                                                 item.TrangThaiDuyet == "Nháp" || item.TrangThaiDuyet == "Từ chối")
+                                            {
+                                                using (Html.BeginForm("Submit", "KhoaHoc", new { id = item.MaKhoaHoc }, FormMethod.Post, new { @class = "d-inline" }))
                                                 {
+                                                    @Html.AntiForgeryToken()
                                                     <button type="submit"
-                                                            class="btn btn-success btn-sm btn-submit text-white rounded-pill px-4"
+                                                            class="btn btn-success btn-sm rounded-pill px-4"
                                                             onclick="return confirm('Gửi khóa học này để chờ duyệt?')">
                                                         <i class="fas fa-paper-plane me-1"></i> Gửi duyệt
                                                     </button>
                                                 }
-                                            </div>
-                                        }
-                                        else if (item.TrangThaiDuyet == "ChoDuyet")
-                                        {
-                                            <span class="text-warning fw-bold">
-                                                <i class="fas fa-hourglass-half me-1"></i> Đang chờ duyệt
-                                            </span>
-                                        }
-                                        else
-                                        {
-                                            <span class="text-success fw-bold">
-                                                <i class="fas fa-check-circle me-1"></i> Đã duyệt
-                                            </span>
-                                        }
+                                            }
+                                            else if (item.TrangThaiDuyet == "ChoDuyet")
+                                            {
+                                                <span class="text-warning fw-bold">
+                                                    <i class="fas fa-hourglass-half me-1"></i> Đang chờ duyệt
+                                                </span>
+                                            }
+                                            else if (item.TrangThaiDuyet == "DaDuyet")
+                                            {
+                                                <span class="text-success fw-bold">
+                                                    <i class="fas fa-check-circle me-1"></i> Đã duyệt
+                                                </span>
+                                            }
+                                        </div>
                                     </td>
                                 </tr>
                             }
+
                         </tbody>
 
                     </table>

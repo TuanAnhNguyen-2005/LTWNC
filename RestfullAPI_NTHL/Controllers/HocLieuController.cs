@@ -70,6 +70,97 @@ public class HocLieuController : ControllerBase
         await _db.SaveChangesAsync();
         return NoContent();
     }
+    // GET: api/HocLieu/course/5 → Lấy danh sách tài liệu của một khóa học cụ thể
+    [HttpGet("course/{maKhoaHoc}")]
+    public async Task<IActionResult> GetByKhoaHoc(int maKhoaHoc)
+    {
+        var data = await _db.HocLieu
+            .AsNoTracking()
+            .Where(h => h.MaKhoaHoc == maKhoaHoc && h.DaDuyet == true)
+            .OrderByDescending(h => h.NgayDang)
+            .Select(h => new
+            {
+                h.MaHocLieu,
+                h.TieuDe,
+                h.MoTa,
+                DuongDanTep = "/files/hoclieu/" + Path.GetFileName(h.DuongDanTep ?? ""), // chỉ trả về phần path public
+                h.LoaiTep,
+                h.KichThuocTep,
+                h.NgayDang
+            })
+            .ToListAsync();
+
+        return Ok(data);
+    }
+
+    // POST: api/HocLieu/upload → Upload file tài liệu cho khóa học
+    // POST: api/HocLieu/upload → Upload file tài liệu cho khóa học
+    [HttpPost("upload")]
+    public async Task<IActionResult> Upload([FromForm] HocLieuUploadDto dto)
+    {
+        if (string.IsNullOrWhiteSpace(dto.TieuDe))
+            return BadRequest("Thiếu tiêu đề tài liệu");
+
+        if (dto.File == null || dto.File.Length == 0)
+            return BadRequest("Chưa chọn file");
+
+        if (dto.File.Length > 50 * 1024 * 1024)
+            return BadRequest("File không được lớn hơn 50MB");
+
+        // Kiểm tra quyền
+        var khoaHoc = await _db.KhoaHoc
+            .FirstOrDefaultAsync(k => k.MaKhoaHoc == dto.MaKhoaHoc
+                                   && k.MaGiaoVien == dto.MaNguoiDung
+                                   && k.TrangThaiDuyet == "DaDuyet");
+
+        if (khoaHoc == null)
+            return Forbid("Bạn không có quyền upload tài liệu cho khóa học này");
+
+        // Kiểm tra định dạng
+        var allowedExtensions = new[] { ".pdf", ".doc", ".docx", ".ppt", ".pptx", ".xls", ".xlsx", ".txt", ".zip", ".rar" };
+        var extension = Path.GetExtension(dto.File.FileName).ToLowerInvariant();
+        if (!allowedExtensions.Contains(extension))
+            return BadRequest("Định dạng file không được hỗ trợ");
+
+        // Lưu file
+        var fileName = Guid.NewGuid().ToString("N") + extension;
+        var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "files", "hoclieu");
+
+        if (!Directory.Exists(folderPath))
+            Directory.CreateDirectory(folderPath);
+
+        var fullPath = Path.Combine(folderPath, fileName);
+
+        using (var stream = new FileStream(fullPath, FileMode.Create))
+        {
+            await dto.File.CopyToAsync(stream);
+        }
+
+        // Lưu DB
+        var hocLieu = new HocLieu
+        {
+            TieuDe = dto.TieuDe.Trim(),
+            MoTa = string.IsNullOrWhiteSpace(dto.MoTa) ? null : dto.MoTa.Trim(),
+            DuongDanTep = "/files/hoclieu/" + fileName,
+            LoaiTep = extension.Substring(1).ToUpper(),
+            KichThuocTep = dto.File.Length,
+            NgayDang = DateTime.Now,
+            MaKhoaHoc = dto.MaKhoaHoc,
+            MaNguoiDung = dto.MaNguoiDung,
+            DaDuyet = true,
+            TrangThaiDuyet = "Đã duyệt"
+        };
+
+        _db.HocLieu.Add(hocLieu);
+        await _db.SaveChangesAsync();
+
+        return Ok(new
+        {
+            message = "Upload tài liệu thành công",
+            maHocLieu = hocLieu.MaHocLieu,
+            duongDan = hocLieu.DuongDanTep
+        });
+    }
 }
 
 

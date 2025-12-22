@@ -1,0 +1,113 @@
+﻿@model MVC_STUDENT.Models.QuizDiemChiTietDto
+
+@{
+    ViewData["Title"] = "Chi tiết bài thi - " + Model.TenQuiz;
+
+    // Độ chính xác tổng của cả bài thi
+    double phanTramDung = Model.TongCau > 0 ? (double)Model.SoCauDung / Model.TongCau * 100 : 0;
+}
+
+<div class="container mt-5 mb-5">
+    <a href="@Url.Action("Index", "Diem")" class="btn btn-outline-secondary mb-4">
+        <i class="fas fa-arrow-left me-2"></i>Quay lại danh sách điểm
+    </a>
+
+    <div class="card shadow-lg border-0">
+        <!-- Header -->
+        <div class="card-header bg-gradient-primary text-white text-center py-4">
+            <h3 class="mb-2"><i class="fas fa-medal me-2"></i>@Model.TenQuiz</h3>
+            <small class="d-block">Nộp bài lúc: @Model.NgayNop.ToString("dd/MM/yyyy HH:mm")</small>
+        </div>
+
+        <!-- Body -->
+        <div class="card-body p-5">
+            <!-- Tổng quan điểm số -->
+            <div class="row text-center g-4 mb-5">
+                <div class="col-md-3">
+                    <div class="p-4 bg-primary text-white rounded-3 shadow">
+                        <h2 class="mb-0">@Model.Diem.ToString("F1")</h2>
+                        <p class="mb-0 fs-5">Điểm số</p>
+                        <small>trên @Model.TongDiem</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-4 bg-success text-white rounded-3 shadow">
+                        <h2 class="mb-0">@Model.SoCauDung / @Model.TongCau</h2>
+                        <p class="mb-0 fs-5">Câu đúng</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-4 @(phanTramDung >= 80 ? "bg-info" : phanTramDung >= 60 ? "bg-warning" : "bg-danger") text-white rounded-3 shadow">
+                        <h2 class="mb-0">@phanTramDung.ToString("F0")%</h2>
+                        <p class="mb-0 fs-5">Độ chính xác</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-4 bg-dark text-white rounded-3 shadow">
+                        <h2 class="mb-0">@string.Format("{0:mm\\:ss}", Model.ThoiGianLam)</h2>
+                        <p class="mb-0 fs-5">Thời gian làm</p>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="border-secondary my-5">
+
+            <!-- Chi tiết từng câu - HIỂN THỊ CHÍNH XÁC TỪNG CÂU -->
+            <h4 class="mb-4 text-dark">
+                <i class="fas fa-list-ol me-2"></i>Chi tiết từng câu
+            </h4>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle text-dark">
+                    <thead class="table-primary">
+                        <tr>
+                            <th class="text-center">STT</th>
+                            <th>Câu hỏi</th>
+                            <th class="text-center">Trả lời của bạn</th>
+                            <th class="text-center">Đáp án đúng</th>
+                            <th class="text-center">Điểm câu</th>
+                            <th class="text-center">Kết quả</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{ int stt = 1; }
+                        @foreach (var cau in Model.ChiTietCauHoi)
+                        {
+                            <tr class="@(cau.DungSai ? "table-success" : "table-danger")">
+                                <td class="text-center fw-bold">@(stt++)</td>
+                                <td>@cau.NoiDung</td>
+                                <td class="text-center">
+                                    <span class="badge @(cau.DungSai ? "bg-success" : "bg-secondary") text-white px-3 py-2">
+                                        @cau.TraLoi
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-success text-white px-3 py-2">
+                                        @cau.DapAn
+                                    </span>
+                                </td>
+                                <td class="text-center fw-bold">@cau.Diem</td>
+                                <td class="text-center">
+                                    @if (cau.DungSai)
+                                    {
+                                        <i class="fas fa-check-circle text-success fa-3x" title="Đúng"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="fas fa-times-circle text-danger fa-3x" title="Sai"></i>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Không cần chú thích ước lượng nữa vì giờ đã chính xác -->
+            <div class="alert alert-success mt-4 text-center">
+                <i class="fas fa-check-circle me-2"></i>
+                <strong>Hoàn tất!</strong> Kết quả từng câu được hiển thị <strong>chính xác</strong> dựa trên đáp án bạn đã chọn.
+            </div>
+        </div>
+    </div>
+</div>
