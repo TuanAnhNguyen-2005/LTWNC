@@ -4,47 +4,66 @@
 }
 
 <div class="cau-hoi-item card mb-4" data-index="@index">
-    <div class="card-body">
-        <div class="d-flex justify-content-between align-items-start mb-3">
-            <h5>Câu hỏi @(index + 1)</h5>
-            <button type="button" class="btn btn-sm btn-danger" onclick="xoaCauHoi(this)">
-                <i class="fas fa-trash"></i> Xóa
-            </button>
+    <div class="card-header">
+        <div class="question-header-content">
+            <div class="question-number-badge">
+                <span class="question-number">@(index + 1)</span>
+            </div>
+            <h5 class="question-title">Câu hỏi</h5>
         </div>
+        <button type="button" class="delete-btn" onclick="xoaCauHoi(this)">
+            <i class="fas fa-trash-alt"></i>
+        </button>
+    </div>
 
-        <!-- Hidden field lưu loại câu hỏi -->
+    <div class="card-body">
         <input type="hidden" name="CauHois[@index].LoaiCauHoi" value="@Model.LoaiCauHoi" />
 
-        <div class="form-group mb-3">
-            <label>Nội dung câu hỏi <span class="text-danger">*</span></label>
+        <!-- Nội dung câu hỏi -->
+        <div class="form-section">
+            <label class="form-label">
+                <i class="fas fa-question-circle"></i>
+                <span>Nội dung câu hỏi</span>
+                <span class="required">*</span>
+            </label>
             <input type="text"
                    name="CauHois[@index].NoiDung"
                    value="@Model.NoiDung"
-                   class="form-control"
-                   placeholder="Nhập nội dung câu hỏi..."
+                   class="form-input"
+                   placeholder="Nhập câu hỏi của bạn..."
                    required />
         </div>
 
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <label>Điểm số</label>
-                <input type="number"
-                       name="CauHois[@index].Diem"
-                       value="@Model.Diem"
-                       class="form-control"
-                       min="0.5"
-                       step="0.5"
-                       style="width:120px;"
-                       required />
+        <!-- Điểm và loại câu hỏi -->
+        <div class="form-row">
+            <div class="form-col-4">
+                <label class="form-label">
+                    <i class="fas fa-star"></i>
+                    <span>Điểm số</span>
+                </label>
+                <div class="input-wrapper">
+                    <input type="number"
+                           name="CauHois[@index].Diem"
+                           value="@Model.Diem"
+                           class="form-input"
+                           min="0.5"
+                           step="0.5"
+                           required />
+                    <span class="input-suffix">điểm</span>
+                </div>
             </div>
-            <div class="col-md-6">
-                <label>Loại câu hỏi</label>
-                <select class="form-control" onchange="changeQuestionType(this, @index)">
+
+            <div class="form-col-8">
+                <label class="form-label">
+                    <i class="fas fa-list-check"></i>
+                    <span>Loại câu hỏi</span>
+                </label>
+                <select class="form-select" onchange="changeQuestionType(this, @index)">
                     <option value="MultipleChoice" @(Model.LoaiCauHoi == "MultipleChoice" ? "selected" : "")>
                         Trắc nghiệm (nhiều lựa chọn)
                     </option>
                     <option value="TrueFalse" @(Model.LoaiCauHoi == "TrueFalse" ? "selected" : "")>
-                        Đúng/Sai
+                        Đúng / Sai
                     </option>
                     <option value="ShortAnswer" @(Model.LoaiCauHoi == "ShortAnswer" ? "selected" : "")>
                         Tự luận
@@ -53,56 +72,470 @@
             </div>
         </div>
 
-        <div id="options-@index" class="mt-3">
-            @if (Model.LoaiCauHoi == "ShortAnswer")
-            {
-                <small class="text-muted">Học sinh sẽ nhập câu trả lời tự do (không cần lựa chọn)</small>
-            }
-            else if (Model.LoaiCauHoi == "TrueFalse")
-            {
-                <div class="lua-chon-item mb-2 d-flex align-items-center">
-                    <input type="radio" name="CauHois[@index].DapAnDungIndex" @(Model.LuaChons[0].LaDapAnDung ? "checked" : "") />
-                    <label class="ms-2 fw-bold">Đúng</label>
-                    <input type="hidden" name="CauHois[@index].LuaChons[0].NoiDung" value="Đúng" />
-                    <input type="hidden" name="CauHois[@index].LuaChons[0].LaDapAnDung" value="@Model.LuaChons[0].LaDapAnDung.ToString().ToLower()" />
-                </div>
-                <div class="lua-chon-item mb-2 d-flex align-items-center">
-                    <input type="radio" name="CauHois[@index].DapAnDungIndex" @(Model.LuaChons[1].LaDapAnDung ? "checked" : "") />
-                    <label class="ms-2 fw-bold">Sai</label>
-                    <input type="hidden" name="CauHois[@index].LuaChons[1].NoiDung" value="Sai" />
-                    <input type="hidden" name="CauHois[@index].LuaChons[1].LaDapAnDung" value="@Model.LuaChons[1].LaDapAnDung.ToString().ToLower()" />
-                </div>
-            }
-            else
-            {
-                <!-- MultipleChoice -->
-                for (int j = 0; j < Model.LuaChons.Count; j++)
+        <!-- Đáp án -->
+        <div class="answer-section">
+            <div class="answer-header">
+                <i class="fas fa-clipboard-check"></i>
+                <span>Đáp án</span>
+            </div>
+
+            <div id="options-@index" class="answer-container">
+                @if (Model.LoaiCauHoi == "ShortAnswer")
                 {
-                    <div class="lua-chon-item mb-2 d-flex align-items-center">
-                        <input type="radio"
-                               name="CauHois[@index].DapAnDungIndex"
-                               @(Model.LuaChons[j].LaDapAnDung ? "checked" : "") />
-                        <input type="text"
-                               name="CauHois[@index].LuaChons[@j].NoiDung"
-                               value="@Model.LuaChons[j].NoiDung"
-                               class="form-control ms-2"
-                               placeholder="Lựa chọn @(j+1)"
-                               required />
-                        <input type="hidden"
-                               name="CauHois[@index].LuaChons[@j].LaDapAnDung"
-                               value="@Model.LuaChons[j].LaDapAnDung.ToString().ToLower()" />
-                        @if (j >= 2) // Chỉ cho xóa từ lựa chọn thứ 3 trở đi
-                        {
-                            <button type="button" class="btn btn-sm btn-danger ms-2" onclick="this.closest('.lua-chon-item').remove()">
-                                ×
-                            </button>
-                        }
+                    <div class="short-answer-info">
+                        <i class="fas fa-keyboard"></i>
+                        <div>
+                            <strong>Câu hỏi tự luận</strong>
+                            <p>Học sinh sẽ nhập câu trả lời tự do</p>
+                        </div>
                     </div>
                 }
-                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="themLuaChon(@index)">
-                    <i class="fas fa-plus"></i> Thêm lựa chọn
-                </button>
-            }
+                else if (Model.LoaiCauHoi == "TrueFalse")
+                {
+                    <div class="option-item true-false">
+                        <input type="radio"
+                               name="CauHois[@index].DapAnDungIndex"
+                               id="tf-true-@index"
+                               @(Model.LuaChons[0].LaDapAnDung ? "checked" : "") />
+                        <label for="tf-true-@index">
+                            <span class="radio-custom"></span>
+                            <i class="fas fa-check-circle text-success"></i>
+                            <span class="option-text">Đúng</span>
+                        </label>
+                        <input type="hidden" name="CauHois[@index].LuaChons[0].NoiDung" value="Đúng" />
+                        <input type="hidden" name="CauHois[@index].LuaChons[0].LaDapAnDung"
+                               value="@Model.LuaChons[0].LaDapAnDung.ToString().ToLower()" />
+                    </div>
+
+                    <div class="option-item true-false">
+                        <input type="radio"
+                               name="CauHois[@index].DapAnDungIndex"
+                               id="tf-false-@index"
+                               @(Model.LuaChons[1].LaDapAnDung ? "checked" : "") />
+                        <label for="tf-false-@index">
+                            <span class="radio-custom"></span>
+                            <i class="fas fa-times-circle text-danger"></i>
+                            <span class="option-text">Sai</span>
+                        </label>
+                        <input type="hidden" name="CauHois[@index].LuaChons[1].NoiDung" value="Sai" />
+                        <input type="hidden" name="CauHois[@index].LuaChons[1].LaDapAnDung"
+                               value="@Model.LuaChons[1].LaDapAnDung.ToString().ToLower()" />
+                    </div>
+                }
+                else
+                {
+                    for (int j = 0; j < Model.LuaChons.Count; j++)
+                    {
+                        <div class="option-item multiple-choice">
+                            <input type="radio"
+                                   name="CauHois[@index].DapAnDungIndex"
+                                   id="mc-@index-@j"
+                                   @(Model.LuaChons[j].LaDapAnDung ? "checked" : "") />
+                            <label for="mc-@index-@j">
+                                <span class="radio-custom"></span>
+                                <span class="option-letter">@(Convert.ToChar(65 + j))</span>
+                            </label>
+
+                            <input type="text"
+                                   name="CauHois[@index].LuaChons[@j].NoiDung"
+                                   value="@Model.LuaChons[j].NoiDung"
+                                   class="option-input"
+                                   placeholder="Nhập lựa chọn @(Convert.ToChar(65 + j))"
+                                   required />
+
+                            <input type="hidden"
+                                   name="CauHois[@index].LuaChons[@j].LaDapAnDung"
+                                   value="@Model.LuaChons[j].LaDapAnDung.ToString().ToLower()" />
+
+                            @if (j >= 2)
+                            {
+                                <button type="button"
+                                        class="remove-option-btn"
+                                        onclick="this.closest('.option-item').remove()">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            }
+                        </div>
+                    }
+
+                    <button type="button"
+                            class="add-option-btn"
+                            onclick="themLuaChon(@index)">
+                        <i class="fas fa-plus"></i>
+                        <span>Thêm lựa chọn</span>
+                    </button>
+                }
+            </div>
         </div>
     </div>
 </div>
+
+<style>
+    /* Card Container */
+    .cau-hoi-item {
+        border: none;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        background: #fff;
+    }
+
+        .cau-hoi-item:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+        }
+
+    /* Header */
+    .card-header {
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        border: none;
+        padding: 16px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .question-header-content {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .question-number-badge {
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        border-radius: 10px;
+        padding: 8px 16px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .question-number {
+        color: #fff;
+        font-weight: 700;
+        font-size: 18px;
+    }
+
+    .question-title {
+        color: #fff;
+        margin: 0;
+        font-weight: 600;
+        font-size: 16px;
+    }
+
+    .delete-btn {
+        background: rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: #fff;
+        padding: 8px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 14px;
+    }
+
+        .delete-btn:hover {
+            background: rgba(239, 68, 68, 0.9);
+            border-color: rgba(239, 68, 68, 1);
+            transform: scale(1.05);
+        }
+
+    /* Card Body */
+    .card-body {
+        padding: 24px;
+    }
+
+    /* Form Sections */
+    .form-section {
+        margin-bottom: 24px;
+    }
+
+    .form-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #374151;
+        font-size: 14px;
+    }
+
+        .form-label i {
+            color: #6366f1;
+            font-size: 16px;
+        }
+
+    .required {
+        color: #ef4444;
+    }
+
+    .form-input, .form-select {
+        width: 100%;
+        padding: 12px 16px;
+        border: 2px solid #e5e7eb;
+        border-radius: 10px;
+        font-size: 15px;
+        transition: all 0.3s ease;
+        background: #fff;
+    }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: #9ca3af;
+        }
+
+    /* Form Row */
+    .form-row {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .form-col-4 {
+        flex: 0 0 35%;
+    }
+
+    .form-col-8 {
+        flex: 1;
+    }
+
+    .input-wrapper {
+        position: relative;
+    }
+
+    .input-suffix {
+        position: absolute;
+        right: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #9ca3af;
+        font-size: 14px;
+        pointer-events: none;
+    }
+
+    /* Answer Section */
+    .answer-section {
+        margin-top: 24px;
+    }
+
+    .answer-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid #f3f4f6;
+        font-weight: 600;
+        color: #374151;
+    }
+
+        .answer-header i {
+            color: #10b981;
+            font-size: 18px;
+        }
+
+    .answer-container {
+        background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+        border-radius: 12px;
+        padding: 20px;
+    }
+
+    /* Short Answer Info */
+    .short-answer-info {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        border-left: 4px solid #6366f1;
+    }
+
+        .short-answer-info i {
+            font-size: 32px;
+            color: #6366f1;
+        }
+
+        .short-answer-info strong {
+            display: block;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+
+        .short-answer-info p {
+            margin: 0;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+    /* Option Items */
+    .option-item {
+        background: #fff;
+        border-radius: 10px;
+        padding: 14px;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
+
+        .option-item:hover {
+            border-color: #e0e7ff;
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1);
+        }
+
+        .option-item input[type="radio"] {
+            display: none;
+        }
+
+        .option-item label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            margin: 0;
+            user-select: none;
+        }
+
+    .radio-custom {
+        width: 20px;
+        height: 20px;
+        border: 2px solid #d1d5db;
+        border-radius: 50%;
+        position: relative;
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+    }
+
+    .option-item input[type="radio"]:checked + label .radio-custom {
+        border-color: #6366f1;
+        background: #6366f1;
+    }
+
+        .option-item input[type="radio"]:checked + label .radio-custom::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 8px;
+            height: 8px;
+            background: #fff;
+            border-radius: 50%;
+        }
+
+    /* True/False Options */
+    .option-item.true-false {
+        padding: 16px;
+    }
+
+        .option-item.true-false label {
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .option-item.true-false i {
+            font-size: 20px;
+        }
+
+    .option-text {
+        color: #374151;
+    }
+
+    /* Multiple Choice Options */
+    .option-letter {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        background: #f3f4f6;
+        border-radius: 8px;
+        font-weight: 700;
+        color: #6b7280;
+        font-size: 14px;
+        flex-shrink: 0;
+    }
+
+    .option-item input[type="radio"]:checked + label .option-letter {
+        background: #6366f1;
+        color: #fff;
+    }
+
+    .option-input {
+        flex: 1;
+        border: none;
+        background: transparent;
+        padding: 8px;
+        font-size: 15px;
+        color: #1f2937;
+    }
+
+        .option-input:focus {
+            outline: none;
+        }
+
+    .remove-option-btn {
+        width: 32px;
+        height: 32px;
+        border: none;
+        background: #fee2e2;
+        color: #ef4444;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+    }
+
+        .remove-option-btn:hover {
+            background: #ef4444;
+            color: #fff;
+            transform: scale(1.1);
+        }
+
+    /* Add Option Button */
+    .add-option-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        width: 100%;
+        padding: 12px;
+        background: #fff;
+        border: 2px dashed #d1d5db;
+        border-radius: 10px;
+        color: #6366f1;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+        .add-option-btn:hover {
+            border-color: #6366f1;
+            background: #eef2ff;
+            transform: translateY(-2px);
+        }
+
+        .add-option-btn i {
+            font-size: 16px;
+        }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .form-row {
+            flex-direction: column;
+        }
+
+        .form-col-4, .form-col-8 {
+            flex: 1 1 100%;
+        }
+    }
+</style>

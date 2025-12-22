@@ -890,6 +890,45 @@
             `;
             document.head.appendChild(style);
         });
+        document.getElementById('profileForm')?.addEventListener('submit', function(e) {
+        // Đánh dấu rằng profile đã được update
+        localStorage.setItem('profileUpdated', 'true');
+        sessionStorage.setItem('profileJustUpdated', 'true');
+
+        // Gửi thông báo đến các tab khác
+        if (typeof BroadcastChannel !== 'undefined') {
+            const channel = new BroadcastChannel('profile_updates');
+            channel.postMessage({ type: 'profile_updated', timestamp: Date.now() });
+        }
+
+        console.log('Profile đã được cập nhật, thông báo cho Dashboard...');
+    });
+
+    // Kiểm tra nếu vừa từ Dashboard chuyển sang
+    document.addEventListener('DOMContentLoaded', function() {
+        if (localStorage.getItem('fromDashboard') === 'true') {
+            console.log('Chuyển từ Dashboard sang Profile');
+            localStorage.removeItem('fromDashboard');
+        }
+
+        // Nếu vừa update xong và quay lại
+        if (sessionStorage.getItem('profileJustUpdated') === 'true') {
+            // Thông báo thành công
+            showNotification('Thông tin đã được cập nhật! Dashboard sẽ tự động cập nhật.', 'success');
+            sessionStorage.removeItem('profileJustUpdated');
+        }
+    });
+
+    // Lắng nghe thông báo từ các tab khác
+    if (typeof BroadcastChannel !== 'undefined') {
+        const channel = new BroadcastChannel('profile_updates');
+        channel.addEventListener('message', function(event) {
+            if (event.data.type === 'profile_updated') {
+                console.log('Nhận thông báo cập nhật profile từ tab khác');
+                // Có thể làm gì đó ở đây nếu cần
+            }
+        });
+    }
     </script>
 }
 
