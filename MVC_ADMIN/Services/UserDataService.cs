@@ -20,7 +20,11 @@ namespace MVC_ADMIN.Services
             try
             {
                 // Đọc từ file appsettings.json trong chính thư mục project MVC_ADMIN
-                string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "appsettings.json");
+                string filePath = Path.Combine(
+                AppDomain.CurrentDomain.BaseDirectory,
+                "appsettings.json"
+                );
+
 
                 if (!File.Exists(filePath))
                 {

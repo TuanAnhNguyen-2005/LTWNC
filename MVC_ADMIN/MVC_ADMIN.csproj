@@ -1869,6 +1869,7 @@
     <Content Include="wwwroot\admin\vendor\jquery\jquery.min.js" />
     <Content Include="wwwroot\admin\vendor\jquery\jquery.slim.js" />
     <Content Include="wwwroot\admin\vendor\jquery\jquery.slim.min.js" />
+    <Content Include="appsettings.json" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />
