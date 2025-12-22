@@ -9,6 +9,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Linq;
 using MVC_Teacher.Models;
+using System.Net.Sockets;
 
 namespace MVC_TEACHER.Controllers
 {
@@ -20,85 +21,116 @@ namespace MVC_TEACHER.Controllers
         // GET: /KhoaHoc/Create
         public ActionResult Create()
         {
+            // Nếu API không cấu hình, vẫn cho phép mở form tạo
+            if (string.IsNullOrEmpty(_apiBase))
+            {
+                ViewBag.Warning = "Cảnh báo: Chưa cấu hình ApiBaseUrl trong Web.config. Tạo khóa học sẽ không lưu được.";
+            }
+
             return View();
         }
 
         // POST: /KhoaHoc/Create
         [HttpPost]
-        public async Task<ActionResult> Create(CreateKhoaHocVm model, HttpPostedFileBase anhBiaFile)  // 🔴 Dùng HttpPostedFileBase
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Create(CreateKhoaHocVm model, HttpPostedFileBase anhBiaFile)
         {
-            if (model == null)
-                throw new Exception("Model is null");
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
 
             if (string.IsNullOrEmpty(_apiBase))
-                throw new Exception("ApiBaseUrl chưa được cấu hình trong Web.config");
+            {
+                ViewBag.Error = "Không thể tạo khóa học: ApiBaseUrl chưa được cấu hình trong Web.config.";
+                return View(model);
+            }
 
             model.MaGiaoVien = GetTeacherId();
 
             var url = _apiBase.TrimEnd('/') + "/Courses";
 
-            using (var http = new HttpClient())
+            try
             {
-                using (var content = new MultipartFormDataContent())
+                using (var http = new HttpClient())
                 {
-                    // Thêm các field text
-                    content.Add(new StringContent(model.TenKhoaHoc ?? ""), "TenKhoaHoc");
-                    content.Add(new StringContent(model.Slug ?? ""), "Slug");
-                    content.Add(new StringContent(model.MoTa ?? ""), "MoTa");
-                    content.Add(new StringContent(model.MaGiaoVien.ToString()), "MaGiaoVien");
-
-                    // 🔴 XỬ LÝ FILE ẢNH (nếu có)
-                    if (anhBiaFile != null && anhBiaFile.ContentLength > 0)
+                    using (var content = new MultipartFormDataContent())
                     {
-                        var fileContent = new StreamContent(anhBiaFile.InputStream);
-                        fileContent.Headers.ContentType = new MediaTypeHeaderValue(anhBiaFile.ContentType);
-                        content.Add(fileContent, "anhBiaFile", anhBiaFile.FileName);
-                    }
+                        content.Add(new StringContent(model.TenKhoaHoc ?? ""), "TenKhoaHoc");
+                        content.Add(new StringContent(model.Slug ?? ""), "Slug");
+                        content.Add(new StringContent(model.MoTa ?? ""), "MoTa");
+                        content.Add(new StringContent(model.MaGiaoVien.ToString()), "MaGiaoVien");
 
-                    var resp = await http.PostAsync(url, content);
+                        if (anhBiaFile != null && anhBiaFile.ContentLength > 0)
+                        {
+                            var fileContent = new StreamContent(anhBiaFile.InputStream);
+                            fileContent.Headers.ContentType = new MediaTypeHeaderValue(anhBiaFile.ContentType);
+                            content.Add(fileContent, "anhBiaFile", anhBiaFile.FileName);
+                        }
 
-                    var apiText = await resp.Content.ReadAsStringAsync();
+                        var resp = await http.PostAsync(url, content);
+                        var apiText = await resp.Content.ReadAsStringAsync();
 
-                    if (!resp.IsSuccessStatusCode)
-                    {
-                        ViewBag.Error =
-                            $"API lỗi {(int)resp.StatusCode}\n" +
-                            $"URL: {url}\n" +
-                            $"Chi tiết: {apiText}";
-
-                        return View(model);
+                        if (!resp.IsSuccessStatusCode)
+                        {
+                            ViewBag.Error = $"Lỗi từ API ({(int)resp.StatusCode}): {apiText}";
+                            return View(model);
+                        }
                     }
                 }
-            }
 
-            TempData["msg"] = "✅ Đã tạo khóa học (Draft)";
-            return RedirectToAction("MyCourses");
+                TempData["msg"] = "✅ Đã tạo khóa học (Draft) thành công!";
+                return RedirectToAction("MyCourses");
+            }
+            catch (HttpRequestException ex)
+            {
+                ViewBag.Error = "Không thể kết nối đến server API. Vui lòng kiểm tra backend đang chạy chưa (port 5015).<br/>Chi tiết: " + ex.Message;
+                return View(model);
+            }
+            catch (SocketException ex)
+            {
+                ViewBag.Error = "Không thể kết nối đến API (target machine actively refused).<br/>Hãy chạy project API backend trước.<br/>Chi tiết: " + ex.Message;
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = "Lỗi không xác định khi gọi API: " + ex.Message;
+                return View(model);
+            }
         }
+
         // GET: /KhoaHoc/MyCourses
         public async Task<ActionResult> MyCourses()
         {
+            if (string.IsNullOrEmpty(_apiBase))
+            {
+                ViewBag.Warning = "ApiBaseUrl chưa cấu hình. Danh sách khóa học không thể tải.";
+                return View(new KhoaHocListVm[0]);
+            }
+
             int teacherId = GetTeacherId();
             var url = _apiBase.TrimEnd('/') + $"/Courses/teacher/{teacherId}";
 
-            using (var http = new HttpClient())
-            {
-                var json = await http.GetStringAsync(url);
-                var data = JsonConvert.DeserializeObject<KhoaHocListVm[]>(json);
-                return View(data);
-            }
-        }
-        // GET: /KhoaHoc
-        public async Task<ActionResult> Index()
-        {
             try
             {
-                return await MyCourses();
+                using (var http = new HttpClient())
+                {
+                    var json = await http.GetStringAsync(url);
+                    var data = JsonConvert.DeserializeObject<KhoaHocListVm[]>(json);
+                    return View(data);
+                }
             }
-            catch
+            catch (Exception)
             {
-                // Nếu API lỗi, trả về view rỗng để tránh crash
-                return View("MyCourses", new KhoaHocListVm[0]);
+                ViewBag.Error = "Không thể tải danh sách khóa học (API không phản hồi).";
+                return View(new KhoaHocListVm[0]);
             }
+        }
+
+        // GET: /KhoaHoc (danh sách của giáo viên hiện tại)
+        public async Task<ActionResult> Index()
+        {
+            return await MyCourses();
         }
 
         [HttpPost]
@@ -111,69 +143,83 @@ namespace MVC_TEACHER.Controllers
                 return RedirectToAction("MyCourses");
             }
 
+            if (string.IsNullOrEmpty(_apiBase))
+            {
+                TempData["error"] = "Không thể xóa: API chưa được cấu hình";
+                return RedirectToAction("MyCourses");
+            }
+
             int teacherId = GetTeacherId();
             var url = _apiBase.TrimEnd('/') + $"/Courses/batch?teacherId={teacherId}";
 
-            using (var http = new HttpClient())
+            try
             {
-                // Tạo JSON body
-                var jsonContent = JsonConvert.SerializeObject(new { Ids = ids });
-                var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
-
-                // Tạo request thủ công với method DELETE và body
-                var request = new HttpRequestMessage(HttpMethod.Delete, url)
+                using (var http = new HttpClient())
                 {
-                    Content = content
-                };
+                    var jsonContent = JsonConvert.SerializeObject(new { Ids = ids });
+                    var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
-                try
-                {
+                    var request = new HttpRequestMessage(HttpMethod.Delete, url)
+                    {
+                        Content = content
+                    };
+
                     var response = await http.SendAsync(request);
 
                     if (response.IsSuccessStatusCode)
                     {
-                        var result = await response.Content.ReadAsStringAsync();
-                        // Có thể parse để lấy số lượng xóa nếu muốn
                         TempData["msg"] = $"🗑️ Đã xóa thành công {ids.Count} khóa học!";
                     }
                     else
                     {
-                        var errorText = await response.Content.ReadAsStringAsync();
-                        TempData["error"] = "⚠️ Không thể xóa một số khóa học (có thể đã được duyệt hoặc đang chờ duyệt)";
+                        TempData["error"] = "⚠️ Không thể xóa một số khóa học (có thể đã được duyệt)";
                     }
                 }
-                catch (Exception ex)
-                {
-                    TempData["error"] = "Lỗi kết nối đến server: " + ex.Message;
-                }
+            }
+            catch (Exception)
+            {
+                TempData["error"] = "Không thể kết nối đến API để xóa khóa học.";
             }
 
             return RedirectToAction("MyCourses");
         }
 
-        // POST: /KhoaHoc/Submit
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<ActionResult> Submit(int id)
         {
+            if (string.IsNullOrEmpty(_apiBase))
+            {
+                TempData["error"] = "Không thể gửi duyệt: API chưa được cấu hình";
+                return RedirectToAction("MyCourses");
+            }
+
             int teacherId = GetTeacherId();
             var url = _apiBase.TrimEnd('/') + $"/Courses/{id}/submit?teacherId={teacherId}";
 
-            using (var http = new HttpClient())
+            try
             {
-                await http.PutAsync(url, new StringContent(""));
+                using (var http = new HttpClient())
+                {
+                    await http.PutAsync(url, new StringContent(""));
+                }
+
+                TempData["msg"] = "📨 Đã gửi chờ Admin duyệt";
+            }
+            catch (Exception)
+            {
+                TempData["error"] = "Không thể gửi yêu cầu duyệt (API không phản hồi)";
             }
 
-            TempData["msg"] = "📨 Đã gửi chờ Admin duyệt";
             return RedirectToAction("MyCourses");
         }
 
-        // Demo – sau này bạn lấy từ đăng nhập
+        // Demo – sau này lấy từ Session hoặc Identity
         private int GetTeacherId()
         {
-            return 1;
+            return 1; // Giả lập giáo viên ID = 1
         }
     }
-
 
     // =======================
     // VIEW MODEL
