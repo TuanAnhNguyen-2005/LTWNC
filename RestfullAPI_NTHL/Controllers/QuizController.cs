@@ -169,15 +169,37 @@ namespace RestfullAPI_NTHL.Controllers
             return NoContent();
         }
 
-        // DELETE: api/Quiz/{id}
         [HttpDelete("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteQuiz(int id)
         {
-            var quiz = await _db.Quizzes.FindAsync(id);
-            if (quiz == null) return NotFound();
+            var quiz = await _db.Quizzes
+                .Include(q => q.CauHois)
+                    .ThenInclude(ch => ch.LuaChons)
+                .FirstOrDefaultAsync(q => q.MaQuiz == id);
 
+            if (quiz == null)
+            {
+                return NotFound(new { message = "Không tìm thấy quiz." });
+            }
+
+            // Xóa kết quả làm bài (KetQuaQuiz) trước
+            var ketQuaList = await _db.KetQuaQuizzes
+                .Where(kq => kq.MaQuiz == id)
+                .ToListAsync();
+
+            if (ketQuaList.Any())
+            {
+                _db.KetQuaQuizzes.RemoveRange(ketQuaList);
+                // TraLoi và TraLoiChiTiet sẽ tự xóa nhờ ON DELETE CASCADE
+            }
+
+            // Xóa quiz (cascade sẽ xóa CauHoi và LuaChon)
             _db.Quizzes.Remove(quiz);
+
             await _db.SaveChangesAsync();
+
             return NoContent();
         }
 
@@ -245,36 +267,47 @@ namespace RestfullAPI_NTHL.Controllers
                 var cauHoi = quiz.CauHois.FirstOrDefault(ch => ch.MaCauHoi == traLoiDto.MaCauHoi);
                 if (cauHoi == null) continue;
 
+                string traLoi = traLoiDto.TraLoi?.Trim() ?? string.Empty;
                 bool dungSai = false;
-                string traLoi = traLoiDto.TraLoi?.Trim() ?? "";
+                double diemCauHoi = cauHoi.Diem;
 
                 if (cauHoi.LoaiCauHoi == "SingleChoice")
                 {
-                    var dapAnDung = cauHoi.LuaChons.FirstOrDefault(lc => lc.LaDapAnDung)?.NoiDung?.Trim();
-                    if (!string.IsNullOrEmpty(dapAnDung) && string.Equals(traLoi, dapAnDung, StringComparison.OrdinalIgnoreCase))
+                    if (int.TryParse(traLoi, out int maLuaChonChon))
                     {
-                        dungSai = true;
-                        diem += cauHoi.Diem;
-                        soCauDung++;
+                        var dapAnDung = cauHoi.LuaChons.FirstOrDefault(lc => lc.LaDapAnDung);
+                        if (dapAnDung != null && dapAnDung.MaLuaChon == maLuaChonChon)
+                        {
+                            dungSai = true;
+                            diem += diemCauHoi;
+                            soCauDung++;
+                        }
                     }
                 }
                 else if (cauHoi.LoaiCauHoi == "MultipleChoice")
                 {
-                    // Giả định dapAnDung là comma-separated từ tất cả LuaChon đúng
-                    var dapAnDungList = cauHoi.LuaChons.Where(lc => lc.LaDapAnDung).Select(lc => lc.NoiDung?.Trim()).OrderBy(s => s).ToList();
-                    var traLoiList = traLoi.Split(',').Select(s => s.Trim()).OrderBy(s => s).ToList();
+                    var maChonList = traLoi.Split(',')
+                        .Select(s => int.TryParse(s.Trim(), out int id) ? id : 0)
+                        .Where(id => id > 0)
+                        .OrderBy(id => id)
+                        .ToList();
 
-                    if (dapAnDungList.SequenceEqual(traLoiList, StringComparer.OrdinalIgnoreCase))
+                    var maDungList = cauHoi.LuaChons
+                        .Where(lc => lc.LaDapAnDung)
+                        .Select(lc => lc.MaLuaChon)
+                        .OrderBy(id => id)
+                        .ToList();
+
+                    if (maChonList.SequenceEqual(maDungList))
                     {
                         dungSai = true;
-                        diem += cauHoi.Diem;
+                        diem += diemCauHoi;
                         soCauDung++;
                     }
                 }
                 else if (cauHoi.LoaiCauHoi == "Essay")
                 {
-                    // Câu mở: mặc định sai, giáo viên chấm thủ công sau
-                    dungSai = false; // Có thể thêm logic AI chấm nếu cần
+                    dungSai = false; // Chấm thủ công
                 }
 
                 // Lưu chi tiết trả lời
@@ -282,11 +315,11 @@ namespace RestfullAPI_NTHL.Controllers
                 {
                     MaKetQua = ketQua.MaKetQua,
                     MaCauHoi = cauHoi.MaCauHoi,
-                    TraLoi = traLoi,
+                    TraLoi = traLoi,  // Lưu ID hoặc chuỗi ID
                     DungSai = dungSai
                 };
                 _db.TraLoiChiTiets.Add(traLoiChiTiet);
-            }
+        }
 
             await _db.SaveChangesAsync();
 
@@ -414,6 +447,20 @@ namespace RestfullAPI_NTHL.Controllers
             var quizzes = await _db.Quizzes
                 .AsNoTracking()
                 .Where(q => q.MaKhoaHoc == maKhoaHoc && q.TrangThai == "Published")
+                .Include(q => q.CauHois)
+                    .ThenInclude(ch => ch.LuaChons)
+                .OrderByDescending(q => q.NgayTao)
+                .ToListAsync();
+
+            return Ok(quizzes);
+        }
+        // GET: api/Quiz/khoahoc/{maKhoaHoc}
+        [HttpGet("khoahoc/{maKhoaHoc:int}")]
+        public async Task<ActionResult<IEnumerable<Quiz>>> GetQuizzesByKhoaHoc(int maKhoaHoc)
+        {
+            var quizzes = await _db.Quizzes
+                .AsNoTracking()
+                .Where(q => q.MaKhoaHoc == maKhoaHoc)
                 .Include(q => q.CauHois)
                     .ThenInclude(ch => ch.LuaChons)
                 .OrderByDescending(q => q.NgayTao)

@@ -1,0 +1,86 @@
+﻿@model MVC_Teacher.Models.QuizDeleteViewModel
+
+@{
+    ViewBag.Title = "Xóa Quiz - Xác nhận";
+}
+
+<div class="main-content">
+    <div class="page-header">
+        <h1><i class="fas fa-exclamation-triangle text-danger me-2"></i>Xác nhận xóa Quiz</h1>
+        <p class="text-muted">Bạn có chắc chắn muốn xóa bài kiểm tra này?</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0"><i class="fas fa-trash me-2"></i>Quiz sẽ bị xóa vĩnh viễn</h5>
+                </div>
+                <div class="card-body text-center py-5">
+                    <div class="mb-4">
+                        <i class="fas fa-clipboard-list fa-4x text-danger mb-3"></i>
+                    </div>
+
+                    <h3 class="text-danger mb-3">@Model.TenQuiz</h3>
+
+                    <div class="row text-start mb-4">
+                        <div class="col-md-6">
+                            <p>
+                                <strong><i class="fas fa-book me-2 text-primary"></i>Khóa học:</strong><br>
+                                <span class="text-muted">@Model.TenKhoaHoc</span>
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p>
+                                <strong><i class="fas fa-users me-2 text-info"></i>Học sinh đã làm:</strong><br>
+                                <span class="badge bg-warning fs-6">@Model.SoHocSinhLamBai người</span>
+                            </p>
+                            <p>
+                                <strong><i class="fas fa-question-circle me-2 text-secondary"></i>Câu hỏi:</strong><br>
+                                <span class="text-muted">@Model.SoCauHoi câu</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    @if (Model.SoHocSinhLamBai > 0)
+                    {
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            <strong>Cảnh báo:</strong> Đã có @Model.SoHocSinhLamBai học sinh làm bài.
+                            Kết quả của họ sẽ bị xóa cùng quiz này.
+                        </div>
+                    }
+
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Hành động này <strong>không thể hoàn tác</strong>. Quiz và toàn bộ dữ liệu liên quan sẽ bị xóa vĩnh viễn.
+                    </div>
+                </div>
+                <div class="card-footer bg-light text-end">
+                    @using (Html.BeginForm("Delete", "Quiz", FormMethod.Post, new { @class = "d-inline" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.HiddenFor(m => m.MaQuiz)
+                        <button type="submit" class="btn btn-danger btn-lg px-4">
+                            <i class="fas fa-trash me-2"></i>Xóa Quiz
+                        </button>
+                    }
+                    <a href="@Url.Action("Details", new { id = Model.MaQuiz })" class="btn btn-secondary btn-lg px-4 ms-2">
+                        <i class="fas fa-times me-2"></i>Hủy
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        // Hiệu ứng confirm thêm
+        document.querySelector('form').addEventListener('submit', function(e) {
+            if (!confirm('Bạn có chắc chắn muốn xóa quiz "' + '@Model.TenQuiz' + '"? Hành động này không thể hoàn tác!')) {
+                e.preventDefault();
+            }
+        });
+    </script>
+}

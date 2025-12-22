@@ -14,7 +14,6 @@ CREATE DATABASE NenTangHocLieu;
 GO
 USE NenTangHocLieu;
 GO
-
 -- ==============================
 -- BẢNG VAI TRÒ, MÔN HỌC, LỚP HỌC, CHỦ ĐỀ
 -- ==============================
