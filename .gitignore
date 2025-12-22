@@ -14,3 +14,4 @@ obj/
 # NuGet packages
 packages/
 *.nupkg
+/MVC_ADMIN/obj/Debug/DesignTimeResolveAssemblyReferencesInput.cache
