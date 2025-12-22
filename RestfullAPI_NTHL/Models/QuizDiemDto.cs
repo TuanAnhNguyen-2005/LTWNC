@@ -8,6 +8,7 @@
         public double TongDiem { get; set; }
         public DateTime NgayNop { get; set; }
         public TimeSpan ThoiGianLam { get; set; }
+        public int MaKetQua { get; set; }
     }
 
     public class QuizDiemChiTietDto
@@ -19,6 +20,7 @@
         public int SoCauDung { get; set; }
         public int TongCau { get; set; }
         public TimeSpan ThoiGianLam { get; set; }
+        public int MaKetQua { get; set; }
         public DateTime NgayNop { get; set; }
         public List<ChiTietCauHoiDto> ChiTietCauHoi { get; set; } = new();
     }
