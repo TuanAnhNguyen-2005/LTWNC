@@ -98,39 +98,38 @@ namespace MVC_STUDENT.Controllers
         }
 
         // GET: /Diem/ChiTiet/5
-        public async Task<ActionResult> ChiTiet(int id)
+        // GET: /Diem/ChiTiet?maKetQua=5
+        public async Task<ActionResult> ChiTiet(string maKetQua)
         {
             if (!IsStudentLoggedIn()) return RedirectToAction("Index", "Login");
 
-            int maHocSinh = GetMaHocSinh();
-            string debugInfo = $"<strong>🔍 DEBUG CHI TIẾT - Quiz ID: {id}, HS: {maHocSinh}</strong><br/>";
+            if (string.IsNullOrWhiteSpace(maKetQua) || !int.TryParse(maKetQua.Trim(), out int mkq) || mkq <= 0)
+            {
+                TempData["Error"] = "Tham số maKetQua không hợp lệ.";
+                return RedirectToAction("Index");
+            }
+
+            string url = $"{_apiBaseUrl}/diem/chitiet/{mkq}";
 
             try
             {
-                string url = $"{_apiBaseUrl}/diem/{maHocSinh}/{id}";
                 var response = await _httpClient.GetAsync(url);
                 string json = await response.Content.ReadAsStringAsync();
-
-                debugInfo += $"API: {url} → {response.StatusCode}<br/>JSON: {json?.Substring(0, 100)}...";
 
                 if (response.IsSuccessStatusCode)
                 {
                     var chiTiet = JsonConvert.DeserializeObject<QuizDiemChiTietDto>(json);
-                    ViewBag.DebugInfo = debugInfo + "<span style='color:green'>✅ OK</span>";
                     return View(chiTiet);
                 }
-                else
-                {
-                    TempData["Error"] = $"Lỗi API: {response.StatusCode}";
-                }
+
+                TempData["Error"] = $"Lỗi API: {response.StatusCode}";
+                return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
-                debugInfo += $"<span style='color:red'>Lỗi: {ex.Message}</span>";
+                TempData["Error"] = $"Lỗi: {ex.Message}";
+                return RedirectToAction("Index");
             }
-
-            ViewBag.DebugInfo = debugInfo;
-            return RedirectToAction("Index");
         }
     }
 
