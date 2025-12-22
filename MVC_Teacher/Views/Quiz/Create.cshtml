@@ -1,381 +1,756 @@
 ﻿@model MVC_Teacher.Models.QuizCreateViewModel
 
 @{
-
+    Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.Title = "Tạo Quiz Mới";
-
 }
 
-<div class="main-content">
-
-    <div class="page-header">
-
-        <h1>Tạo Quiz Mới</h1>
-
-        <p>Thiết kế bài kiểm tra tương tác giống Google Forms</p>
-
+<div class="page-header">
+    <div class="page-header-content">
+        <div class="page-icon">
+            <i class="fas fa-clipboard-question"></i>
+        </div>
+        <div class="page-title">
+            <h1>Tạo Quiz Mới</h1>
+            <p>Thiết kế bài kiểm tra tương tác với giao diện hiện đại</p>
+        </div>
     </div>
+</div>
 
-    <div class="card" style="max-width: 900px; margin: 0 auto;">
+<div class="quiz-form-container">
+    @using (Html.BeginForm("Create", "Quiz", FormMethod.Post, new { id = "quizForm", @class = "quiz-form" }))
+    {
+        @Html.AntiForgeryToken()
 
-        <div class="card-body">
-
-            @using (Html.BeginForm("Create", "Quiz", FormMethod.Post, new { id = "quizForm" }))
-
-            {
-
-                @Html.AntiForgeryToken()
-
-                if (TempData["Success"] != null)
-
-                {
-
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-
-                        <i class="fas fa-check-circle me-2"></i>
-
-                        <strong>Thành công!</strong> @TempData["Success"]
-
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-
-                    </div>
-
-                }
-
-                if (TempData["Error"] != null)
-
-                {
-
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-
-                        <i class="fas fa-exclamation-triangle me-2"></i>
-
-                        <strong>Lỗi!</strong> @TempData["Error"]
-
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-
-                    </div>
-
-                }
-
-                <div class="form-group mb-4">
-
-                    <label>Tên Quiz <span class="text-danger">*</span></label>
-
-                    @Html.TextBoxFor(m => m.TenQuiz, new { @class = "form-control form-control-lg", placeholder = "VD: Kiểm tra giữa kỳ ASP.NET Core" })
-
-                    @Html.ValidationMessageFor(m => m.TenQuiz, "", new { @class = "text-danger" })
-
+        if (TempData["Success"] != null)
+        {
+            <div class="alert-card success">
+                <div class="alert-icon">
+                    <i class="fas fa-check-circle"></i>
                 </div>
-
-                <div class="form-group mb-4">
-
-                    <label>Mô tả</label>
-
-                    @Html.TextAreaFor(m => m.MoTa, new { @class = "form-control", rows = 3, placeholder = "Mô tả ngắn về bài kiểm tra..." })
-
+                <div class="alert-content">
+                    <h4>Thành công!</h4>
+                    <p>@TempData["Success"]</p>
                 </div>
+                <button type="button" class="alert-close" onclick="this.parentElement.style.display='none'">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        }
 
-                <div class="row mb-4">
-                    <div class="col-md-6">
-                        <label class="fw-bold">Thuộc khóa học <span class="text-danger">*</span></label>
+        if (TempData["Error"] != null)
+        {
+            <div class="alert-card error">
+                <div class="alert-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="alert-content">
+                    <h4>Lỗi!</h4>
+                    <p>@TempData["Error"]</p>
+                </div>
+                <button type="button" class="alert-close" onclick="this.parentElement.style.display='none'">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        }
 
-                        @if (ViewBag.CoKhoaHoc == true)
-                        {
-                            <div class="alert alert-info p-3 mb-0">
-                                <i class="fas fa-book me-2"></i>
-                                <strong>@ViewBag.TenKhoaHocHienTai</strong>
-                                <p class="mb-0 mt-2 small text-muted">
+        <div class="form-section">
+            <div class="section-header">
+                <i class="fas fa-info-circle"></i>
+                <h3>Thông tin chung</h3>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-heading"></i>
+                    <span>Tên Quiz</span>
+                    <span class="required">*</span>
+                </label>
+                @Html.TextBoxFor(m => m.TenQuiz, new
+                {
+                    @class = "form-input",
+                    placeholder = "VD: Kiểm tra giữa kỳ ASP.NET Core",
+                    required = "required"
+                })
+                @Html.ValidationMessageFor(m => m.TenQuiz, "", new { @class = "error-message" })
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-align-left"></i>
+                    <span>Mô tả</span>
+                </label>
+                @Html.TextAreaFor(m => m.MoTa, new
+                {
+                    @class = "form-textarea",
+                    rows = 4,
+                    placeholder = "Mô tả ngắn về mục đích, nội dung bài kiểm tra..."
+                })
+            </div>
+
+            <div class="form-row">
+                <div class="form-col">
+                    <label class="form-label">
+                        <i class="fas fa-book"></i>
+                        <span>Khóa học</span>
+                        <span class="required">*</span>
+                    </label>
+
+                    @if (ViewBag.CoKhoaHoc == true)
+                    {
+                        <div class="info-card">
+                            <div class="info-card-header">
+                                <i class="fas fa-check-circle text-success"></i>
+                                <span>Khóa học được chọn</span>
+                            </div>
+                            <div class="info-card-body">
+                                <h4>@ViewBag.TenKhoaHocHienTai</h4>
+                                <p class="text-muted">
                                     Quiz này sẽ được gắn tự động vào khóa học trên.<br>
                                     Học sinh trong khóa học sẽ thấy và làm được bài kiểm tra.
                                 </p>
-                                @Html.HiddenFor(m => m.MaKhoaHoc) <!-- Rất quan trọng: giữ giá trị MaKhoaHoc để submit -->
                             </div>
-                        }
-                        else
-                        {
-                            <select name="MaKhoaHoc" class="form-control" required>
-                                <option value="">-- Chọn khóa học --</option>
-                                @foreach (var kh in ViewBag.KhoaHocList as List<SelectListItem>)
-                                {
-                                    <option value="@kh.Value" @(kh.Selected ? "selected" : "")>@kh.Text</option>
-                                }
-                            </select>
-                            <small class="text-muted">Chọn khóa học mà quiz này thuộc về</small>
-                        }
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="fw-bold">Thời gian làm bài (phút)</label>
-                        @Html.TextBoxFor(m => m.ThoiGianLamBai, new { @class = "form-control", type = "number", min = "1", max = "300", value = "30" })
-                        <small class="text-muted">Để trống hoặc 0 nếu không giới hạn</small>
-                    </div>
-                </div>
-
-                <hr class="my-5">
-
-                <h4>Câu hỏi</h4>
-
-                <div id="cauHoiContainer">
-
-                    @for (int i = 0; i < Model.CauHois.Count; i++)
-
-                    {
-
-                        @Html.Partial("_CauHoiEditor", Model.CauHois[i], new ViewDataDictionary(ViewData) { { "Index", i } })
-
+                            @Html.HiddenFor(m => m.MaKhoaHoc)
+                        </div>
                     }
-
+                    else
+                    {
+                        <select name="MaKhoaHoc" class="form-select" required>
+                            <option value="">-- Chọn khóa học --</option>
+                            @foreach (var kh in ViewBag.KhoaHocList as List<SelectListItem>)
+                            {
+                                <option value="@kh.Value" @(kh.Selected ? "selected" : "")>@kh.Text</option>
+                            }
+                        </select>
+                        <small class="form-hint">Chọn khóa học mà quiz này thuộc về</small>
+                    }
                 </div>
 
-                <button type="button" class="btn btn-outline-primary mt-3" onclick="themCauHoi()">
-
-                    <i class="fas fa-plus"></i> Thêm câu hỏi
-
-                </button>
-
-                <hr class="my-5">
-
-                <div class="text-end">
-
-                    <button type="submit" class="btn btn-primary btn-lg px-5">
-
-                        <i class="fas fa-save"></i> Lưu Quiz
-
-                    </button>
-
+                <div class="form-col">
+                    <label class="form-label">
+                        <i class="fas fa-clock"></i>
+                        <span>Thời gian làm bài (phút)</span>
+                    </label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-hourglass-half"></i>
+                        @Html.TextBoxFor(m => m.ThoiGianLamBai, new
+                        {
+                            @class = "form-input",
+                            type = "number",
+                            min = "1",
+                            max = "300",
+                            value = "30",
+                            placeholder = "30"
+                        })
+                    </div>
+                    <small class="form-hint">Để trống hoặc 0 nếu không giới hạn thời gian</small>
                 </div>
-
-            }
-
+            </div>
         </div>
 
-    </div>
-
-</div>
-
-@* Partial View cho mỗi câu hỏi *@
-
-@section scripts {
-
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-
-    <script>
-
-    let questionIndex = @Model.CauHois.Count;
-
-    function themCauHoi() {
-
-        const container = document.getElementById('cauHoiContainer');
-
-        const html = `
-
-        <div class="cau-hoi-item card mb-4" data-index="${questionIndex}">
-
-            <div class="card-body">
-
-                <div class="d-flex justify-content-between align-items-start mb-3">
-
-                    <h5>Câu hỏi ${questionIndex + 1}</h5>
-
-                    <button type="button" class="btn btn-sm btn-danger" onclick="xoaCauHoi(this)">Xóa</button>
-
-                </div>
-
-                <input type="hidden" name="CauHois[${questionIndex}].LoaiCauHoi" value="MultipleChoice" />
-
-                <div class="form-group mb-3">
-
-                    <input type="text" name="CauHois[${questionIndex}].NoiDung" class="form-control" placeholder="Nhập nội dung câu hỏi..." required />
-
-                </div>
-
-                <div class="form-group mb-3">
-
-                    <label>Điểm</label>
-
-                    <input type="number" name="CauHois[${questionIndex}].Diem" class="form-control" value="1" min="0.5" step="0.5" style="width:120px;" />
-
-                </div>
-
-                <div class="form-group">
-
-                    <label>Loại câu hỏi</label>
-
-                    <select class="form-control" onchange="changeQuestionType(this, ${questionIndex})">
-
-                        <option value="MultipleChoice">Trắc nghiệm (nhiều lựa chọn)</option>
-
-                        <option value="TrueFalse">Đúng/Sai</option>
-
-                        <option value="ShortAnswer">Tự luận</option>
-
-                    </select>
-
-                </div>
-
-                <div id="options-${questionIndex}" class="mt-3">
-
-                    <div class="lua-chon-item mb-2 d-flex align-items-center">
-
-                        <input type="radio" name="CauHois[${questionIndex}].DapAnDungIndex" checked />
-
-                        <input type="text" name="CauHois[${questionIndex}].LuaChons[0].NoiDung" class="form-control ms-2" placeholder="Lựa chọn 1" required />
-
-                        <input type="hidden" name="CauHois[${questionIndex}].LuaChons[0].LaDapAnDung" value="true" />
-
-                    </div>
-
-                    <div class="lua-chon-item mb-2 d-flex align-items-center">
-
-                        <input type="radio" name="CauHois[${questionIndex}].DapAnDungIndex" />
-
-                        <input type="text" name="CauHois[${questionIndex}].LuaChons[1].NoiDung" class="form-control ms-2" placeholder="Lựa chọn 2" required />
-
-                        <input type="hidden" name="CauHois[${questionIndex}].LuaChons[1].LaDapAnDung" value="false" />
-
-                    </div>
-
-                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="themLuaChon(${questionIndex})">+ Thêm lựa chọn</button>
-
-                </div>
-
+        <div class="form-section">
+            <div class="section-header">
+                <i class="fas fa-question-circle"></i>
+                <h3>Câu hỏi</h3>
             </div>
 
-        </div>`;
+            <div id="cauHoiContainer">
+                @for (int i = 0; i < Model.CauHois.Count; i++)
+                {
+                    @Html.Partial("_CauHoiEditor", Model.CauHois[i], new ViewDataDictionary(ViewData) { { "Index", i } })
+                }
+            </div>
 
-        container.insertAdjacentHTML('beforeend', html);
+            <div class="text-center mt-4">
+                <button type="button" class="btn btn-add-question" onclick="themCauHoi()">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Thêm câu hỏi</span>
+                </button>
+            </div>
+        </div>
 
-        questionIndex++;
-
+        <div class="form-actions">
+            <button type="button" class="btn btn-secondary" onclick="window.history.back()">
+                <i class="fas fa-arrow-left"></i>
+                <span>Quay lại</span>
+            </button>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i>
+                <span>Lưu Quiz</span>
+            </button>
+        </div>
     }
+</div>
 
-    function xoaCauHoi(btn) {
-
-        btn.closest('.cau-hoi-item').remove();
-
-    }
-
-    function changeQuestionType(select, index) {
-
-        const type = select.value;
-
-        const container = document.getElementById(`options-${index}`);
-
-        container.innerHTML = '';
-
-        if (type === "ShortAnswer") {
-
-            container.innerHTML = '<small class="text-muted">Học sinh sẽ nhập câu trả lời tự do</small>';
-
-        } else if (type === "TrueFalse") {
-
-            container.innerHTML = `
-
-                <div class="lua-chon-item mb-2 d-flex align-items-center">
-
-                    <input type="radio" name="CauHois[${index}].DapAnDungIndex" checked />
-
-                    <label class="ms-2">Đúng</label>
-
-                    <input type="hidden" name="CauHois[${index}].LuaChons[0].NoiDung" value="Đúng" />
-
-                    <input type="hidden" name="CauHois[${index}].LuaChons[0].LaDapAnDung" value="true" />
-
-                </div>
-
-                <div class="lua-chon-item mb-2 d-flex align-items-center">
-
-                    <input type="radio" name="CauHois[${index}].DapAnDungIndex" />
-
-                    <label class="ms-2">Sai</label>
-
-                    <input type="hidden" name="CauHois[${index}].LuaChons[1].NoiDung" value="Sai" />
-
-                    <input type="hidden" name="CauHois[${index}].LuaChons[1].LaDapAnDung" value="false" />
-
-                </div>`;
-
-        } else {
-
-            container.innerHTML = `
-
-                <div class="lua-chon-item mb-2 d-flex align-items-center">
-
-                    <input type="radio" name="CauHois[${index}].DapAnDungIndex" checked />
-
-                    <input type="text" name="CauHois[${index}].LuaChons[0].NoiDung" class="form-control ms-2" placeholder="Lựa chọn 1" required />
-
-                    <input type="hidden" name="CauHois[${index}].LuaChons[0].LaDapAnDung" value="true" />
-
-                </div>
-
-                <div class="lua-chon-item mb-2 d-flex align-items-center">
-
-                    <input type="radio" name="CauHois[${index}].DapAnDungIndex" />
-
-                    <input type="text" name="CauHois[${index}].LuaChons[1].NoiDung" class="form-control ms-2" placeholder="Lựa chọn 2" required />
-
-                    <input type="hidden" name="CauHois[${index}].LuaChons[1].LaDapAnDung" value="false" />
-
-                </div>
-
-                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="themLuaChon(${index})">+ Thêm lựa chọn</button>`;
-
+@section styles {
+    <style>
+        /* Page Header */
+        .page-header {
+            background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 32px;
+            color: white;
+            box-shadow: 0 4px 20px rgba(124, 58, 237, 0.2);
         }
 
-        // Cập nhật hidden LoaiCauHoi
+        .page-header-content {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
 
-        select.closest('.cau-hoi-item').querySelector('input[name*="LoaiCauHoi"]').value = type;
+        .page-icon {
+            width: 64px;
+            height: 64px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
 
-    }
+        .page-title h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
 
-    function themLuaChon(index) {
+        .page-title p {
+            opacity: 0.9;
+            font-size: 15px;
+        }
 
-        const container = document.getElementById(`options-${index}`);
+        /* Quiz Form Container */
+        .quiz-form-container {
+            background: #fff;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        }
 
-        const count = container.querySelectorAll('.lua-chon-item').length;
+        /* Alert Cards */
+        .alert-card {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            position: relative;
+        }
 
-        const html = `
+            .alert-card.success {
+                background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                color: white;
+            }
 
-            <div class="lua-chon-item mb-2 d-flex align-items-center">
+            .alert-card.error {
+                background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+                color: white;
+            }
 
-                <input type="radio" name="CauHois[${index}].DapAnDungIndex" />
+        .alert-icon {
+            font-size: 20px;
+        }
 
-                <input type="text" name="CauHois[${index}].LuaChons[${count}].NoiDung" class="form-control ms-2" placeholder="Lựa chọn mới" required />
+        .alert-content {
+            flex: 1;
+        }
 
-                <input type="hidden" name="CauHois[${index}].LuaChons[${count}].LaDapAnDung" value="false" />
+            .alert-content h4 {
+                margin: 0 0 4px 0;
+                font-size: 16px;
+                font-weight: 600;
+            }
 
-                <button type="button" class="btn btn-sm btn-danger ms-2" onclick="this.closest('.lua-chon-item').remove()">×</button>
+            .alert-content p {
+                margin: 0;
+                font-size: 14px;
+                opacity: 0.9;
+            }
 
+        .alert-close {
+            background: transparent;
+            border: none;
+            color: inherit;
+            cursor: pointer;
+            padding: 4px;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+
+            .alert-close:hover {
+                opacity: 1;
+            }
+
+        /* Form Sections */
+        .form-section {
+            margin-bottom: 40px;
+            padding-bottom: 40px;
+            border-bottom: 2px solid #f3f4f6;
+        }
+
+            .form-section:last-child {
+                border-bottom: none;
+                margin-bottom: 0;
+                padding-bottom: 0;
+            }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+            .section-header i {
+                font-size: 20px;
+                color: #7c3aed;
+            }
+
+            .section-header h3 {
+                margin: 0;
+                color: #1f2937;
+                font-size: 18px;
+                font-weight: 600;
+            }
+
+        /* Form Groups */
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+            font-size: 14px;
+        }
+
+            .form-label i {
+                color: #6b7280;
+                font-size: 14px;
+            }
+
+        .required {
+            color: #ef4444;
+            margin-left: 4px;
+        }
+
+        /* Form Inputs */
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background: #fff;
+            color: #1f2937;
+        }
+
+            .form-input:focus, .form-textarea:focus, .form-select:focus {
+                outline: none;
+                border-color: #7c3aed;
+                box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+            }
+
+            .form-input::placeholder, .form-textarea::placeholder {
+                color: #9ca3af;
+            }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Form Row */
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+
+        .form-col {
+            flex: 1;
+        }
+
+        .form-hint {
+            display: block;
+            margin-top: 6px;
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .error-message {
+            color: #ef4444;
+            font-size: 13px;
+            margin-top: 4px;
+            display: block;
+        }
+
+        /* Info Card */
+        .info-card {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border: 2px solid #0ea5e9;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .info-card-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            font-weight: 600;
+            color: #0369a1;
+        }
+
+        .info-card-body h4 {
+            margin: 0 0 8px 0;
+            color: #1e40af;
+        }
+
+        .text-muted {
+            color: #6b7280;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* Input with Icon */
+        .input-with-icon {
+            position: relative;
+        }
+
+            .input-with-icon i {
+                position: absolute;
+                left: 16px;
+                top: 50%;
+                transform: translateY(-50%);
+                color: #6b7280;
+            }
+
+            .input-with-icon .form-input {
+                padding-left: 44px;
+            }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+            color: white;
+        }
+
+            .btn-primary:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+            }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+            border: 2px solid #e5e7eb;
+        }
+
+            .btn-secondary:hover {
+                background: #e5e7eb;
+            }
+
+        .btn-add-question {
+            background: transparent;
+            color: #7c3aed;
+            border: 2px dashed #7c3aed;
+            padding: 16px 32px;
+            font-size: 16px;
+        }
+
+            .btn-add-question:hover {
+                background: rgba(124, 58, 237, 0.05);
+                border-style: solid;
+            }
+
+        /* Form Actions */
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 40px;
+            padding-top: 24px;
+            border-top: 2px solid #f3f4f6;
+        }
+
+        /* Responsive */
+        @@media (max-width: 768px) {
+            .page-header-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 16px;
+            }
+
+            .page-icon {
+                width: 56px;
+                height: 56px;
+                font-size: 24px;
+            }
+
+            .page-title h1 {
+                font-size: 24px;
+            }
+
+            .form-row {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .quiz-form-container {
+                padding: 20px;
+            }
+
+            .form-actions {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+}
+
+@section scripts {
+    <script>
+        let questionIndex = @Model.CauHois.Count;
+
+        function themCauHoi() {
+            const container = document.getElementById('cauHoiContainer');
+
+            const html = `
+            <div class="cau-hoi-item card mb-4" data-index="${questionIndex}">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h5>Câu hỏi ${questionIndex + 1}</h5>
+                        <button type="button" class="btn btn-sm btn-danger" onclick="xoaCauHoi(this)">
+                            <i class="fas fa-trash"></i> Xóa
+                        </button>
+                    </div>
+
+                    <input type="hidden" name="CauHois[${questionIndex}].LoaiCauHoi" value="MultipleChoice" />
+
+                    <div class="form-group mb-3">
+                        <input type="text"
+                               name="CauHois[${questionIndex}].NoiDung"
+                               class="form-input"
+                               placeholder="Nhập nội dung câu hỏi..."
+                               required />
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="form-label">Điểm</label>
+                        <input type="number"
+                               name="CauHois[${questionIndex}].Diem"
+                               class="form-input"
+                               value="1"
+                               min="0.5"
+                               step="0.5"
+                               style="width: 120px;" />
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Loại câu hỏi</label>
+                        <select class="form-select" onchange="changeQuestionType(this, ${questionIndex})">
+                            <option value="MultipleChoice">Trắc nghiệm (nhiều lựa chọn)</option>
+                            <option value="TrueFalse">Đúng/Sai</option>
+                            <option value="ShortAnswer">Tự luận</option>
+                        </select>
+                    </div>
+
+                    <div id="options-${questionIndex}" class="mt-3">
+                        <div class="option-item">
+                            <input type="radio" name="CauHois[${questionIndex}].DapAnDungIndex" checked />
+                            <input type="text"
+                                   name="CauHois[${questionIndex}].LuaChons[0].NoiDung"
+                                   class="form-input"
+                                   placeholder="Lựa chọn 1"
+                                   required />
+                            <input type="hidden"
+                                   name="CauHois[${questionIndex}].LuaChons[0].LaDapAnDung"
+                                   value="true" />
+                        </div>
+
+                        <div class="option-item">
+                            <input type="radio" name="CauHois[${questionIndex}].DapAnDungIndex" />
+                            <input type="text"
+                                   name="CauHois[${questionIndex}].LuaChons[1].NoiDung"
+                                   class="form-input"
+                                   placeholder="Lựa chọn 2"
+                                   required />
+                            <input type="hidden"
+                                   name="CauHois[${questionIndex}].LuaChons[1].LaDapAnDung"
+                                   value="false" />
+                        </div>
+
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="themLuaChon(${questionIndex})">
+                            <i class="fas fa-plus"></i> Thêm lựa chọn
+                        </button>
+                    </div>
+                </div>
             </div>`;
 
-        container.insertAdjacentHTML('beforeend', html);
-
-    }
-
-    // Cập nhật đáp án đúng khi chọn radio
-
-    document.addEventListener('change', function(e) {
-
-        if (e.target.type === 'radio' && e.target.name.includes('DapAnDungIndex')) {
-
-            const name = e.target.name;
-
-            const index = name.match(/CauHois\[(\d+)\]/)[1];
-
-            const luaChonIndex = [...e.target.closest('#options-' + index).querySelectorAll('input[type=radio]')].indexOf(e.target);
-
-            // Cập nhật hidden field LaDapAnDung
-
-            const hiddenFields = e.target.closest('#options-' + index).querySelectorAll('input[name*=".LaDapAnDung"]');
-
-            hiddenFields.forEach((h, i) => h.value = (i === luaChonIndex).toString().toLowerCase());
-
+            container.insertAdjacentHTML('beforeend', html);
+            questionIndex++;
         }
 
-    });
+        function xoaCauHoi(btn) {
+            if (confirm('Bạn có chắc chắn muốn xóa câu hỏi này?')) {
+                btn.closest('.cau-hoi-item').remove();
+            }
+        }
 
+        function changeQuestionType(select, index) {
+            const type = select.value;
+            const container = document.getElementById(`options-${index}`);
+            container.innerHTML = '';
+
+            if (type === "ShortAnswer") {
+                container.innerHTML = `
+                    <div class="info-card">
+                        <div class="info-card-header">
+                            <i class="fas fa-keyboard"></i>
+                            <span>Câu hỏi tự luận</span>
+                        </div>
+                        <p class="text-muted">Học sinh sẽ nhập câu trả lời tự do</p>
+                    </div>`;
+            } else if (type === "TrueFalse") {
+                container.innerHTML = `
+                    <div class="option-item">
+                        <input type="radio" name="CauHois[${index}].DapAnDungIndex" id="tf-true-${index}" checked />
+                        <label for="tf-true-${index}">
+                            <span class="radio-custom"></span>
+                            <i class="fas fa-check-circle text-success"></i>
+                            <span class="option-text">Đúng</span>
+                        </label>
+                        <input type="hidden" name="CauHois[${index}].LuaChons[0].NoiDung" value="Đúng" />
+                        <input type="hidden" name="CauHois[${index}].LuaChons[0].LaDapAnDung" value="true" />
+                    </div>
+
+                    <div class="option-item">
+                        <input type="radio" name="CauHois[${index}].DapAnDungIndex" id="tf-false-${index}" />
+                        <label for="tf-false-${index}">
+                            <span class="radio-custom"></span>
+                            <i class="fas fa-times-circle text-danger"></i>
+                            <span class="option-text">Sai</span>
+                        </label>
+                        <input type="hidden" name="CauHois[${index}].LuaChons[1].NoiDung" value="Sai" />
+                        <input type="hidden" name="CauHois[${index}].LuaChons[1].LaDapAnDung" value="false" />
+                    </div>`;
+            } else {
+                container.innerHTML = `
+                    <div class="option-item">
+                        <input type="radio" name="CauHois[${index}].DapAnDungIndex" id="mc-${index}-0" checked />
+                        <label for="mc-${index}-0">
+                            <span class="radio-custom"></span>
+                            <span class="option-letter">A</span>
+                        </label>
+                        <input type="text"
+                               name="CauHois[${index}].LuaChons[0].NoiDung"
+                               class="form-input"
+                               placeholder="Lựa chọn A"
+                               required />
+                        <input type="hidden"
+                               name="CauHois[${index}].LuaChons[0].LaDapAnDung"
+                               value="true" />
+                    </div>
+
+                    <div class="option-item">
+                        <input type="radio" name="CauHois[${index}].DapAnDungIndex" id="mc-${index}-1" />
+                        <label for="mc-${index}-1">
+                            <span class="radio-custom"></span>
+                            <span class="option-letter">B</span>
+                        </label>
+                        <input type="text"
+                               name="CauHois[${index}].LuaChons[1].NoiDung"
+                               class="form-input"
+                               placeholder="Lựa chọn B"
+                               required />
+                        <input type="hidden"
+                               name="CauHois[${index}].LuaChons[1].LaDapAnDung"
+                               value="false" />
+                    </div>
+
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="themLuaChon(${index})">
+                        <i class="fas fa-plus"></i> Thêm lựa chọn
+                    </button>`;
+            }
+
+            // Cập nhật hidden LoaiCauHoi
+            select.closest('.cau-hoi-item').querySelector('input[name*="LoaiCauHoi"]').value = type;
+        }
+
+        function themLuaChon(index) {
+            const container = document.getElementById(`options-${index}`);
+            const count = container.querySelectorAll('.option-item').length;
+            const letter = String.fromCharCode(65 + count);
+
+            const html = `
+                <div class="option-item">
+                    <input type="radio" name="CauHois[${index}].DapAnDungIndex" id="mc-${index}-${count}" />
+                    <label for="mc-${index}-${count}">
+                        <span class="radio-custom"></span>
+                        <span class="option-letter">${letter}</span>
+                    </label>
+                    <input type="text"
+                           name="CauHois[${index}].LuaChons[${count}].NoiDung"
+                           class="form-input"
+                           placeholder="Lựa chọn ${letter}"
+                           required />
+                    <input type="hidden"
+                           name="CauHois[${index}].LuaChons[${count}].LaDapAnDung"
+                           value="false" />
+                    <button type="button" class="btn btn-danger btn-sm" onclick="this.closest('.option-item').remove()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>`;
+
+            container.insertAdjacentHTML('beforeend', html);
+        }
+
+        // Cập nhật đáp án đúng khi chọn radio
+        document.addEventListener('change', function(e) {
+            if (e.target.type === 'radio' && e.target.name.includes('DapAnDungIndex')) {
+                const name = e.target.name;
+                const index = name.match(/CauHois\[(\d+)\]/)[1];
+                const container = document.getElementById(`options-${index}`);
+                const radioButtons = container.querySelectorAll('input[type=radio]');
+                const luaChonIndex = Array.from(radioButtons).indexOf(e.target);
+
+                // Cập nhật hidden field LaDapAnDung
+                const hiddenFields = container.querySelectorAll('input[name*=".LaDapAnDung"]');
+                hiddenFields.forEach((h, i) => {
+                    h.value = (i === luaChonIndex).toString().toLowerCase();
+                });
+            }
+        });
     </script>
-
 }

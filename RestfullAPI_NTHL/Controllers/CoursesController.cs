@@ -249,30 +249,6 @@ namespace RestfullAPI_NTHL.Controllers
                 deletedIds = courses.Select(c => c.MaKhoaHoc).ToList()
             });
         }
-        // GET: api/Courses/{id} - Lấy chi tiết 1 khóa học (dành cho học sinh xem)
-        [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetById(int id)
-        {
-            var course = await _db.KhoaHoc
-                .AsNoTracking()
-                .Where(kh => kh.MaKhoaHoc == id && kh.IsActive == true && kh.TrangThaiDuyet == "DaDuyet")
-                .Select(kh => new
-                {
-                    kh.MaKhoaHoc,
-                    kh.TenKhoaHoc,
-                    kh.MoTa,
-                    kh.AnhBia,
-                    kh.NgayTao,
-                    kh.MaGiaoVien
-                    // Thêm field nào cần thiết
-                })
-                .FirstOrDefaultAsync();
-
-            if (course == null)
-                return NotFound("Không tìm thấy khóa học hoặc chưa được duyệt.");
-
-            return Ok(course);
-        }
 
         // GET: api/Courses/published
         // Lấy danh sách khóa học đã được duyệt (công khai cho học sinh)
@@ -293,6 +269,33 @@ namespace RestfullAPI_NTHL.Controllers
                 .ToListAsync();
 
             return Ok(data);
+        }
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetCourseById(int id)
+        {
+            var course = await _db.KhoaHoc
+                .AsNoTracking()
+                .FirstOrDefaultAsync(kh => kh.MaKhoaHoc == id);  // BỎ hết lọc IsActive, TrangThaiDuyet
+
+            if (course == null)
+            {
+                return NotFound(new { message = $"Không tìm thấy khóa học với ID {id}." });
+            }
+
+            return Ok(new
+            {
+                course.MaKhoaHoc,
+                course.TenKhoaHoc,
+                course.MoTa,
+                course.AnhBia,
+                course.NgayTao,
+                course.MaGiaoVien,
+                course.TrangThaiDuyet,
+                course.NgayGuiDuyet,
+                course.NgayDuyet,
+                course.LyDoTuChoi,
+                course.IsActive
+            });
         }
     }
 }

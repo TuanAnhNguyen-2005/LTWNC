@@ -19,16 +19,19 @@ namespace MVC_ADMIN.Services
         {
             try
             {
-                // Đọc từ file appsettings.json trong chính thư mục project MVC_ADMIN
-                string filePath = Path.Combine(
-                    AppDomain.CurrentDomain.BaseDirectory,
-                    "appsettings.json"
-                );
+                // ĐỌC appsettings.json từ thư mục gốc solution (cùng cấp với LTWNC)
+                // Khi chạy, BaseDirectory = ...\MVC_ADMIN\bin\Debug\
+                // → lên 1 cấp ".." → ...\MVC_ADMIN\
+                // → nhưng file appsettings.json nằm ở cấp cao hơn (LTWNC)
+                // → thực tế chỉ cần lên 1 cấp từ bin là tới thư mục chứa appsettings (theo bạn xác nhận)
+                string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "appsettings.json");
 
+                // Chuẩn hóa đường dẫn để tránh lỗi
+                filePath = Path.GetFullPath(filePath);
 
                 if (!File.Exists(filePath))
                 {
-                    throw new FileNotFoundException($"Không tìm thấy file appsettings.json tại: {filePath}. Hãy copy file vào thư mục MVC_ADMIN.");
+                    throw new FileNotFoundException($"Không tìm thấy file appsettings.json tại: {filePath}. Hãy kiểm tra lại vị trí file.");
                 }
 
                 string json = File.ReadAllText(filePath);
@@ -46,6 +49,8 @@ namespace MVC_ADMIN.Services
                 throw new InvalidOperationException($"Lỗi đọc appsettings.json: {ex.Message}", ex);
             }
         }
+
+        // Phần còn lại giữ nguyên hoàn toàn
         /// <summary>
         /// Quick test helper to verify DB connectivity (useful for diagnostics)
         /// </summary>
@@ -75,19 +80,17 @@ namespace MVC_ADMIN.Services
         /// <summary>
         /// Đăng ký user mới
         /// </summary>
-        public bool RegisterUser(string fullName, string email, string password, string role, 
+        public bool RegisterUser(string fullName, string email, string password, string role,
             string phoneNumber = null, string gender = null, string address = null, DateTime? dateOfBirth = null)
         {
             try
             {
-                // Map role string sang MaVaiTro
                 int maVaiTro = GetMaVaiTroByRole(role);
 
                 using (var connection = new SqlConnection(_connectionString))
                 {
                     connection.Open();
 
-                    // Kiểm tra email đã tồn tại chưa
                     string checkEmailSql = "SELECT COUNT(*) FROM NguoiDung WHERE Email = @Email";
                     using (var checkCmd = new SqlCommand(checkEmailSql, connection))
                     {
@@ -95,11 +98,10 @@ namespace MVC_ADMIN.Services
                         int count = (int)checkCmd.ExecuteScalar();
                         if (count > 0)
                         {
-                            return false; // Email đã tồn tại
+                            return false;
                         }
                     }
 
-                    // Insert user mới với đầy đủ thông tin
                     string insertSql = @"
                         INSERT INTO NguoiDung (HoTen, Email, MatKhau, MaVaiTro, SoDienThoai, GioiTinh, DiaChi, NgaySinh, NgayTao, TrangThai)
                         VALUES (@HoTen, @Email, @MatKhau, @MaVaiTro, @SoDienThoai, @GioiTinh, @DiaChi, @NgaySinh, GETDATE(), 1)";
@@ -108,7 +110,7 @@ namespace MVC_ADMIN.Services
                     {
                         cmd.Parameters.AddWithValue("@HoTen", (object)fullName ?? DBNull.Value);
                         cmd.Parameters.AddWithValue("@Email", email);
-                        cmd.Parameters.AddWithValue("@MatKhau", password); // Lưu plain text (nên hash trong production)
+                        cmd.Parameters.AddWithValue("@MatKhau", password);
                         cmd.Parameters.AddWithValue("@MaVaiTro", maVaiTro);
                         cmd.Parameters.AddWithValue("@SoDienThoai", (object)phoneNumber ?? DBNull.Value);
                         cmd.Parameters.AddWithValue("@GioiTinh", (object)gender ?? DBNull.Value);
@@ -120,13 +122,12 @@ namespace MVC_ADMIN.Services
                     }
                 }
             }
-            catch (SqlException) // let caller inspect SQL errors where appropriate
+            catch (SqlException)
             {
                 throw;
             }
             catch (Exception)
             {
-                // rethrow to preserve stack for controller to report/log
                 throw;
             }
         }
@@ -181,9 +182,6 @@ namespace MVC_ADMIN.Services
             }
         }
 
-        /// <summary>
-        /// Lấy MaVaiTro từ role string
-        /// </summary>
         private int GetMaVaiTroByRole(string role)
         {
             switch (role?.ToLower())
@@ -200,9 +198,6 @@ namespace MVC_ADMIN.Services
             }
         }
 
-        /// <summary>
-        /// Map role tiếng Việt sang tiếng Anh
-        /// </summary>
         private string MapRoleToEnglish(string role)
         {
             switch (role?.ToLower())
@@ -218,9 +213,6 @@ namespace MVC_ADMIN.Services
             }
         }
 
-        /// <summary>
-        /// Tạo user mẫu nếu chưa tồn tại
-        /// </summary>
         public bool CreateSampleUser()
         {
             try
@@ -229,7 +221,6 @@ namespace MVC_ADMIN.Services
                 {
                     connection.Open();
 
-                    // Kiểm tra email đã tồn tại chưa
                     string checkEmailSql = "SELECT COUNT(*) FROM NguoiDung WHERE Email = @Email";
                     using (var checkCmd = new SqlCommand(checkEmailSql, connection))
                     {
@@ -237,11 +228,10 @@ namespace MVC_ADMIN.Services
                         int count = (int)checkCmd.ExecuteScalar();
                         if (count > 0)
                         {
-                            return true; // Đã tồn tại
+                            return true;
                         }
                     }
 
-                    // Insert user mẫu (Sinh viên)
                     string insertSql = @"
                         INSERT INTO NguoiDung (HoTen, Email, MatKhau, MaVaiTro, NgayTao, TrangThai)
                         VALUES (@HoTen, @Email, @MatKhau, @MaVaiTro, GETDATE(), 1)";
@@ -251,7 +241,7 @@ namespace MVC_ADMIN.Services
                         cmd.Parameters.AddWithValue("@HoTen", "Thành Tú");
                         cmd.Parameters.AddWithValue("@Email", "thanhtu98912@gmail.com");
                         cmd.Parameters.AddWithValue("@MatKhau", "12345");
-                        cmd.Parameters.AddWithValue("@MaVaiTro", 3); // Sinh viên
+                        cmd.Parameters.AddWithValue("@MaVaiTro", 3);
 
                         int result = cmd.ExecuteNonQuery();
                         return result > 0;
@@ -266,9 +256,6 @@ namespace MVC_ADMIN.Services
         }
     }
 
-    /// <summary>
-    /// Kết quả đăng nhập
-    /// </summary>
     public class LoginResult
     {
         public bool Success { get; set; }
@@ -278,4 +265,3 @@ namespace MVC_ADMIN.Services
         public string Role { get; set; }
     }
 }
-
