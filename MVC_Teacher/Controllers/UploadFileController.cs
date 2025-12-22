@@ -1,317 +1,147 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using MVC_Teacher.Models;
+using Newtonsoft.Json;
+using System;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using MVC_Teacher.Models;
-using Newtonsoft.Json;
 
 namespace MVC_Teacher.Controllers
 {
     public class UploadFileController : Controller
     {
-        private readonly HttpClient _httpClient;
-        private const string ApiBaseUrl = "https://localhost:7068/api/"; // Thay port nếu khác
+        // ✅ API Base (đúng theo bạn đang chạy)
+        private readonly string _apiBase = "https://localhost:7068/api/";
 
-        public UploadFileController()
+
+        [HttpGet]
+        public ActionResult Upload(int maKhoaHoc)
         {
-            _httpClient = new HttpClient();
-            _httpClient.BaseAddress = new Uri(ApiBaseUrl);
-            _httpClient.DefaultRequestHeaders.Accept.Clear();
-            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            var keys = string.Join(", ", Session.Keys.Cast<string>());
+            ViewBag.SessionKeys = keys;
+
+            ViewBag.MaNguoiDung = Session["MaNguoiDung"];
+            ViewBag.UserId = Session["UserId"];
+            ViewBag.TeacherId = Session["TeacherId"];
+            ViewBag.MaGiaoVien = Session["MaGiaoVien"];
+
+            var model = new UploadHocLieuDto { MaKhoaHoc = maKhoaHoc };
+            return View(model);
         }
 
-        // GET: UploadFile/Upload?maKhoaHoc=5
-        public async Task<ActionResult> Upload(int? maKhoaHoc)
-        {
-            if (!maKhoaHoc.HasValue)
-            {
-                TempData["error"] = "Không xác định được khóa học để tải tài liệu.";
-                return RedirectToAction("MyCourses", "KhoaHoc");
-            }
 
-            int teacherId = GetCurrentTeacherId();
-
-            try
-            {
-                var courseResponse = await _httpClient.GetAsync($"Courses/{maKhoaHoc.Value}");
-                if (!courseResponse.IsSuccessStatusCode)
-                {
-                    TempData["error"] = $"Không tìm thấy khóa học (API lỗi {courseResponse.StatusCode}).";
-                    return RedirectToAction("MyCourses", "KhoaHoc");
-                }
-
-                var courseJson = await courseResponse.Content.ReadAsStringAsync();
-
-                // DEBUG: Hiển thị JSON trả về để biết chính xác API trả gì
-                ViewBag.DebugApiResponse = courseJson;
-
-                var courseObj = JsonConvert.DeserializeObject<dynamic>(courseJson);
-
-                // Log chi tiết để debug
-                int? apiMaGiaoVien = courseObj?.MaGiaoVien;
-                string apiTrangThai = courseObj?.TrangThaiDuyet?.ToString();
-                string apiTenKhoaHoc = courseObj?.tenKhoaHoc?.ToString();
-
-                ViewBag.DebugInfo = $"teacherId hiện tại: {teacherId}<br>" +
-                                    $"API MaGiaoVien: {apiMaGiaoVien}<br>" +
-                                    $"API TrangThaiDuyet: {apiTrangThai}<br>" +
-                                    $"API TenKhoaHoc: {apiTenKhoaHoc}";
-
-                //if (apiMaGiaoVien == null || apiTrangThai != "DaDuyet" || apiMaGiaoVien != teacherId)
-                //{
-                //    TempData["error"] = "Bạn không có quyền tải tài liệu lên khóa học này hoặc khóa học chưa được duyệt.";
-                //    return RedirectToAction("MyCourses", "KhoaHoc");
-                //}
-
-                ViewBag.TenKhoaHoc = apiTenKhoaHoc ?? "Khóa học không tên";
-                ViewBag.MaKhoaHoc = maKhoaHoc.Value;
-
-                // Lấy danh sách tài liệu (giữ nguyên)
-                var hocLieuResponse = await _httpClient.GetAsync($"HocLieu/course/{maKhoaHoc.Value}");
-                List<HocLieuViewModel> danhSach = new List<HocLieuViewModel>();
-                string hocLieuJson = "";
-                if (hocLieuResponse.IsSuccessStatusCode)
-                {
-                    hocLieuJson = await hocLieuResponse.Content.ReadAsStringAsync();
-                    danhSach = JsonConvert.DeserializeObject<List<HocLieuViewModel>>(hocLieuJson) ?? new List<HocLieuViewModel>();
-                }
-                else
-                {
-                    hocLieuJson = $"Error: {hocLieuResponse.StatusCode} - {await hocLieuResponse.Content.ReadAsStringAsync()}";
-                }
-                ViewBag.DebugHocLieuJson = hocLieuJson;
-                ViewBag.DanhSachTaiLieu = danhSach;
-
-                return View(new UploadHocLieuDto { MaKhoaHoc = maKhoaHoc.Value });
-            }
-            catch (Exception ex)
-            {
-                TempData["error"] = "Lỗi kết nối API: " + ex.Message + "<br>Stack Trace: " + ex.StackTrace;
-                ViewBag.DebugInfo = ex.ToString();
-                return RedirectToAction("MyCourses", "KhoaHoc");
-            }
-        }
-
+        // POST: /UploadFile/Upload
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Upload(UploadHocLieuDto model)
         {
-            // BƯỚC 1: Kiểm tra ModelState từ DataAnnotations ([Required])
-            if (!ModelState.IsValid)
+            // 1) Validate input
+            if (model == null)
             {
-                // Nếu có lỗi validation (TieuDe rỗng hoặc File null), load lại view với thông báo lỗi
-                await LoadCourseAndMaterials(model.MaKhoaHoc);
-                return View(model);
+                TempData["error"] = "Dữ liệu không hợp lệ";
+                return RedirectToAction("Upload", new { maKhoaHoc = 0 });
             }
 
-            // BƯỚC 2: Kiểm tra file có thực sự được chọn (phòng trường hợp binding lỗi)
-            if (model.FileHocLieu == null || model.FileHocLieu.ContentLength == 0)
+            if (string.IsNullOrWhiteSpace(model.TieuDe))
             {
-                ModelState.AddModelError("FileHocLieu", "Vui lòng chọn file tài liệu.");
-                await LoadCourseAndMaterials(model.MaKhoaHoc);
-                return View(model);
+                TempData["error"] = "Vui lòng nhập tiêu đề tài liệu";
+                return RedirectToAction("Upload", new { maKhoaHoc = model.MaKhoaHoc });
             }
 
-            // BƯỚC 3: Kiểm tra định dạng và kích thước file
-            var allowedExtensions = new[] { ".pdf", ".doc", ".docx", ".ppt", ".pptx", ".xls", ".xlsx", ".txt", ".zip", ".rar" };
-            var extension = Path.GetExtension(model.FileHocLieu.FileName).ToLowerInvariant();
-            if (!allowedExtensions.Contains(extension))
+            if (model.FileHocLieu == null || model.FileHocLieu.ContentLength <= 0)
             {
-                ModelState.AddModelError("FileHocLieu", "Chỉ chấp nhận định dạng: PDF, Word, Excel, PPT, TXT, ZIP, RAR.");
-                await LoadCourseAndMaterials(model.MaKhoaHoc);
-                return View(model);
+                TempData["error"] = "Vui lòng chọn file tài liệu";
+                return RedirectToAction("Upload", new { maKhoaHoc = model.MaKhoaHoc });
             }
 
-            if (model.FileHocLieu.ContentLength > 50 * 1024 * 1024)
+            // 2) Validate file extension + size (match API rule)
+            var allowedExtensions = new[]
             {
-                ModelState.AddModelError("FileHocLieu", "File không được lớn hơn 50MB.");
-                await LoadCourseAndMaterials(model.MaKhoaHoc);
-                return View(model);
+                ".pdf", ".doc", ".docx", ".ppt", ".pptx",
+                ".xls", ".xlsx", ".txt", ".zip", ".rar"
+            };
+
+            var ext = Path.GetExtension(model.FileHocLieu.FileName)?.ToLowerInvariant();
+            if (string.IsNullOrEmpty(ext) || !allowedExtensions.Contains(ext))
+            {
+                TempData["error"] = "Định dạng file không được hỗ trợ";
+                return RedirectToAction("Upload", new { maKhoaHoc = model.MaKhoaHoc });
             }
 
-            // BƯỚC 4: Gửi lên API
+            long maxBytes = 50L * 1024 * 1024; // 50MB
+            if (model.FileHocLieu.ContentLength > maxBytes)
+            {
+                TempData["error"] = "File không được lớn hơn 50MB";
+                return RedirectToAction("Upload", new { maKhoaHoc = model.MaKhoaHoc });
+            }
+
+            // 3) Lấy MaGiaoVien từ session/login
+            int teacherId = GetCurrentTeacherId();
+            if (teacherId <= 0)
+            {
+                TempData["error"] = "Bạn chưa đăng nhập hoặc không xác định được mã giáo viên.";
+                return RedirectToAction("Upload", new { maKhoaHoc = model.MaKhoaHoc });
+            }
+
+            // 4) Call API upload
             try
             {
-                using (var content = new MultipartFormDataContent())
+                using (var http = new HttpClient())
                 {
-                    content.Add(new StringContent(model.TieuDe.Trim()), "TieuDe");
+                    http.BaseAddress = new Uri(_apiBase);
+                    http.DefaultRequestHeaders.Accept.Clear();
+                    http.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("*/*"));
 
-                    if (!string.IsNullOrWhiteSpace(model.MoTa))
-                        content.Add(new StringContent(model.MoTa.Trim()), "MoTa");
-
-                    content.Add(new StringContent(model.MaKhoaHoc.ToString()), "MaKhoaHoc");
-                    content.Add(new StringContent(GetCurrentTeacherId().ToString()), "MaNguoiDung");
-
-                    var fileContent = new StreamContent(model.FileHocLieu.InputStream);
-                    fileContent.Headers.ContentType = new MediaTypeHeaderValue(model.FileHocLieu.ContentType);
-                    content.Add(fileContent, "File", model.FileHocLieu.FileName);
-
-                    var response = await _httpClient.PostAsync("HocLieu/upload", content);
-                    var responseBody = await response.Content.ReadAsStringAsync();
-
-                    TempData["debug_response"] = $"Status: {(int)response.StatusCode} | Body: {responseBody}";
-
-                    if (response.IsSuccessStatusCode)
+                    using (var content = new MultipartFormDataContent())
                     {
-                        TempData["msg"] = $"Đã upload tài liệu \"{model.TieuDe}\" thành công!";
-                        return RedirectToAction("Upload", new { maKhoaHoc = model.MaKhoaHoc });
-                        // Hoặc: return RedirectToAction("Success", new { maKhoaHoc = model.MaKhoaHoc });
-                    }
-                    else
-                    {
-                        TempData["error"] = "Upload thất bại: " + responseBody;
-                        return RedirectToAction("Upload", new { maKhoaHoc = model.MaKhoaHoc });
+                        // ✅ tên field PHẢI khớp DTO API
+                        content.Add(new StringContent(model.TieuDe.Trim()), "TieuDe");
+                        content.Add(new StringContent(model.MoTa ?? ""), "MoTa");
+                        content.Add(new StringContent(model.MaKhoaHoc.ToString()), "MaKhoaHoc");
+
+                        // ✅ API mới dùng MaGiaoVien (KHÔNG phải MaNguoiDung)
+                        content.Add(new StringContent(teacherId.ToString()), "MaGiaoVien");
+
+                        // ✅ API mới nhận file key là "File"
+                        var fileContent = new StreamContent(model.FileHocLieu.InputStream);
+                        fileContent.Headers.ContentType = new MediaTypeHeaderValue(model.FileHocLieu.ContentType);
+                        content.Add(fileContent, "File", Path.GetFileName(model.FileHocLieu.FileName));
+
+                        var response = await http.PostAsync("HocLieu/upload", content);
+                        var responseBody = await response.Content.ReadAsStringAsync();
+
+                        TempData["debug_response"] = $"Status: {(int)response.StatusCode}\n{responseBody}";
+
+                        if (response.IsSuccessStatusCode)
+                        {
+                            TempData["msg"] = "Upload tài liệu thành công!";
+                        }
+                        else
+                        {
+                            TempData["error"] = "Upload thất bại: " + responseBody;
+                        }
                     }
                 }
             }
             catch (Exception ex)
             {
                 TempData["error"] = "Lỗi hệ thống: " + ex.Message;
-                return RedirectToAction("Upload", new { maKhoaHoc = model.MaKhoaHoc });
             }
+
+            return RedirectToAction("Upload", new { maKhoaHoc = model.MaKhoaHoc });
         }
 
-        // Hàm phụ để load tên khóa học + danh sách tài liệu khi có lỗi
-        private async Task LoadCourseAndMaterials(int maKhoaHoc)
-        {
-            try
-            {
-                var courseResp = await _httpClient.GetAsync($"Courses/{maKhoaHoc}");
-                if (courseResp.IsSuccessStatusCode)
-                {
-                    var json = await courseResp.Content.ReadAsStringAsync();
-                    dynamic obj = JsonConvert.DeserializeObject(json);
-                    ViewBag.TenKhoaHoc = obj?.tenKhoaHoc?.ToString() ?? $"Khóa học #{maKhoaHoc}";
-                }
-                else
-                {
-                    ViewBag.TenKhoaHoc = $"Khóa học #{maKhoaHoc}";
-                }
-            }
-            catch
-            {
-                ViewBag.TenKhoaHoc = $"Khóa học #{maKhoaHoc}";
-            }
-
-            ViewBag.MaKhoaHoc = maKhoaHoc;
-
-            // Load danh sách tài liệu
-            var hlResp = await _httpClient.GetAsync($"HocLieu/course/{maKhoaHoc}");
-            List<HocLieuViewModel> ds = new List<HocLieuViewModel>();
-            if (hlResp.IsSuccessStatusCode)
-            {
-                var json = await hlResp.Content.ReadAsStringAsync();
-                ds = JsonConvert.DeserializeObject<List<HocLieuViewModel>>(json) ?? new List<HocLieuViewModel>();
-            }
-            ViewBag.DanhSachTaiLieu = ds;
-        }
-
-        // Hàm phụ để tránh lặp code khi load view Upload
-        private async Task<ActionResult> PrepareUploadView(int maKhoaHoc)
-        {
-            // Load tên khóa học đúng cách
-            try
-            {
-                var resp = await _httpClient.GetAsync($"Courses/{maKhoaHoc}");
-                if (resp.IsSuccessStatusCode)
-                {
-                    var json = await resp.Content.ReadAsStringAsync();
-                    dynamic obj = JsonConvert.DeserializeObject(json);
-                    ViewBag.TenKhoaHoc = obj?.tenKhoaHoc?.ToString() ?? $"Khóa học #{maKhoaHoc}";
-                }
-                else
-                {
-                    ViewBag.TenKhoaHoc = $"Khóa học #{maKhoaHoc}";
-                }
-            }
-            catch
-            {
-                ViewBag.TenKhoaHoc = $"Khóa học #{maKhoaHoc}";
-            }
-
-            ViewBag.MaKhoaHoc = maKhoaHoc;
-
-            // Load danh sách tài liệu
-            var hocLieuResp = await _httpClient.GetAsync($"HocLieu/course/{maKhoaHoc}");
-            List<HocLieuViewModel> danhSach = new List<HocLieuViewModel>();
-            if (hocLieuResp.IsSuccessStatusCode)
-            {
-                var json = await hocLieuResp.Content.ReadAsStringAsync();
-                danhSach = JsonConvert.DeserializeObject<List<HocLieuViewModel>>(json) ?? new List<HocLieuViewModel>();
-            }
-            ViewBag.DanhSachTaiLieu = danhSach;
-
-            return View("Upload", new UploadHocLieuDto { MaKhoaHoc = maKhoaHoc });
-        }
-
-        // Hàm phụ để load tên khóa học khi có lỗi validation (tránh hiển thị "Khóa học #5")
-        private async Task LoadCourseInfo(int maKhoaHoc)
-        {
-            try
-            {
-                var response = await _httpClient.GetAsync($"Courses/{maKhoaHoc}");
-                if (response.IsSuccessStatusCode)
-                {
-                    var json = await response.Content.ReadAsStringAsync();
-                    dynamic obj = JsonConvert.DeserializeObject(json);
-                    ViewBag.TenKhoaHoc = obj?.tenKhoaHoc?.ToString() ?? $"Khóa học #{maKhoaHoc}";
-                }
-            }
-            catch { ViewBag.TenKhoaHoc = $"Khóa học #{maKhoaHoc}"; }
-            ViewBag.MaKhoaHoc = maKhoaHoc;
-        }
-
-        public async Task<ActionResult> Success(int maKhoaHoc)
-        {
-            int teacherId = GetCurrentTeacherId();
-
-            try
-            {
-                var courseResponse = await _httpClient.GetAsync($"Courses/{maKhoaHoc}");
-                if (!courseResponse.IsSuccessStatusCode)
-                {
-                    TempData["error"] = $"Không tìm thấy khóa học (API lỗi {courseResponse.StatusCode}).";
-                    return RedirectToAction("MyCourses", "KhoaHoc");
-                }
-
-                var courseJson = await courseResponse.Content.ReadAsStringAsync();
-                var courseObj = JsonConvert.DeserializeObject<dynamic>(courseJson);
-                string apiTenKhoaHoc = courseObj?.tenKhoaHoc?.ToString();
-
-                ViewBag.TenKhoaHoc = apiTenKhoaHoc ?? "Khóa học không tên";
-
-                ViewBag.TenKhoaHoc = apiTenKhoaHoc ?? "Khóa học không tên";
-                ViewBag.MaKhoaHoc = maKhoaHoc;
-                ViewBag.SuccessMessage = TempData["SuccessMessage"];
-
-                var hocLieuResponse = await _httpClient.GetAsync($"HocLieu/course/{maKhoaHoc}");
-                List<HocLieuViewModel> danhSach = new List<HocLieuViewModel>();
-                if (hocLieuResponse.IsSuccessStatusCode)
-                {
-                    var json = await hocLieuResponse.Content.ReadAsStringAsync();
-                    danhSach = JsonConvert.DeserializeObject<List<HocLieuViewModel>>(json) ?? new List<HocLieuViewModel>();
-                }
-                ViewBag.DanhSachTaiLieu = danhSach;
-
-                return View();
-            }
-            catch (Exception ex)
-            {
-                TempData["error"] = "Lỗi kết nối API: " + ex.Message;
-                return RedirectToAction("MyCourses", "KhoaHoc");
-            }
-        }
-
+        // ✅ Lấy ID giáo viên đang đăng nhập
+        // Bạn chỉnh đúng theo session key dự án bạn đang dùng
         private int GetCurrentTeacherId()
         {
-            if (Session["MaNguoiDung"] != null && int.TryParse(Session["MaNguoiDung"].ToString(), out int id))
+            if (Session["UserId"] != null && int.TryParse(Session["UserId"].ToString(), out int id))
                 return id;
-            return 2; // test
+
+            return 0;
         }
+
     }
 }

@@ -1,0 +1,64 @@
+﻿@model List<MVC_STUDENT.Models.HocLieuVm>
+
+@{
+    ViewBag.Title = "Tài liệu khóa học";
+    string fileBase = ViewBag.FileBaseUrl ?? "";
+}
+
+<div class="container py-4">
+    <h3>Tài liệu khóa học</h3>
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger">@ViewBag.Error</div>
+    }
+
+    @if (Model == null || Model.Count == 0)
+    {
+        <div class="alert alert-info">
+            Chưa có tài liệu nào cho khóa học này.
+        </div>
+    }
+    else
+    {
+        <table class="table table-bordered table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Tiêu đề</th>
+                    <th>Mô tả</th>
+                    <th>Loại</th>
+                    <th>Ngày đăng</th>
+                    <th>Tài liệu</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    var fileUrl = string.IsNullOrWhiteSpace(item.DuongDanTep)
+                        ? ""
+                        : fileBase + item.DuongDanTep;
+
+                    <tr>
+                        <td class="fw-bold">@item.TieuDe</td>
+                        <td>@(string.IsNullOrWhiteSpace(item.MoTa) ? "-" : item.MoTa)</td>
+                        <td>@item.LoaiTep</td>
+                        <td>@item.NgayDang?.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(fileUrl))
+                            {
+                                <!-- 🔗 LINK LABEL bạn nói lúc nãy -->
+                                <a href="@fileUrl" target="_blank" class="text-primary fw-semibold">
+                                    Xem 
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="text-muted">Không có</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

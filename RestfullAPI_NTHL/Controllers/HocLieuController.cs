@@ -92,12 +92,11 @@ public class HocLieuController : ControllerBase
 
         return Ok(data);
     }
-
-    // POST: api/HocLieu/upload → Upload file tài liệu cho khóa học
     // POST: api/HocLieu/upload → Upload file tài liệu cho khóa học
     [HttpPost("upload")]
     public async Task<IActionResult> Upload([FromForm] HocLieuUploadDto dto)
     {
+        // 1) Validate cơ bản
         if (string.IsNullOrWhiteSpace(dto.TieuDe))
             return BadRequest("Thiếu tiêu đề tài liệu");
 
@@ -107,22 +106,48 @@ public class HocLieuController : ControllerBase
         if (dto.File.Length > 50 * 1024 * 1024)
             return BadRequest("File không được lớn hơn 50MB");
 
-        // Kiểm tra quyền
+        // 2) Kiểm tra giáo viên (MaVaiTro = 2)
+        var gv = await _db.NguoiDung
+            .AsNoTracking()
+            .FirstOrDefaultAsync(u => u.MaNguoiDung == dto.MaGiaoVien);
+
+        if (gv == null)
+            return Unauthorized("Không tìm thấy giáo viên");
+
+        if (gv.MaVaiTro != 2)
+            return StatusCode(StatusCodes.Status403Forbidden,
+                "Chỉ giáo viên (mã vai trò = 2) mới được upload tài liệu");
+
+        // 3) Kiểm tra khóa học có tồn tại không
         var khoaHoc = await _db.KhoaHoc
-            .FirstOrDefaultAsync(k => k.MaKhoaHoc == dto.MaKhoaHoc
-                                   && k.MaGiaoVien == dto.MaNguoiDung
-                                   && k.TrangThaiDuyet == "DaDuyet");
+            .AsNoTracking()
+            .FirstOrDefaultAsync(k => k.MaKhoaHoc == dto.MaKhoaHoc);
 
         if (khoaHoc == null)
-            return Forbid("Bạn không có quyền upload tài liệu cho khóa học này");
+            return NotFound("Không tồn tại khóa học này");
 
-        // Kiểm tra định dạng
-        var allowedExtensions = new[] { ".pdf", ".doc", ".docx", ".ppt", ".pptx", ".xls", ".xlsx", ".txt", ".zip", ".rar" };
+        // 4) Kiểm tra khóa học có thuộc giáo viên này không
+        if (khoaHoc.MaGiaoVien != dto.MaGiaoVien)
+            return StatusCode(StatusCodes.Status403Forbidden,
+                "Bạn không phải giáo viên của khóa học này");
+
+        // 5) Kiểm tra trạng thái duyệt khóa học
+        if (khoaHoc.TrangThaiDuyet != "DaDuyet")
+            return StatusCode(StatusCodes.Status403Forbidden,
+                "Khóa học chưa được duyệt nên không thể upload tài liệu");
+
+        // 6) Kiểm tra định dạng
+        var allowedExtensions = new[]
+        {
+        ".pdf", ".doc", ".docx", ".ppt", ".pptx",
+        ".xls", ".xlsx", ".txt", ".zip", ".rar"
+    };
+
         var extension = Path.GetExtension(dto.File.FileName).ToLowerInvariant();
         if (!allowedExtensions.Contains(extension))
             return BadRequest("Định dạng file không được hỗ trợ");
 
-        // Lưu file
+        // 7) Lưu file
         var fileName = Guid.NewGuid().ToString("N") + extension;
         var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "files", "hoclieu");
 
@@ -136,7 +161,7 @@ public class HocLieuController : ControllerBase
             await dto.File.CopyToAsync(stream);
         }
 
-        // Lưu DB
+        // 8) Lưu DB
         var hocLieu = new HocLieu
         {
             TieuDe = dto.TieuDe.Trim(),
@@ -145,8 +170,12 @@ public class HocLieuController : ControllerBase
             LoaiTep = extension.Substring(1).ToUpper(),
             KichThuocTep = dto.File.Length,
             NgayDang = DateTime.Now,
+
             MaKhoaHoc = dto.MaKhoaHoc,
-            MaNguoiDung = dto.MaNguoiDung,
+
+            // lưu người upload (giáo viên)
+            MaNguoiDung = dto.MaGiaoVien,
+
             DaDuyet = true,
             TrangThaiDuyet = "Đã duyệt"
         };
@@ -161,6 +190,7 @@ public class HocLieuController : ControllerBase
             duongDan = hocLieu.DuongDanTep
         });
     }
+
 }
 
 

@@ -1,152 +1,43 @@
 ﻿@model MVC_Teacher.Models.UploadHocLieuDto
-@{
-    ViewBag.Title = "Tải tài liệu lên - " + ViewBag.TenKhoaHoc;
+
+@if (ViewBag.SessionKeys != null)
+{
+    <div class="alert alert-warning">
+        <b>Session keys:</b> @ViewBag.SessionKeys <br />
+        <b>MaNguoiDung:</b> @ViewBag.MaNguoiDung <br />
+        <b>UserId:</b> @ViewBag.UserId <br />
+        <b>TeacherId:</b> @ViewBag.TeacherId <br />
+        <b>MaGiaoVien:</b> @ViewBag.MaGiaoVien
+    </div>
 }
 
-<div class="container py-5">
-    <h2 class="mb-4 fw-bold text-primary">
-        Tải tài liệu lên cho khóa học: <span class="text-dark">@ViewBag.TenKhoaHoc</span>
-    </h2>
 
-    @if (TempData["msg"] != null)
-    {
-        <div class="alert alert-success alert-dismissible fade show">
-            <i class="fas fa-check-circle"></i> @TempData["msg"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    }
-    @if (TempData["error"] != null)
-    {
-        <div class="alert alert-danger alert-dismissible fade show">
-            <i class="fas fa-exclamation-triangle"></i> @TempData["error"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    }
+@using (Html.BeginForm("Upload", "UploadFile", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.MaKhoaHoc)
 
-    @if (TempData["debug_response"] != null)
-    {
-        <div class="alert alert-info">
-            <strong>Debug API Upload Response:</strong><br />
-            @TempData["debug_response"]
-        </div>
-    }
-
-    @if (ViewBag.DebugInfo != null)
-    {
-        <div class="alert alert-info">
-            <strong>Debug Info:</strong><br />
-            @Html.Raw(ViewBag.DebugInfo)
-        </div>
-    }
-
-    @if (ViewBag.DebugApiResponse != null)
-    {
-        <div class="alert alert-info">
-            <strong>API Response (Course):</strong><br />
-            <pre>@ViewBag.DebugApiResponse</pre>
-        </div>
-    }
-
-    @if (ViewBag.DebugHocLieuJson != null)
-    {
-        <div class="alert alert-info">
-            <strong>Debug HocLieu API JSON:</strong><br />
-            <pre>@ViewBag.DebugHocLieuJson</pre>
-        </div>
-    }
-
-    <div class="card shadow mb-5">
-        <div class="card-header bg-success text-white">
-            <h5 class="mb-0"><i class="fas fa-upload me-2"></i> Upload tài liệu mới</h5>
-        </div>
-        <div class="card-body">
-            <form asp-action="Upload" method="post" enctype="multipart/form-data">
-                @Html.ValidationSummary(false, "", new { @class = "text-danger" })
-                @Html.AntiForgeryToken()
-                <input type="hidden" name="MaKhoaHoc" value="@Model.MaKhoaHoc" />
-
-                <div class="form-group mb-3">
-                    <label>Tiêu đề tài liệu <span class="text-danger">*</span></label>
-                    <input asp-for="TieuDe" class="form-control" />
-                    <span asp-validation-for="TieuDe" class="text-danger"></span>
-                    <span asp-validation-for="FileHocLieu" class="text-danger"></span>
-                </div>
-
-                <div class="form-group mb-3">
-                    <label>Mô tả (tùy chọn)</label>
-                    <textarea asp-for="MoTa" class="form-control" rows="3"></textarea>
-                    <span asp-validation-for="MoTa" class="text-danger"></span>
-                </div>
-
-                <div class="form-group mb-4">
-                    <label>Chọn file <span class="text-danger">*</span></label>
-                    <input type="file" name="FileHocLieu" class="form-control"
-                           accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt,.zip,.rar" required />
-                    <span asp-validation-for="FileHocLieu" class="text-danger"></span>
-                    <small class="text-muted">Tối đa 50MB. Định dạng: PDF, Word, Excel, PPT, TXT, ZIP, RAR</small>
-                </div>
-
-                <button type="submit" class="btn btn-success btn-lg" onclick="return validateUpload()">
-                    <i class="fas fa-upload me-2"></i> Upload tài liệu
-                </button>
-
-                <script>
-                    function validateUpload() {
-                        // Tìm input tiêu đề (dùng cả 2 cách để chắc chắn)
-                        var tieuDeInput = document.querySelector('input[asp-for="TieuDe"]') ||
-                            document.querySelector('input[name="TieuDe"]');
-                        var fileInput = document.querySelector('input[type="file"][name="FileHocLieu"]');
-
-                        if (!tieuDeInput || tieuDeInput.value.trim() === '') {
-                            alert('⚠️ Vui lòng nhập tiêu đề tài liệu!');
-                            return false;
-                        }
-
-                        if (!fileInput || fileInput.files.length === 0) {
-                            alert('⚠️ Vui lòng chọn một file tài liệu!');
-                            return false;
-                        }
-
-                        return true;
-                    }
-                </script>
-                <a href="@Url.Action("MyCourses", "KhoaHoc")" class="btn btn-secondary btn-lg ms-3">
-                    <i class="fas fa-arrow-left me-2"></i> Quay lại danh sách khóa học
-                </a>
-            </form>
-        </div>
+    <div>
+        <label>Tiêu đề</label>
+        @Html.TextBoxFor(m => m.TieuDe)
     </div>
 
-    @if (ViewBag.DanhSachTaiLieu != null && ((List<MVC_Teacher.Models.HocLieuViewModel>)ViewBag.DanhSachTaiLieu).Count > 0)
-    {
-        <h4 class="mb-4">Danh sách tài liệu đã upload (@((List<MVC_Teacher.Models.HocLieuViewModel>)ViewBag.DanhSachTaiLieu).Count)</h4>
-        <div class="row">
-            @foreach (var item in (List<MVC_Teacher.Models.HocLieuViewModel>)ViewBag.DanhSachTaiLieu)
-            {
-                <div class="col-md-6 mb-4">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body d-flex flex-column">
-                            <h5 class="card-title">@item.TieuDe</h5>
-                            @if (!string.IsNullOrEmpty(item.MoTa))
-                            {
-                                <p class="card-text text-muted small">@item.MoTa</p>
-                            }
-                            <p class="text-muted small">
-                                <i class="fas fa-file-alt me-1"></i> @item.LoaiTep
-                                <span class="ml-3"><i class="fas fa-hdd me-1"></i> @item.KichThuocHienThi</span>
-                                <br><i class="fas fa-calendar me-1"></i> @item.NgayDang.ToString("dd/MM/yyyy HH:mm")
-                            </p>
-                            <a href="@item.DuongDanTep" target="_blank" class="btn btn-outline-primary mt-auto">
-                                <i class="fas fa-eye me-1"></i> Xem / Tải xuống
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            }
-        </div>
-    }
-    else
-    {
-        <p class="text-muted">Chưa có tài liệu nào được upload cho khóa học này.</p>
-    }
-</div>
+    <div>
+        <label>Mô tả</label>
+        @Html.TextAreaFor(m => m.MoTa)
+    </div>
+
+    <div>
+        <label>File</label>
+        <input type="file" name="FileHocLieu" />
+    </div>
+
+    <button type="submit">Upload</button>
+}
+
+@if (TempData["msg"] != null)
+{<div style="color:green">@TempData["msg"]</div>}
+@if (TempData["error"] != null)
+{<div style="color:red">@TempData["error"]</div>}
+@if (TempData["debug_response"] != null)
+{<pre>@TempData["debug_response"]</pre>}

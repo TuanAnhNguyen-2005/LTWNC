@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using RestfullAPI_NTHL.Models;
+using Microsoft.AspNetCore.Authentication.Cookies; // THÊM ĐỂ DÙNG COOKIE AUTHENTICATION
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,19 @@ builder.Services.AddDbContext<NenTangDbContext>(options =>
     var connection = builder.Configuration.GetConnectionString("DefaultConnection");
     options.UseSqlServer(connection);
 });
+
+// THÊM PHẦN NÀY: CẤU HÌNH AUTHENTICATION VỚI COOKIE
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Account/Login"; // Đường dẫn trang login nếu chưa đăng nhập
+        options.AccessDeniedPath = "/Account/AccessDenied"; // Đường dẫn khi không đủ quyền
+        options.ExpireTimeSpan = TimeSpan.FromHours(8); // Thời gian hết hạn cookie
+        options.SlidingExpiration = true; // Tự động gia hạn nếu còn hoạt động
+    });
+
+// THÊM PHẦN NÀY: AUTHORIZATION (nếu chưa có)
+builder.Services.AddAuthorization();
 
 // CORS
 builder.Services.AddCors(options =>
@@ -36,13 +50,6 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-app.UseSwagger();
-app.UseSwaggerUI(c =>
-{
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "NenTangHocLieu API v1");
-    c.RoutePrefix = "swagger";
-});
-
 // 🔴 FIX CHÍNH: CẤU HÌNH STATIC FILES EXPLICIT VÀ ĐẶT LÊN ĐẦU
 app.UseStaticFiles(new StaticFileOptions
 {
@@ -54,10 +61,18 @@ app.UseStaticFiles(new StaticFileOptions
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");
 
-// Nếu bạn có JWT authentication
-// app.UseAuthentication();
+// THÊM PHẦN NÀY: USE AUTHENTICATION (PHẢI TRƯỚC UseAuthorization)
+app.UseAuthentication();
 
+// ĐÃ CÓ: USE AUTHORIZATION
 app.UseAuthorization();
+
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "NenTangHocLieu API v1");
+    c.RoutePrefix = "swagger";
+});
 
 app.MapControllers();
 

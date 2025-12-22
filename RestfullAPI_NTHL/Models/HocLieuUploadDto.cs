@@ -10,7 +10,8 @@ namespace RestfullAPI_NTHL.Models
 
         public int MaKhoaHoc { get; set; }
 
-        public int MaNguoiDung { get; set; }
+        public int MaGiaoVien { get; set; }
+
 
         public IFormFile File { get; set; } = null!;
     }

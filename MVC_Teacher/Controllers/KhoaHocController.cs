@@ -167,11 +167,15 @@ namespace MVC_TEACHER.Controllers
             return RedirectToAction("MyCourses");
         }
 
-        // Demo – sau này bạn lấy từ đăng nhập
         private int GetTeacherId()
         {
-            return 1;
+            // đúng theo session hiện tại của bạn
+            if (Session["UserId"] != null && int.TryParse(Session["UserId"].ToString(), out int id))
+                return id;
+
+            return 0; // hoặc throw / redirect login
         }
+
     }
 
 
