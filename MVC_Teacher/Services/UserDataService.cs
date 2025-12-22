@@ -22,12 +22,19 @@ namespace MVC_Teacher.Services
         {
             try
             {
-                // Đọc file appsettings.json ngay trong thư mục project MVC hiện tại (cùng cấp Web.config)
-                var filePath = System.Web.Hosting.HostingEnvironment.MapPath("~/appsettings.json");
+                // ĐỌC appsettings.json từ thư mục gốc solution (cùng cấp với LTWNC)
+                // Khi chạy, BaseDirectory = ...\MVC_ADMIN\bin\Debug\
+                // → lên 1 cấp ".." → ...\MVC_ADMIN\
+                // → nhưng file appsettings.json nằm ở cấp cao hơn (LTWNC)
+                // → thực tế chỉ cần lên 1 cấp từ bin là tới thư mục chứa appsettings (theo bạn xác nhận)
+                string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "appsettings.json");
+
+                // Chuẩn hóa đường dẫn để tránh lỗi
+                filePath = Path.GetFullPath(filePath);
 
                 if (!File.Exists(filePath))
                 {
-                    throw new FileNotFoundException($"Không tìm thấy file appsettings.json tại: {filePath}. Hãy tạo file này trong thư mục project MVC.");
+                    throw new FileNotFoundException($"Không tìm thấy file appsettings.json tại: {filePath}. Hãy kiểm tra lại vị trí file.");
                 }
 
                 string json = File.ReadAllText(filePath);

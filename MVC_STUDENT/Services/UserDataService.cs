@@ -15,16 +15,19 @@ namespace MVC_STUDENT.Services  // ĐỔI THÀNH namespace của project bạn
         {
             try
             {
-                string filePath = Path.Combine(
-                    AppDomain.CurrentDomain.BaseDirectory,
-                    "appsettings.json"
-                );
+                // ĐỌC appsettings.json từ thư mục gốc solution (cùng cấp với LTWNC)
+                // Khi chạy, BaseDirectory = ...\MVC_ADMIN\bin\Debug\
+                // → lên 1 cấp ".." → ...\MVC_ADMIN\
+                // → nhưng file appsettings.json nằm ở cấp cao hơn (LTWNC)
+                // → thực tế chỉ cần lên 1 cấp từ bin là tới thư mục chứa appsettings (theo bạn xác nhận)
+                string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "appsettings.json");
 
+                // Chuẩn hóa đường dẫn để tránh lỗi
                 filePath = Path.GetFullPath(filePath);
 
                 if (!File.Exists(filePath))
                 {
-                    throw new FileNotFoundException($"Không tìm thấy appsettings.json tại: {filePath}");
+                    throw new FileNotFoundException($"Không tìm thấy file appsettings.json tại: {filePath}. Hãy kiểm tra lại vị trí file.");
                 }
 
                 string json = File.ReadAllText(filePath);
@@ -39,7 +42,7 @@ namespace MVC_STUDENT.Services  // ĐỔI THÀNH namespace của project bạn
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Lỗi đọc cấu hình: {ex.Message}", ex);
+                throw new InvalidOperationException($"Lỗi đọc appsettings.json: {ex.Message}", ex);
             }
         }
         public LoginResult LoginUser(string email, string password)
