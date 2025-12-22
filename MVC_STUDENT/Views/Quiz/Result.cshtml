@@ -1,62 +1,76 @@
+@model MVC_STUDENT.Models.QuizResultDto
+
 @{
+    ViewBag.Title = "Kết quả - " + Model.TenQuiz;
     Layout = "~/Views/Shared/_StudentLayout.cshtml";
-    ViewBag.Title = "Kết quả Quiz";
+
+    var tyLeDung = Model.TongCau > 0 ? Math.Round((Model.SoCauDung * 100.0 / Model.TongCau), 0) : 0;
 }
 
-<div class="row">
-    <div class="col-lg-8 mx-auto">
-        <div class="card card-modern">
-            <div class="card-body text-center p-5">
-                <div class="mb-4">
-                    <i class="fas fa-trophy fa-5x text-warning mb-3"></i>
-                    <h2 class="fw-bold">Kết quả Quiz</h2>
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-gradient-success text-white text-center py-4">
+                    <h2 class="mb-0">
+                        <i class="fas fa-trophy me-2"></i>
+                        Chúc mừng! Bạn đã hoàn thành bài quiz
+                    </h2>
                 </div>
+                <div class="card-body text-center py-5">
+                    <h3 class="text-primary mb-4">@Model.TenQuiz</h3>
 
-                <div class="row mb-4">
-                    <div class="col-md-4 mb-3">
-                        <div class="card card-modern">
-                            <div class="card-body">
-                                <h3 class="text-primary fw-bold">8/10</h3>
-                                <p class="text-muted mb-0">Điểm số</p>
+                    <div class="display-1 fw-bold text-success mb-3">
+                        @Model.Diem.ToString("0.##") <small class="fs-3">/ @Model.TongDiem</small>
+                    </div>
+
+                    <div class="row justify-content-center mb-5">
+                        <div class="col-md-4">
+                            <div class="card bg-light border-0">
+                                <div class="card-body">
+                                    <h4 class="text-success fw-bold">@tyLeDung%</h4>
+                                    <p class="text-muted mb-0">Tỷ lệ đúng</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-light border-0">
+                                <div class="card-body">
+                                    <h4 class="text-primary fw-bold">@Model.SoCauDung / @Model.TongCau</h4>
+                                    <p class="text-muted mb-0">Câu đúng</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-light border-0">
+                                <div class="card-body">
+                                    <h4 class="text-info fw-bold">
+                                        @(Model.ThoiGianLam.Minutes)m @(Model.ThoiGianLam.Seconds.ToString("00"))s
+                                    </h4>
+                                    <p class="text-muted mb-0">Thời gian làm</p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="card card-modern">
-                            <div class="card-body">
-                                <h3 class="text-success fw-bold">80%</h3>
-                                <p class="text-muted mb-0">Tỷ lệ đúng</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="card card-modern">
-                            <div class="card-body">
-                                <h3 class="text-info fw-bold">25:30</h3>
-                                <p class="text-muted mb-0">Thời gian</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
-                <div class="alert alert-success">
-                    <i class="fas fa-check-circle me-2"></i>
-                    <strong>Chúc mừng!</strong> Bạn đã hoàn thành quiz với kết quả tốt.
-                </div>
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle me-2"></i>
+                        <strong>Xuất sắc!</strong> Bạn đã hoàn thành bài kiểm tra vào lúc
+                        <strong>@Model.NgayNop.ToString("HH:mm, dd/MM/yyyy")</strong>
+                    </div>
 
-                <div class="mt-4">
-                    <a href="/Quiz" class="btn btn-gradient me-2">
-                        <i class="fas fa-list me-1"></i>Xem danh sách Quiz
-                    </a>
-                    <a href="/Quiz/Details/1" class="btn btn-outline-primary">
-                        <i class="fas fa-redo me-1"></i>Làm lại
-                    </a>
+                    <div class="mt-5">
+                        <a href="@Url.Action("Index", "TrangChu")" class="btn btn-primary btn-lg px-5">
+                            <i class="fas fa-home me-2"></i> Trở về trang chủ
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-
-
-
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,30 +1,158 @@
 using System;
+using System.Configuration; // QUAN TRỌNG: Để đọc Web.config
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
 using MVC_ADMIN.Helpers;
+using Newtonsoft.Json;
 
 namespace MVC_ADMIN.Services
 {
-    /// <summary>
-    /// Service để thao tác với database cho User
-    /// </summary>
     public class UserDataService
     {
         private readonly string _connectionString;
 
         public UserDataService()
         {
-            // Try common names used in the codebase
-            _connectionString = ConfigurationHelper.GetConnectionString("NenTangHocLieu")
-                ?? ConfigurationHelper.GetConnectionString("DefaultConnection")
-                ?? ConfigurationHelper.GetConnectionString("NenTangHocLieuEntities");
-
-            // Fail fast instead of falling back to an invalid hard-coded server
-            if (string.IsNullOrEmpty(_connectionString))
+            try
             {
-                _connectionString = "Server=CHAODAIKA\\THAITHANHTU2340;Database=NenTangHocLieu;User ID=sa;Password=12345;TrustServerCertificate=True;MultipleActiveResultSets=True;";
+                // ƯU TIÊN 1: Đọc từ Web.config (nơi bạn đã cấu hình đúng)
+                _connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"]?.ConnectionString;
+
+                System.Diagnostics.Debug.WriteLine("=== KHỞI TẠO UserDataService ===");
+                System.Diagnostics.Debug.WriteLine($"1. Đang thử đọc từ Web.config...");
+
+                if (!string.IsNullOrEmpty(_connectionString))
+                {
+                    System.Diagnostics.Debug.WriteLine($"   THÀNH CÔNG: Connection String từ Web.config.");
+                    System.Diagnostics.Debug.WriteLine($"   Giá trị: {_connectionString}");
+                    return; // Thoát ngay nếu đọc được
+                }
+
+                // ƯU TIÊN 2: Nếu Web.config không có, thử đọc từ appsettings.json
+                System.Diagnostics.Debug.WriteLine($"2. Không tìm thấy trong Web.config. Thử đọc từ appsettings.json...");
+                string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
+                System.Diagnostics.Debug.WriteLine($"   Đường dẫn tìm kiếm: {filePath}");
+                System.Diagnostics.Debug.WriteLine($"   File tồn tại: {File.Exists(filePath)}");
+
+                if (File.Exists(filePath))
+                {
+                    string json = File.ReadAllText(filePath);
+                    dynamic config = JsonConvert.DeserializeObject(json);
+                    _connectionString = config?.ConnectionStrings?.DefaultConnection;
+                    System.Diagnostics.Debug.WriteLine($"   Đọc từ JSON thành công: {_connectionString}");
+                }
+
+                if (string.IsNullOrEmpty(_connectionString))
+                {
+                    throw new InvalidOperationException("KHÔNG THỂ TÌM THẤY CHUỖI KẾT NỐI. Kiểm tra Web.config hoặc appsettings.json.");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"=== LỖI NGHIÊM TRỌNG khi khởi tạo Service ===");
+                System.Diagnostics.Debug.WriteLine($"{ex.ToString()}");
+                throw; // Ném lỗi ra để Controller bắt
             }
         }
+
+        public LoginResult LoginUser(string email, string password)
+        {
+            System.Diagnostics.Debug.WriteLine($"\n=== BẮT ĐẦU ĐĂNG NHẬP ===");
+            System.Diagnostics.Debug.WriteLine($"Email nhập: '{email}'");
+            System.Diagnostics.Debug.WriteLine($"Password nhập (độ dài {password?.Length}): '{password}'");
+
+            if (string.IsNullOrWhiteSpace(_connectionString))
+            {
+                System.Diagnostics.Debug.WriteLine("LỖI: Connection String bị rỗng.");
+                return new LoginResult { Success = false };
+            }
+
+            System.Diagnostics.Debug.WriteLine($"Sử dụng Connection String: {_connectionString}");
+
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    // THỬ MỞ KẾT NỐI
+                    System.Diagnostics.Debug.WriteLine("Đang thử mở kết nối Database...");
+                    connection.Open();
+                    System.Diagnostics.Debug.WriteLine($"   THÀNH CÔNG! Kết nối đã mở. Database: {connection.Database}");
+
+                    // THỰC THI TRUY VẤN (ĐÃ ĐƠN GIẢN HÓA)
+                    // Tạm bỏ LTRIM/RTRIM và chỉ kiểm tra với bảng NguoiDung trước
+                    string sql = @"
+                        SELECT TOP 1 nd.MaNguoiDung, nd.HoTen, nd.Email, nd.MatKhau, nd.MaVaiTro
+                        FROM NguoiDung nd
+                        WHERE nd.Email = @Email 
+                          AND nd.MatKhau = @MatKhau
+                          AND nd.TrangThai = 1";
+
+                    System.Diagnostics.Debug.WriteLine($"Đang thực thi truy vấn: {sql}");
+
+                    using (var cmd = new SqlCommand(sql, connection))
+                    {
+                        cmd.Parameters.AddWithValue("@Email", email);
+                        cmd.Parameters.AddWithValue("@MatKhau", password);
+
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                // Lấy MaVaiTro và map sang tên Role
+                                int maVaiTro = reader.GetInt32(4); // Cột MaVaiTro
+                                string roleName = MapRoleIdToName(maVaiTro);
+
+                                System.Diagnostics.Debug.WriteLine($"   TÌM THẤY USER!");
+                                System.Diagnostics.Debug.WriteLine($"   ID: {reader.GetInt32(0)}, Tên: {reader.GetString(1)}, Vai trò (ID): {maVaiTro}, Vai trò (Tên): {roleName}");
+
+                                return new LoginResult
+                                {
+                                    Success = true,
+                                    UserId = reader.GetInt32(0),
+                                    FullName = reader.IsDBNull(1) ? "" : reader.GetString(1),
+                                    Email = reader.GetString(2),
+                                    Role = roleName
+                                };
+                            }
+                            else
+                            {
+                                System.Diagnostics.Debug.WriteLine($"   KHÔNG TÌM THẤY USER nào khớp với email và mật khẩu này.");
+                            }
+                        }
+                    }
+                }
+            }
+            catch (SqlException sqlEx)
+            {
+                System.Diagnostics.Debug.WriteLine($"=== LỖI SQL KHI ĐĂNG NHẬP ===");
+                System.Diagnostics.Debug.WriteLine($"Số lỗi: {sqlEx.Number}");
+                System.Diagnostics.Debug.WriteLine($"Thông báo: {sqlEx.Message}");
+                System.Diagnostics.Debug.WriteLine($"Server: {sqlEx.Server}");
+                // Đây là thông tin cực kỳ quan trọng!
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"=== LỖI TỔNG QUÁT KHI ĐĂNG NHẬP ===");
+                System.Diagnostics.Debug.WriteLine($"{ex.ToString()}");
+            }
+
+            System.Diagnostics.Debug.WriteLine("=== KẾT THÚC ĐĂNG NHẬP (THẤT BẠI) ===");
+            return new LoginResult { Success = false };
+        }
+
+        private string MapRoleIdToName(int maVaiTro)
+        {
+            // Map trực tiếp từ ID, không cần JOIN
+            switch (maVaiTro)
+            {
+                case 1: return "Admin";
+                case 2: return "Teacher";
+                case 3: return "Student";
+                default: return "Unknown";
+            }
+        }
+        // ===== CÁC PHƯƠNG THỨC KHÁC - GIỮ NGUYÊN TỪ CODE CŨ =====
 
         /// <summary>
         /// Quick test helper to verify DB connectivity (useful for diagnostics)
@@ -55,7 +183,7 @@ namespace MVC_ADMIN.Services
         /// <summary>
         /// Đăng ký user mới
         /// </summary>
-        public bool RegisterUser(string fullName, string email, string password, string role, 
+        public bool RegisterUser(string fullName, string email, string password, string role,
             string phoneNumber = null, string gender = null, string address = null, DateTime? dateOfBirth = null)
         {
             try
@@ -100,64 +228,13 @@ namespace MVC_ADMIN.Services
                     }
                 }
             }
-            catch (SqlException) // let caller inspect SQL errors where appropriate
+            catch (SqlException)
             {
                 throw;
             }
             catch (Exception)
             {
-                // rethrow to preserve stack for controller to report/log
                 throw;
-            }
-        }
-
-        /// <summary>
-        /// Đăng nhập user
-        /// </summary>
-        public LoginResult LoginUser(string email, string password)
-        {
-            try
-            {
-                using (var connection = new SqlConnection(_connectionString))
-                {
-                    connection.Open();
-
-                    string sql = @"
-                        SELECT nd.MaNguoiDung, nd.HoTen, nd.Email, vt.TenVaiTro
-                        FROM NguoiDung nd
-                        INNER JOIN VaiTro vt ON nd.MaVaiTro = vt.MaVaiTro
-                        WHERE LTRIM(RTRIM(nd.Email)) = LTRIM(RTRIM(@Email))
-                          AND LTRIM(RTRIM(nd.MatKhau)) = LTRIM(RTRIM(@MatKhau))
-                          AND nd.TrangThai = 1";
-
-                    using (var cmd = new SqlCommand(sql, connection))
-                    {
-                        cmd.Parameters.AddWithValue("@Email", email);
-                        cmd.Parameters.AddWithValue("@MatKhau", password);
-
-                        using (var reader = cmd.ExecuteReader())
-                        {
-                            if (reader.Read())
-                            {
-                                return new LoginResult
-                                {
-                                    Success = true,
-                                    UserId = reader.GetInt32(0),
-                                    FullName = reader.IsDBNull(1) ? "" : reader.GetString(1),
-                                    Email = reader.GetString(2),
-                                    Role = MapRoleToEnglish(reader.GetString(3))
-                                };
-                            }
-                        }
-                    }
-                }
-
-                return new LoginResult { Success = false };
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Error logging in: {ex.Message}");
-                return new LoginResult { Success = false };
             }
         }
 
@@ -246,9 +323,6 @@ namespace MVC_ADMIN.Services
         }
     }
 
-    /// <summary>
-    /// Kết quả đăng nhập
-    /// </summary>
     public class LoginResult
     {
         public bool Success { get; set; }
@@ -258,4 +332,3 @@ namespace MVC_ADMIN.Services
         public string Role { get; set; }
     }
 }
-

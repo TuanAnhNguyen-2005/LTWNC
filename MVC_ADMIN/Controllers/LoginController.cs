@@ -39,25 +39,34 @@ namespace MVC_ADMIN.Controllers
                     return View();
                 }
 
-                // Đăng nhập từ database
                 var result = _userDataService.LoginUser(email, password);
 
-                if (result.Success)
-                {
-                    // Lưu thông tin user vào Session
-                    Session["UserId"] = result.UserId;
-                    Session["FullName"] = result.FullName;
-                    Session["Email"] = result.Email;
-                    Session["Role"] = result.Role; // Admin / Teacher / Student
-
-                    // Chuyển hướng theo role
-                    return RedirectToHomeByRole();
-                }
-                else
+                if (!result.Success)
                 {
                     ViewBag.Error = "Email hoặc mật khẩu không đúng!";
                     return View();
                 }
+
+                // ✅ CHẶN QUYỀN: chỉ Admin (MaVaiTro = 1) mới được đăng nhập
+                // (Ưu tiên kiểm tra RoleId nếu service có trả, còn không thì fallback qua Role string)
+                bool isAdmin =
+                    (result.Role != null && result.Role.Equals("Admin", StringComparison.OrdinalIgnoreCase))
+                    || (result.GetType().GetProperty("RoleId") != null
+                        && (int)result.GetType().GetProperty("RoleId").GetValue(result) == 1);
+
+                if (!isAdmin)
+                {
+                    ViewBag.Error = "Bạn không đủ quyền truy cập! Chỉ có admin mới vào được trang web này !";
+                    return View();
+                }
+
+                // ✅ Admin mới được lưu session
+                Session["UserId"] = result.UserId;
+                Session["FullName"] = result.FullName;
+                Session["Email"] = result.Email;
+                Session["Role"] = result.Role;
+
+                return RedirectToHomeByRole();
             }
             catch (Exception ex)
             {
@@ -66,7 +75,6 @@ namespace MVC_ADMIN.Controllers
                 return View();
             }
         }
-
         public ActionResult Logout()
         {
             Session.Clear();

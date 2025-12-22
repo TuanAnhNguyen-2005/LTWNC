@@ -208,8 +208,8 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Quiz" ? "active" : "")" href="/Quiz">
-                            <i class="fas fa-question-circle me-1"></i>Quiz
+                        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "KhoaHoc" ? "active" : "")" href="@Url.Action("Index", "KhoaHoc")">
+                            <i class="fas fa-book me-1"></i> Khóa học của tôi
                         </a>
                     </li>
                 </ul>
@@ -224,6 +224,11 @@
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li><a class="dropdown-item" href="/Profile"><i class="fas fa-user me-2"></i>Thông tin cá nhân</a></li>
                                 <li><a class="dropdown-item" href="/LearningHistory"><i class="fas fa-history me-2"></i>Lịch sử học tập</a></li>
+                                <li>
+                                    <a class="dropdown-item" href="@Url.Action("Index", "Diem")">
+                                        <i class="fas fa-chart-line me-2"></i>Điểm thi
+                                    </a>
+                                </li>
                                 <li><a class="dropdown-item" href="/Favorites"><i class="fas fa-heart me-2"></i>Yêu thích</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="/Login/Logout"><i class="fas fa-sign-out-alt me-2"></i>Đăng xuất</a></li>
