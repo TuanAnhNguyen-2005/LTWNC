@@ -15,3 +15,4 @@ obj/
 packages/
 *.nupkg
 
+/MVC_STUDENT/obj/Debug/MVC_STUDENT.csproj.AssemblyReference.cache
