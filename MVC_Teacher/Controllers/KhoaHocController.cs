@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using System.Linq;
+using MVC_Teacher.Models;
 using System.Net.Sockets;
 
 namespace MVC_TEACHER.Controllers
@@ -239,5 +240,6 @@ namespace MVC_TEACHER.Controllers
         public string TrangThaiDuyet { get; set; }
         public string AnhBia { get; set; }
         public DateTime NgayTao { get; set; }
+        public List<QuizListItemVm> Quizzes { get; set; } = new List<QuizListItemVm>();
     }
 }

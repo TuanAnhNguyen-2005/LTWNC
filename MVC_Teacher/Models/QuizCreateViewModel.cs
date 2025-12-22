@@ -7,18 +7,15 @@ namespace MVC_Teacher.Models
 {
     public class QuizCreateViewModel
     {
+        public int MaQuiz { get; set; } // Thêm dòng này
+
         [Required(ErrorMessage = "Vui lòng nhập tên quiz")]
         public string TenQuiz { get; set; }
-
         public string MoTa { get; set; }
-
         public int? MaKhoaHoc { get; set; }
-
         public int MaGiaoVien { get; set; }
-
         [Range(1, 300, ErrorMessage = "Thời gian từ 1 đến 300 phút")]
         public int? ThoiGianLamBai { get; set; }
-
         public List<CauHoiViewModel> CauHois { get; set; } = new List<CauHoiViewModel>();
 
         // Chuyển sang DTO để gửi API
@@ -26,6 +23,7 @@ namespace MVC_Teacher.Models
         {
             return new
             {
+                maQuiz = MaQuiz, // Thêm nếu API cần
                 tenQuiz = TenQuiz,
                 moTa = MoTa,
                 maKhoaHoc = MaKhoaHoc,

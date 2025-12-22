@@ -3,7 +3,19 @@
     ViewBag.Title = "Khóa học của tôi";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
+<!-- Phần debug (hiển thị khi có lỗi hoặc luôn) -->
+@if (ViewBag.DebugInfo != null && ((List<string>)ViewBag.DebugInfo).Any())
+{
+    <div class="alert alert-info mt-3">
+        <strong>Debug Info:</strong>
+        <ul class="mb-0">
+            @foreach (var line in (List<string>)ViewBag.DebugInfo)
+            {
+                <li>@Html.Raw(line)</li>
+            }
+        </ul>
+    </div>
+}
 <style>
     .course-container {
         background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
@@ -19,16 +31,16 @@
         position: relative;
     }
 
-    .page-title::after {
-        content: '';
-        position: absolute;
-        bottom: -12px;
-        left: 0;
-        width: 100px;
-        height: 5px;
-        background: linear-gradient(to right, #3498db, #2980b9);
-        border-radius: 3px;
-    }
+        .page-title::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 0;
+            width: 100px;
+            height: 5px;
+            background: linear-gradient(to right, #3498db, #2980b9);
+            border-radius: 3px;
+        }
 
     .create-btn {
         background: linear-gradient(120deg, #00c6a7, #1e8f7e);
@@ -41,10 +53,10 @@
         white-space: nowrap;
     }
 
-    .create-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 26px rgba(0, 198, 167, 0.55);
-    }
+        .create-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 26px rgba(0, 198, 167, 0.55);
+        }
 
     .custom-table {
         background: white;
@@ -53,28 +65,28 @@
         box-shadow: 0 15px 40px rgba(0,0,0,0.12);
     }
 
-    .custom-table thead {
-        background: linear-gradient(120deg, #6a11cb, #2575fc);
-        color: white;
-    }
+        .custom-table thead {
+            background: linear-gradient(120deg, #6a11cb, #2575fc);
+            color: white;
+        }
 
-    .custom-table th {
-        font-weight: 700;
-        padding: 18px;
-        text-align: center;
-    }
+        .custom-table th {
+            font-weight: 700;
+            padding: 18px;
+            text-align: center;
+        }
 
-    /* Hover giữ như bạn đang dùng, nhưng dùng top thay transform để tránh lỗi click trên table */
-    .custom-table tbody tr {
-        position: relative;
-        transition: all 0.3s ease;
-    }
+        /* Hover giữ như bạn đang dùng, nhưng dùng top thay transform để tránh lỗi click trên table */
+        .custom-table tbody tr {
+            position: relative;
+            transition: all 0.3s ease;
+        }
 
-    .custom-table tbody tr:hover {
-        background-color: #f0f8ff;
-        top: -2px;
-        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-    }
+            .custom-table tbody tr:hover {
+                background-color: #f0f8ff;
+                top: -2px;
+                box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            }
 
     .badge-status {
         padding: 10px 20px;
@@ -89,11 +101,11 @@
         color: #95a5a6;
     }
 
-    .empty-state i {
-        font-size: 100px;
-        margin-bottom: 20px;
-        opacity: 0.6;
-    }
+        .empty-state i {
+            font-size: 100px;
+            margin-bottom: 20px;
+            opacity: 0.6;
+        }
 
     /* Checkbox wrap */
     .checkbox-wrap {
@@ -107,9 +119,9 @@
         user-select: none;
     }
 
-    .checkbox-wrap:hover {
-        background: rgba(0,0,0,0.04);
-    }
+        .checkbox-wrap:hover {
+            background: rgba(0,0,0,0.04);
+        }
 
     .course-checkbox {
         cursor: pointer !important;
@@ -135,7 +147,9 @@
     }
 
     @@media (max-width: 768px) {
-        .page-title { font-size: 1.9rem; }
+        .page-title {
+            font-size: 1.9rem;
+        }
 
         .action-bar {
             flex-direction: column;
@@ -147,13 +161,15 @@
             width: 100%;
         }
 
-        .action-right .create-btn {
-            width: 100%;
-            justify-content: center;
-            display: inline-flex;
-        }
+            .action-right .create-btn {
+                width: 100%;
+                justify-content: center;
+                display: inline-flex;
+            }
 
-        #deleteSelectedBtn { width: 100%; }
+        #deleteSelectedBtn {
+            width: 100%;
+        }
     }
 </style>
 
@@ -252,8 +268,6 @@
 
                                         </label>
                                     </td>
-
-
                                     <td class="text-center align-middle fw-bold">#@item.MaKhoaHoc</td>
 
                                     <td class="align-middle text-center">
@@ -296,20 +310,11 @@
 
                                     <td class="text-center align-middle">@item.NgayTao.ToString("dd/MM/yyyy")</td>
 
-                                    <!-- Cột Quiz - chỉ hiển thị khi đã duyệt -->
                                     <td class="text-center align-middle">
-                                        @if (item.TrangThaiDuyet == "DaDuyet")
-                                        {
-                                            <a href="@Url.Action("Create", "Quiz", new { maKhoaHoc = item.MaKhoaHoc })"
-                                               class="btn btn-primary btn-sm rounded-pill px-4 text-white"
-                                               title="Tạo bài kiểm tra cho khóa học này">
-                                                <i class="fas fa-plus me-1"></i> Tạo Quiz
-                                            </a>
-                                        }
-                                        else
-                                        {
-                                            <span class="text-muted small">—</span>
-                                        }
+                                        <a href="@Url.Action("QuizzesByCourse", "Quiz", new { maKhoaHoc = item.MaKhoaHoc })"
+                                           class="btn btn-sm btn-primary rounded-pill px-4 py-2">
+                                            <i class="fas fa-list me-2"></i>Xem Quiz
+                                        </a>
                                     </td>
 
                                     <!-- Cột Tài liệu - mới, chỉ hiển thị khi đã duyệt -->

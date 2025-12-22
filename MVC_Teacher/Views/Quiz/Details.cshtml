@@ -1,0 +1,134 @@
+﻿@model MVC_Teacher.Models.QuizDetailViewModel
+
+@{
+    ViewBag.Title = "Chi tiết Quiz - " + Model.TenQuiz;
+}
+
+<div class="main-content">
+    <div class="page-header">
+        <h1><i class="fas fa-clipboard-list me-2"></i>@Model.TenQuiz</h1>
+        <p class="text-muted">Xem chi tiết bài kiểm tra và thống kê kết quả</p>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-info-circle me-2 text-primary"></i>Thông tin Quiz</h5>
+                    <span class="badge bg-@(Model.TrangThai == "Published" ? "success" : "warning") fs-6">@Model.TrangThai</span>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Khóa học:</strong> <span class="text-primary">@Model.TenKhoaHoc</span></p>
+                            <p><strong>Giáo viên:</strong> @Model.TenGiaoVien</p>
+                            <p><strong>Thời gian:</strong> @Model.ThoiGianLamBai phút</p>
+                            <p><strong>Ngày tạo:</strong> @Model.NgayTao.ToString("dd/MM/yyyy HH:mm")</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Tổng câu hỏi:</strong> <span class="text-success fs-5">@Model.SoCauHoi</span></p>
+                            <p><strong>Tổng điểm:</strong> <span class="text-success fs-5">@Model.TongDiem</span></p>
+                            <p>
+                                <strong>Số học sinh đã làm:</strong>
+                                <span class="badge bg-info fs-6">@Model.SoHocSinhLamBai</span>
+                            </p>
+                            <p>
+                                <strong>Điểm TB:</strong>
+                                @if (Model.DiemTrungBinh > 0)
+                                {
+                                    <span class="text-warning fs-5">@Model.DiemTrungBinh:F1/10</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Chưa có kết quả</span>
+                                }
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Thống kê nhanh</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Hoàn thành đúng hạn:</span>
+                        <strong>@Model.PhanTramHoanThanh% <i class="fas fa-check-circle text-success"></i></strong>
+                    </div>
+                    <div class="progress mb-2" style="height: 8px;">
+                        <div class="progress-bar bg-success" style="width: @Model.PhanTramHoanThanh%"></div>
+                        10/10
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Đạt >= 7 điểm:</span>
+                        <strong>@Model.PhanTramDat% <i class="fas fa-trophy text-warning"></i></strong>
+                    </div>
+                    <div class="progress mb-0" style="height: 8px;">
+                        <div class="progress-bar bg-warning" style="width: @Model.PhanTramDat%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Danh sách câu hỏi -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0"><i class="fas fa-question-circle me-2 text-primary"></i>Câu hỏi (@Model.SoCauHoi câu)</h5>
+        </div>
+        <div class="card-body">
+            @for (int i = 0; i < Model.CauHois.Count; i++)
+            {
+                var cauHoi = Model.CauHois[i];
+                <div class="cau-hoi-preview mb-4 p-3 border rounded">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h6 class="mb-2">
+                            Câu @((i+1)): <strong>@cauHoi.NoiDung</strong>
+                            <span class="badge bg-secondary ms-2">(@cauHoi.LoaiCauHoi) - @cauHoi.Diem điểm</span>
+                        </h6>
+                        <span class="text-muted small">
+                            @cauHoi.SoHocSinhTraLoi học sinh đã trả lời
+                        </span>
+                    </div>
+
+                    <div class="lua-chon-list">
+                        @foreach (var lc in cauHoi.LuaChons)
+                        {
+                            <div class="lua-chon-item mb-2 ps-4 position-relative">
+                                <i class="fas @(lc.LaDapAnDung ? "fa-check-circle text-success" : "fa-circle text-muted") position-absolute"
+                                   style="left: 0; top: 50%; transform: translateY(-50%);"></i>
+                                <span>@lc.NoiDung</span>
+                                @if (lc.LaDapAnDung)
+                                {
+                                    <span class="badge bg-success ms-2">Đáp án đúng</span>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    <!-- Nút hành động -->
+    <div class="card mt-4">
+        <div class="card-body text-end">
+            <a href="@Url.Action("Edit", new { id = Model.MaQuiz })" class="btn btn-warning me-2">
+                <i class="fas fa-edit"></i> Sửa Quiz
+            </a>
+            <a href="@Url.Action("Delete", new { id = Model.MaQuiz })" class="btn btn-danger me-2">
+                <i class="fas fa-trash"></i> Xóa Quiz
+            </a>
+            <div class="mt-4 text-center">
+                
+                    <a href="@Url.Action("QuizzesByCourse", "Quiz", new { maKhoaHoc = Model.MaKhoaHoc })"
+                       class="btn btn-secondary rounded-pill px-4 py-2">
+                        <i class="fas fa-arrow-left me-2"></i>Quay lại danh sách quiz khóa học
+                    </a>
+                
+            </div>
+        </div>
+    </div>
+</div>
