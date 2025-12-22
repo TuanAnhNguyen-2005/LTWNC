@@ -23,7 +23,11 @@ namespace MVC_Teacher.Services
             try
             {
                 // Đọc file appsettings.json ngay trong thư mục project MVC hiện tại (cùng cấp Web.config)
-                string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "appsettings.json");
+                string filePath = Path.Combine(
+                AppDomain.CurrentDomain.BaseDirectory,
+                "appsettings.json"
+                );      
+
 
                 if (!File.Exists(filePath))
                 {

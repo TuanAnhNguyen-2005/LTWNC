@@ -15,7 +15,11 @@ namespace MVC_STUDENT.Services  // ĐỔI THÀNH namespace của project bạn
         {
             try
             {
-                string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "appsettings.json");
+                string filePath = Path.Combine(
+                AppDomain.CurrentDomain.BaseDirectory,
+                "appsettings.json"
+                );
+
                 filePath = Path.GetFullPath(filePath);
 
                 if (!File.Exists(filePath))
