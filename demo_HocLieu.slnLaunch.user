@@ -1,0 +1,27 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "MVC_ADMIN\\MVC_ADMIN.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "RestfullAPI_NTHL\\RestfullAPI_NTHL.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "MVC_Teacher\\MVC_Teacher.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "RESTAPI_NenTangHocLieu\\RESTAPI_NenTangHocLieu.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "MVC_STUDENT\\MVC_STUDENT.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

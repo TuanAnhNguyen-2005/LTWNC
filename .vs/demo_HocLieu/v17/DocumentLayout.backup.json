@@ -1,0 +1,137 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\125\\NenTangHocLieu_Quiz\\demo_HocLieu\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{DFB3777C-FF6C-41E1-9FAB-260D445CEF76}|MVC_Teacher\\MVC_Teacher.csproj|d:\\125\\nentanghoclieu_quiz\\demo_hoclieu\\mvc_teacher\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{DFB3777C-FF6C-41E1-9FAB-260D445CEF76}|MVC_Teacher\\MVC_Teacher.csproj|solutionrelative:mvc_teacher\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DFB3777C-FF6C-41E1-9FAB-260D445CEF76}|MVC_Teacher\\MVC_Teacher.csproj|D:\\125\\NenTangHocLieu_Quiz\\demo_HocLieu\\mvc_teacher\\views\\shared\\_cauhoieditor.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{DFB3777C-FF6C-41E1-9FAB-260D445CEF76}|MVC_Teacher\\MVC_Teacher.csproj|solutionrelative:mvc_teacher\\views\\shared\\_cauhoieditor.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DFB3777C-FF6C-41E1-9FAB-260D445CEF76}|MVC_Teacher\\MVC_Teacher.csproj|d:\\125\\nentanghoclieu_quiz\\demo_hoclieu\\mvc_teacher\\views\\quiz\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{DFB3777C-FF6C-41E1-9FAB-260D445CEF76}|MVC_Teacher\\MVC_Teacher.csproj|solutionrelative:mvc_teacher\\views\\quiz\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 72,
+          "SelectedChildIndex": 7,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:1:0:{e8b06f52-6d01-11d2-aa7d-00c04f990343}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{75188d03-9892-4ae2-abf1-207126247ce5}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{eefa5220-e298-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{fbcae063-e2c0-4ab1-a516-996ea3dafb72}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Create.cshtml",
+              "DocumentMoniker": "D:\\125\\NenTangHocLieu_Quiz\\demo_HocLieu\\MVC_Teacher\\Views\\Quiz\\Create.cshtml",
+              "RelativeDocumentMoniker": "MVC_Teacher\\Views\\Quiz\\Create.cshtml",
+              "ToolTip": "D:\\125\\NenTangHocLieu_Quiz\\demo_HocLieu\\MVC_Teacher\\Views\\Quiz\\Create.cshtml",
+              "RelativeToolTip": "MVC_Teacher\\Views\\Quiz\\Create.cshtml",
+              "ViewState": "AgIAAM4CAAAAAAAAAAAuwNkCAAApAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-12-22T09:21:56.689Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "_Layout.cshtml",
+              "DocumentMoniker": "D:\\125\\NenTangHocLieu_Quiz\\demo_HocLieu\\MVC_Teacher\\Views\\Shared\\_Layout.cshtml",
+              "RelativeDocumentMoniker": "MVC_Teacher\\Views\\Shared\\_Layout.cshtml",
+              "ToolTip": "D:\\125\\NenTangHocLieu_Quiz\\demo_HocLieu\\MVC_Teacher\\Views\\Shared\\_Layout.cshtml",
+              "RelativeToolTip": "MVC_Teacher\\Views\\Shared\\_Layout.cshtml",
+              "ViewState": "AgIAAMwDAAAAAAAAAAAuwOUDAAA/AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-12-22T09:00:45.225Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "_CauHoiEditor.cshtml",
+              "DocumentMoniker": "D:\\125\\NenTangHocLieu_Quiz\\demo_HocLieu\\MVC_Teacher\\Views\\Shared\\_CauHoiEditor.cshtml",
+              "RelativeDocumentMoniker": "MVC_Teacher\\Views\\Shared\\_CauHoiEditor.cshtml",
+              "ToolTip": "D:\\125\\NenTangHocLieu_Quiz\\demo_HocLieu\\MVC_Teacher\\Views\\Shared\\_CauHoiEditor.cshtml",
+              "RelativeToolTip": "MVC_Teacher\\Views\\Shared\\_CauHoiEditor.cshtml",
+              "ViewState": "AgIAAPcBAAAAAAAAAAAuwBMCAAAgAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-12-22T03:25:19.665Z",
+              "EditorCaption": ""
+            }
+          ]
+        },
+        {
+          "DockedWidth": 1652,
+          "SelectedChildIndex": -1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{d78612c7-9962-4b83-95d9-268046dad23a}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{0ad07096-bba9-4900-a651-0598d26f6d24}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:2:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:3:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:4:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:1:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{b1e99781-ab81-11d0-b683-00aa00a3ee26}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
