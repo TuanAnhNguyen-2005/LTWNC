@@ -822,6 +822,8 @@
                 transform: translateX(5px);
             }
 
+        }
+
         .activity-icon {
             width: 40px;
             height: 40px;
@@ -1108,6 +1110,89 @@
                 transform: translateY(-1px);
                 box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
             }
+
+        /* Logout Modal */
+        .logout-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+            .logout-modal.show {
+                display: flex;
+            }
+
+        .logout-modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .logout-icon {
+            font-size: 48px;
+            color: #ef4444;
+            margin-bottom: 16px;
+        }
+
+        .logout-modal h3 {
+            margin: 0 0 16px;
+            color: #1f2937;
+            font-size: 20px;
+        }
+
+        .logout-modal p {
+            color: #6b7280;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        .logout-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .logout-btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .logout-cancel {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+            .logout-cancel:hover {
+                background: #d1d5db;
+            }
+
+        .logout-confirm {
+            background: #ef4444;
+            color: white;
+        }
+
+            .logout-confirm:hover {
+                background: #dc2626;
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+            }
     </style>
     @RenderSection("styles", required: false)
 </head>
@@ -1167,7 +1252,6 @@
                 </div>
 
                 <!-- Dropdown Menu -->
-                <!-- Dropdown Menu -->
                 <div class="profile-dropdown" id="profileDropdown">
                     <div class="dropdown-header">
                         <div class="dropdown-user-info">
@@ -1184,7 +1268,7 @@
                             <span>Chỉnh sửa thông tin</span>
                         </div>
 
-                        <!-- 🔴 THÊM MỤC MỚI: KHÓA HỌC CỦA TÔI -->
+                        <!-- KHÓA HỌC CỦA TÔI -->
                         <div class="dropdown-item">
                             <i class="fas fa-book"></i>
                             <span>
@@ -1195,7 +1279,7 @@
                         </div>
 
                         <div class="dropdown-divider"></div>
-                        <div class="dropdown-item" onclick="logout()">
+                        <div class="dropdown-item" onclick="showLogoutModal()">
                             <i class="fas fa-sign-out-alt"></i>
                             <span>Đăng xuất</span>
                         </div>
@@ -1448,6 +1532,21 @@
 
     </main>
 
+    <!-- Logout Confirmation Modal -->
+    <div class="logout-modal" id="logoutModal">
+        <div class="logout-modal-content">
+            <div class="logout-icon">
+                <i class="fas fa-sign-out-alt"></i>
+            </div>
+            <h3>Bạn có chắc muốn đăng xuất?</h3>
+            <p>Bạn sẽ được chuyển về trang đăng nhập của hệ thống.</p>
+            <div class="logout-buttons">
+                <button class="logout-btn logout-cancel" onclick="hideLogoutModal()">Hủy</button>
+                <button class="logout-btn logout-confirm" onclick="performLogout()">Đăng xuất</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="footer">
         <div class="footer-content">
@@ -1547,12 +1646,46 @@
             window.location.href = '@Url.Action("Index","Profile")';
         }
 
-        function logout() {
-            if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
-                alert('Đang đăng xuất...');
-                // Thêm logic đăng xuất thực tế ở đây
-            }
+        // Logout Modal Functions
+        function showLogoutModal() {
+            const modal = document.getElementById('logoutModal');
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden'; // Prevent scrolling
         }
+
+        function hideLogoutModal() {
+            const modal = document.getElementById('logoutModal');
+            modal.classList.remove('show');
+            document.body.style.overflow = ''; // Restore scrolling
+        }
+
+        function performLogout() {
+    console.log('Performing logout...');
+
+    // Sử dụng URL theo cấu trúc routing: /Login/Logout
+    // Theo LoginController.cs, action Logout là GET method
+    const logoutUrl = '@Url.Action("Logout", "Login")';
+
+    console.log('Logout URL:', logoutUrl);
+
+    // Redirect đến action Logout
+    window.location.href = logoutUrl;
+}
+
+        // Close modal when clicking outside
+        document.getElementById('logoutModal').addEventListener('click', function (e) {
+            if (e.target === this) {
+                hideLogoutModal();
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function (e) {
+            const modal = document.getElementById('logoutModal');
+            if (e.key === 'Escape' && modal.classList.contains('show')) {
+                hideLogoutModal();
+            }
+        });
 
         // Auto expand sidebar on hover (desktop only)
         if (window.innerWidth > 1200) {

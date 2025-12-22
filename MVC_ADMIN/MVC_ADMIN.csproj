@@ -1869,6 +1869,13 @@
     <Content Include="wwwroot\admin\vendor\jquery\jquery.min.js" />
     <Content Include="wwwroot\admin\vendor\jquery\jquery.slim.js" />
     <Content Include="wwwroot\admin\vendor\jquery\jquery.slim.min.js" />
+    <Content Include="appsettings.Development.json">
+      <DependentUpon>appsettings.json</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />
@@ -1896,7 +1903,6 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Login\Index.cshtml" />
     <Content Include="Views\Shared\_LoginLayout.cshtml" />
-    <Content Include="Views\SignUp\Index.cshtml" />
     <Content Include="Views\Statistical\Index.cshtml" />
     <Content Include="Views\Shared\_AdminLayout.cshtml" />
     <Content Include="Views\Category\Index.cshtml" />
