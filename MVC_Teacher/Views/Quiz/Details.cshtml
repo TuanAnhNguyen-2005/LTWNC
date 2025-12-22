@@ -1,134 +1,793 @@
 ﻿@model MVC_Teacher.Models.QuizDetailViewModel
-
 @{
     ViewBag.Title = "Chi tiết Quiz - " + Model.TenQuiz;
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="main-content">
-    <div class="page-header">
-        <h1><i class="fas fa-clipboard-list me-2"></i>@Model.TenQuiz</h1>
-        <p class="text-muted">Xem chi tiết bài kiểm tra và thống kê kết quả</p>
+<style>
+    /* ===== MODERN QUIZ DETAIL DESIGN ===== */
+
+    .quiz-detail-wrapper {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 40px 20px 80px;
+        min-height: 100vh;
+    }
+
+    /* ===== HEADER SECTION ===== */
+    .detail-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 28px;
+        padding: 50px 40px;
+        margin-bottom: 40px;
+        box-shadow:
+            0 20px 60px rgba(102, 126, 234, 0.3),
+            0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+        position: relative;
+        overflow: hidden;
+        color: white;
+    }
+
+    .detail-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -20%;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+        animation: float 6s ease-in-out infinite;
+    }
+
+    @@keyframes float {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        50% { transform: translate(20px, -20px) scale(1.1); }
+    }
+
+    .header-content {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+    }
+
+    .header-icon-wrapper {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 80px;
+        height: 80px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 20px;
+        margin-bottom: 20px;
+        backdrop-filter: blur(10px);
+    }
+
+    .header-icon-wrapper i {
+        font-size: 2.5rem;
+    }
+
+    .detail-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin: 0 0 12px 0;
+        letter-spacing: -0.5px;
+    }
+
+    .detail-subtitle {
+        font-size: 1.2rem;
+        opacity: 0.95;
+        margin: 0;
+    }
+
+    /* ===== INFO CARDS GRID ===== */
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 24px;
+        margin-bottom: 40px;
+    }
+
+    .info-card {
+        background: white;
+        border-radius: 20px;
+        padding: 28px;
+        box-shadow:
+            0 10px 30px rgba(0, 0, 0, 0.06),
+            0 0 0 1px rgba(0, 0, 0, 0.04);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .info-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+    }
+
+    .info-card:hover {
+        transform: translateY(-4px);
+        box-shadow:
+            0 15px 40px rgba(0, 0, 0, 0.1),
+            0 0 0 1px rgba(0, 0, 0, 0.06);
+    }
+
+    .info-card-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 56px;
+        height: 56px;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+        border-radius: 14px;
+        margin-bottom: 16px;
+    }
+
+    .info-card-icon i {
+        font-size: 1.8rem;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .info-card-label {
+        font-size: 0.9rem;
+        color: #64748b;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+    }
+
+    .info-card-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #1e293b;
+        line-height: 1.2;
+    }
+
+    .info-card-secondary {
+        font-size: 0.95rem;
+        color: #64748b;
+        margin-top: 4px;
+    }
+
+    /* Special colors for specific cards */
+    .info-card.card-primary .info-card-value {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .info-card.card-success .info-card-value {
+        background: linear-gradient(135deg, #10b981, #059669);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .info-card.card-warning .info-card-value {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    /* ===== QUESTIONS SECTION ===== */
+    .questions-section {
+        background: white;
+        border-radius: 28px;
+        padding: 40px;
+        box-shadow:
+            0 10px 40px rgba(0, 0, 0, 0.06),
+            0 0 0 1px rgba(0, 0, 0, 0.04);
+        margin-bottom: 40px;
+    }
+
+    .section-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 32px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #f1f5f9;
+    }
+
+    .section-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 48px;
+        height: 48px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 12px;
+        color: white;
+        font-size: 1.4rem;
+    }
+
+    .section-title {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin: 0;
+    }
+
+    .section-count {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+        color: #667eea;
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-size: 1rem;
+        font-weight: 700;
+        margin-left: auto;
+    }
+
+    /* ===== QUESTION CARD ===== */
+    .question-card {
+        background: #f8fafc;
+        border: 2px solid #e2e8f0;
+        border-radius: 20px;
+        padding: 28px;
+        margin-bottom: 24px;
+        transition: all 0.3s ease;
+    }
+
+    .question-card:hover {
+        border-color: #667eea;
+        box-shadow: 0 8px 24px rgba(102, 126, 234, 0.1);
+    }
+
+    .question-card:last-child {
+        margin-bottom: 0;
+    }
+
+    .question-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 20px;
+        margin-bottom: 20px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .question-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 12px;
+        color: white;
+        font-weight: 700;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+
+    .question-content {
+        flex: 1;
+    }
+
+    .question-text {
+        font-size: 1.15rem;
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 12px;
+        line-height: 1.5;
+    }
+
+    .question-badges {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .badge-custom {
+        padding: 6px 14px;
+        border-radius: 10px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .badge-type {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+    }
+
+    .badge-points {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: white;
+    }
+
+    .question-meta {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: #64748b;
+        font-size: 0.9rem;
+        background: white;
+        padding: 8px 16px;
+        border-radius: 10px;
+        white-space: nowrap;
+    }
+
+    /* ===== ANSWER LIST ===== */
+    .answer-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .answer-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px 20px;
+        background: white;
+        border: 2px solid #e2e8f0;
+        border-radius: 14px;
+        transition: all 0.2s ease;
+    }
+
+    .answer-item:hover {
+        border-color: #cbd5e1;
+        transform: translateX(4px);
+    }
+
+    .answer-item.correct {
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.05));
+        border-color: #10b981;
+    }
+
+    .answer-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    .answer-item.correct .answer-icon {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+    }
+
+    .answer-item:not(.correct) .answer-icon {
+        background: #f1f5f9;
+        color: #94a3b8;
+    }
+
+    .answer-text {
+        flex: 1;
+        font-size: 1rem;
+        color: #475569;
+    }
+
+    .answer-item.correct .answer-text {
+        font-weight: 600;
+        color: #059669;
+    }
+
+    .correct-badge {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        padding: 6px 14px;
+        border-radius: 10px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    /* ===== EMPTY STATE ===== */
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+    }
+
+    .empty-icon-wrapper {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 120px;
+        height: 120px;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+        border-radius: 50%;
+        margin-bottom: 24px;
+    }
+
+    .empty-icon-wrapper i {
+        font-size: 3.5rem;
+        color: #667eea;
+        opacity: 0.6;
+    }
+
+    .empty-title {
+        color: #475569;
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+    .empty-text {
+        color: #64748b;
+        font-size: 1rem;
+    }
+
+    /* ===== ACTION BUTTONS ===== */
+    .action-section {
+        display: flex;
+        justify-content: center;
+        gap: 16px;
+        flex-wrap: wrap;
+        padding: 40px 20px;
+    }
+
+    .btn-action {
+        border: none;
+        border-radius: 16px;
+        padding: 16px 32px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+        min-width: 160px;
+        justify-content: center;
+    }
+
+    .btn-edit {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: white;
+        box-shadow: 0 8px 24px rgba(245, 158, 11, 0.3);
+    }
+
+    .btn-edit:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 32px rgba(245, 158, 11, 0.4);
+        color: white;
+    }
+
+    .btn-delete {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: white;
+        box-shadow: 0 8px 24px rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-delete:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 32px rgba(239, 68, 68, 0.4);
+        color: white;
+    }
+
+    .btn-back {
+        background: white;
+        color: #64748b;
+        border: 2px solid #e2e8f0;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    }
+
+    .btn-back:hover {
+        background: #f8fafc;
+        border-color: #cbd5e1;
+        color: #475569;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-back i {
+        transition: transform 0.2s ease;
+    }
+
+    .btn-back:hover i {
+        transform: translateX(-4px);
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @@media (max-width: 992px) {
+        .quiz-detail-wrapper {
+            padding: 30px 15px 60px;
+        }
+
+        .detail-header {
+            padding: 40px 30px;
+            border-radius: 24px;
+        }
+
+        .detail-title {
+            font-size: 2rem;
+        }
+
+        .detail-subtitle {
+            font-size: 1.1rem;
+        }
+
+        .info-grid {
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+        }
+
+        .questions-section {
+            padding: 30px 25px;
+            border-radius: 24px;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .detail-header {
+            padding: 30px 20px;
+            border-radius: 20px;
+        }
+
+        .header-icon-wrapper {
+            width: 70px;
+            height: 70px;
+        }
+
+        .header-icon-wrapper i {
+            font-size: 2rem;
+        }
+
+        .detail-title {
+            font-size: 1.7rem;
+        }
+
+        .detail-subtitle {
+            font-size: 1rem;
+        }
+
+        .info-grid {
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        .info-card {
+            padding: 24px;
+        }
+
+        .questions-section {
+            padding: 25px 20px;
+            border-radius: 20px;
+        }
+
+        .section-header {
+            flex-wrap: wrap;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+        }
+
+        .question-card {
+            padding: 20px;
+        }
+
+        .question-header {
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .question-meta {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .action-section {
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn-action {
+            width: 100%;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .question-text {
+            font-size: 1rem;
+        }
+
+        .answer-item {
+            padding: 14px 16px;
+        }
+
+        .btn-action {
+            padding: 14px 24px;
+            font-size: 0.95rem;
+        }
+    }
+</style>
+
+<div class="quiz-detail-wrapper">
+    <!-- Header -->
+    <div class="detail-header">
+        <div class="header-content">
+            <div class="header-icon-wrapper">
+                <i class="fas fa-clipboard-check"></i>
+            </div>
+            <h1 class="detail-title">@Model.TenQuiz</h1>
+            <p class="detail-subtitle">Chi tiết thông tin và danh sách câu hỏi</p>
+        </div>
     </div>
 
-    <div class="row mb-4">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0"><i class="fas fa-info-circle me-2 text-primary"></i>Thông tin Quiz</h5>
-                    <span class="badge bg-@(Model.TrangThai == "Published" ? "success" : "warning") fs-6">@Model.TrangThai</span>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <p><strong>Khóa học:</strong> <span class="text-primary">@Model.TenKhoaHoc</span></p>
-                            <p><strong>Giáo viên:</strong> @Model.TenGiaoVien</p>
-                            <p><strong>Thời gian:</strong> @Model.ThoiGianLamBai phút</p>
-                            <p><strong>Ngày tạo:</strong> @Model.NgayTao.ToString("dd/MM/yyyy HH:mm")</p>
-                        </div>
-                        <div class="col-md-6">
-                            <p><strong>Tổng câu hỏi:</strong> <span class="text-success fs-5">@Model.SoCauHoi</span></p>
-                            <p><strong>Tổng điểm:</strong> <span class="text-success fs-5">@Model.TongDiem</span></p>
-                            <p>
-                                <strong>Số học sinh đã làm:</strong>
-                                <span class="badge bg-info fs-6">@Model.SoHocSinhLamBai</span>
-                            </p>
-                            <p>
-                                <strong>Điểm TB:</strong>
-                                @if (Model.DiemTrungBinh > 0)
-                                {
-                                    <span class="text-warning fs-5">@Model.DiemTrungBinh:F1/10</span>
-                                }
-                                else
-                                {
-                                    <span class="text-muted">Chưa có kết quả</span>
-                                }
-                            </p>
-                        </div>
-                    </div>
-                </div>
+    <!-- Info Cards Grid -->
+    <div class="info-grid">
+        <div class="info-card">
+            <div class="info-card-icon">
+                <i class="fas fa-book"></i>
             </div>
+            <div class="info-card-label">Khóa học</div>
+            <div class="info-card-value">@Model.TenKhoaHoc</div>
         </div>
-        <div class="col-md-4">
-            <div class="card h-100">
-                <div class="card-header">
-                    <h6 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Thống kê nhanh</h6>
-                </div>
-                <div class="card-body">
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>Hoàn thành đúng hạn:</span>
-                        <strong>@Model.PhanTramHoanThanh% <i class="fas fa-check-circle text-success"></i></strong>
-                    </div>
-                    <div class="progress mb-2" style="height: 8px;">
-                        <div class="progress-bar bg-success" style="width: @Model.PhanTramHoanThanh%"></div>
-                        10/10
-                    </div>
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>Đạt >= 7 điểm:</span>
-                        <strong>@Model.PhanTramDat% <i class="fas fa-trophy text-warning"></i></strong>
-                    </div>
-                    <div class="progress mb-0" style="height: 8px;">
-                        <div class="progress-bar bg-warning" style="width: @Model.PhanTramDat%"></div>
-                    </div>
-                </div>
+
+        <div class="info-card">
+            <div class="info-card-icon">
+                <i class="fas fa-user-tie"></i>
             </div>
+            <div class="info-card-label">Giáo viên</div>
+            <div class="info-card-value" style="font-size: 1.4rem;">@Model.TenGiaoVien</div>
+        </div>
+
+        <div class="info-card">
+            <div class="info-card-icon">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="info-card-label">Thời gian làm bài</div>
+            <div class="info-card-value">@Model.ThoiGianLamBai <small style="font-size: 1rem;">phút</small></div>
+        </div>
+
+        <div class="info-card">
+            <div class="info-card-icon">
+                <i class="fas fa-calendar-alt"></i>
+            </div>
+            <div class="info-card-label">Ngày tạo</div>
+            <div class="info-card-value" style="font-size: 1.2rem;">@Model.NgayTao.ToString("dd-MM-yyyy")</div>
+            <div class="info-card-secondary">@Model.NgayTao.ToString("HH:mm")</div>
+        </div>
+
+        <div class="info-card card-primary">
+            <div class="info-card-icon">
+                <i class="fas fa-question-circle"></i>
+            </div>
+            <div class="info-card-label">Tổng câu hỏi</div>
+            <div class="info-card-value">@Model.SoCauHoi <small style="font-size: 1rem;">câu</small></div>
+        </div>
+
+        <div class="info-card card-warning">
+            <div class="info-card-icon">
+                <i class="fas fa-star"></i>
+            </div>
+            <div class="info-card-label">Tổng điểm</div>
+            <div class="info-card-value">@Model.TongDiem <small style="font-size: 1rem;">điểm</small></div>
+        </div>
+
+        <div class="info-card">
+            <div class="info-card-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="info-card-label">Học sinh đã làm</div>
+            <div class="info-card-value">@Model.SoHocSinhLamBai <small style="font-size: 1rem;">người</small></div>
+        </div>
+
+        <div class="info-card card-success">
+            <div class="info-card-icon">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="info-card-label">Điểm trung bình</div>
+            @if (Model.DiemTrungBinh > 0)
+            {
+                <div class="info-card-value">@Model.DiemTrungBinh.ToString("F1") <small style="font-size: 1rem;">/ 10</small></div>
+            }
+            else
+            {
+                <div class="info-card-value" style="font-size: 1.2rem; color: #94a3b8;">Chưa có dữ liệu</div>
+            }
         </div>
     </div>
 
-    <!-- Danh sách câu hỏi -->
-    <div class="card">
-        <div class="card-header">
-            <h5 class="mb-0"><i class="fas fa-question-circle me-2 text-primary"></i>Câu hỏi (@Model.SoCauHoi câu)</h5>
+    <!-- Questions Section -->
+    <div class="questions-section">
+        <div class="section-header">
+            <div class="section-icon">
+                <i class="fas fa-list-ol"></i>
+            </div>
+            <h2 class="section-title">Danh sách câu hỏi</h2>
+            <span class="section-count">@Model.SoCauHoi câu</span>
         </div>
-        <div class="card-body">
-            @for (int i = 0; i < Model.CauHois.Count; i++)
+
+        @if (Model.SoCauHoi == 0)
+        {
+            <div class="empty-state">
+                <div class="empty-icon-wrapper">
+                    <i class="fas fa-inbox"></i>
+                </div>
+                <h3 class="empty-title">Chưa có câu hỏi nào</h3>
+                <p class="empty-text">Quiz này hiện chưa có câu hỏi. Hãy thêm câu hỏi để bắt đầu!</p>
+            </div>
+        }
+        else
+        {
+            for (int i = 0; i < Model.CauHois.Count; i++)
             {
                 var cauHoi = Model.CauHois[i];
-                <div class="cau-hoi-preview mb-4 p-3 border rounded">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <h6 class="mb-2">
-                            Câu @((i+1)): <strong>@cauHoi.NoiDung</strong>
-                            <span class="badge bg-secondary ms-2">(@cauHoi.LoaiCauHoi) - @cauHoi.Diem điểm</span>
-                        </h6>
-                        <span class="text-muted small">
-                            @cauHoi.SoHocSinhTraLoi học sinh đã trả lời
-                        </span>
+                <div class="question-card">
+                    <div class="question-header">
+                        <div style="display: flex; gap: 16px; flex: 1; align-items: flex-start;">
+                            <div class="question-number">@(i + 1)</div>
+                            <div class="question-content">
+                                <div class="question-text">@cauHoi.NoiDung</div>
+                                <div class="question-badges">
+                                    <span class="badge-custom badge-type">
+                                        <i class="fas fa-tag"></i>
+                                        @cauHoi.LoaiCauHoi
+                                    </span>
+                                    <span class="badge-custom badge-points">
+                                        <i class="fas fa-award"></i>
+                                        @cauHoi.Diem điểm
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="question-meta">
+                            <i class="fas fa-user-check"></i>
+                            <span>@cauHoi.SoHocSinhTraLoi học sinh</span>
+                        </div>
                     </div>
 
-                    <div class="lua-chon-list">
+                    <div class="answer-list">
                         @foreach (var lc in cauHoi.LuaChons)
                         {
-                            <div class="lua-chon-item mb-2 ps-4 position-relative">
-                                <i class="fas @(lc.LaDapAnDung ? "fa-check-circle text-success" : "fa-circle text-muted") position-absolute"
-                                   style="left: 0; top: 50%; transform: translateY(-50%);"></i>
-                                <span>@lc.NoiDung</span>
+                            <div class="answer-item @(lc.LaDapAnDung ? "correct" : "")">
+                                <div class="answer-icon">
+                                    <i class="fas @(lc.LaDapAnDung ? "fa-check" : "fa-circle")"></i>
+                                </div>
+                                <span class="answer-text">@lc.NoiDung</span>
                                 @if (lc.LaDapAnDung)
                                 {
-                                    <span class="badge bg-success ms-2">Đáp án đúng</span>
+                                    <span class="correct-badge">
+                                        <i class="fas fa-check-circle"></i>
+                                        Đáp án đúng
+                                    </span>
                                 }
                             </div>
                         }
                     </div>
                 </div>
             }
-        </div>
+        }
     </div>
-    <!-- Nút hành động -->
-    <div class="card mt-4">
-        <div class="card-body text-end">
-            <a href="@Url.Action("Edit", new { id = Model.MaQuiz })" class="btn btn-warning me-2">
-                <i class="fas fa-edit"></i> Sửa Quiz
-            </a>
-            <a href="@Url.Action("Delete", new { id = Model.MaQuiz })" class="btn btn-danger me-2">
-                <i class="fas fa-trash"></i> Xóa Quiz
-            </a>
-            <div class="mt-4 text-center">
-                
-                    <a href="@Url.Action("QuizzesByCourse", "Quiz", new { maKhoaHoc = Model.MaKhoaHoc })"
-                       class="btn btn-secondary rounded-pill px-4 py-2">
-                        <i class="fas fa-arrow-left me-2"></i>Quay lại danh sách quiz khóa học
-                    </a>
-                
-            </div>
-        </div>
+
+    <!-- Action Buttons -->
+    <div class="action-section">
+        <a href="@Url.Action("Edit", "Quiz", new { id = Model.MaQuiz })" class="btn-action btn-edit">
+            <i class="fas fa-edit"></i>
+            Chỉnh sửa Quiz
+        </a>
+        <a href="@Url.Action("Delete", "Quiz", new { id = Model.MaQuiz })"
+           class="btn-action btn-delete"
+           onclick="return confirm('Bạn có chắc muốn xóa quiz này không? Hành động này không thể hoàn tác.');">
+            <i class="fas fa-trash-alt"></i>
+            Xóa Quiz
+        </a>
+        <a href="@Url.Action("QuizzesByCourse", "Quiz", new { maKhoaHoc = Model.MaKhoaHoc })" class="btn-action btn-back">
+            <i class="fas fa-arrow-left"></i>
+            Quay lại danh sách
+        </a>
     </div>
 </div>

@@ -16,43 +16,34 @@ namespace MVC_ADMIN.Services
         {
             try
             {
-                // ƯU TIÊN 1: Đọc từ Web.config (nơi bạn đã cấu hình đúng)
-                _connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"]?.ConnectionString;
+                // ĐỌC appsettings.json từ thư mục gốc solution (cùng cấp với LTWNC)
+                // Khi chạy, BaseDirectory = ...\MVC_ADMIN\bin\Debug\
+                // → lên 1 cấp ".." → ...\MVC_ADMIN\
+                // → nhưng file appsettings.json nằm ở cấp cao hơn (LTWNC)
+                // → thực tế chỉ cần lên 1 cấp từ bin là tới thư mục chứa appsettings (theo bạn xác nhận)
+                string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "appsettings.json");
 
-                System.Diagnostics.Debug.WriteLine("=== KHỞI TẠO UserDataService ===");
-                System.Diagnostics.Debug.WriteLine($"1. Đang thử đọc từ Web.config...");
+                // Chuẩn hóa đường dẫn để tránh lỗi
+                filePath = Path.GetFullPath(filePath);
 
-                if (!string.IsNullOrEmpty(_connectionString))
+                if (!File.Exists(filePath))
                 {
-                    System.Diagnostics.Debug.WriteLine($"   THÀNH CÔNG: Connection String từ Web.config.");
-                    System.Diagnostics.Debug.WriteLine($"   Giá trị: {_connectionString}");
-                    return; // Thoát ngay nếu đọc được
+                    throw new FileNotFoundException($"Không tìm thấy file appsettings.json tại: {filePath}. Hãy kiểm tra lại vị trí file.");
                 }
 
-                // ƯU TIÊN 2: Nếu Web.config không có, thử đọc từ appsettings.json
-                System.Diagnostics.Debug.WriteLine($"2. Không tìm thấy trong Web.config. Thử đọc từ appsettings.json...");
-                string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
-                System.Diagnostics.Debug.WriteLine($"   Đường dẫn tìm kiếm: {filePath}");
-                System.Diagnostics.Debug.WriteLine($"   File tồn tại: {File.Exists(filePath)}");
+                string json = File.ReadAllText(filePath);
+                dynamic config = JsonConvert.DeserializeObject(json);
 
-                if (File.Exists(filePath))
-                {
-                    string json = File.ReadAllText(filePath);
-                    dynamic config = JsonConvert.DeserializeObject(json);
-                    _connectionString = config?.ConnectionStrings?.DefaultConnection;
-                    System.Diagnostics.Debug.WriteLine($"   Đọc từ JSON thành công: {_connectionString}");
-                }
+                _connectionString = config?.ConnectionStrings?.DefaultConnection;
 
                 if (string.IsNullOrEmpty(_connectionString))
                 {
-                    throw new InvalidOperationException("KHÔNG THỂ TÌM THẤY CHUỖI KẾT NỐI. Kiểm tra Web.config hoặc appsettings.json.");
+                    throw new InvalidOperationException("Không tìm thấy 'DefaultConnection' trong appsettings.json");
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"=== LỖI NGHIÊM TRỌNG khi khởi tạo Service ===");
-                System.Diagnostics.Debug.WriteLine($"{ex.ToString()}");
-                throw; // Ném lỗi ra để Controller bắt
+                throw new InvalidOperationException($"Lỗi đọc appsettings.json: {ex.Message}", ex);
             }
         }
 

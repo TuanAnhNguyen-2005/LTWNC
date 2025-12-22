@@ -1,15 +1,5 @@
 ﻿@model MVC_Teacher.Models.UploadHocLieuDto
 
-@if (ViewBag.SessionKeys != null)
-{
-    <div class="alert alert-warning">
-        <b>Session keys:</b> @ViewBag.SessionKeys <br />
-        <b>MaNguoiDung:</b> @ViewBag.MaNguoiDung <br />
-        <b>UserId:</b> @ViewBag.UserId <br />
-        <b>TeacherId:</b> @ViewBag.TeacherId <br />
-        <b>MaGiaoVien:</b> @ViewBag.MaGiaoVien
-    </div>
-}
 
 
 @using (Html.BeginForm("Upload", "UploadFile", FormMethod.Post, new { enctype = "multipart/form-data" }))

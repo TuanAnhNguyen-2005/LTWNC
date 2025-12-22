@@ -16,44 +16,34 @@ namespace MVC_Teacher.Services
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine("=== MVC_TEACHER: KHỞI TẠO UserDataService ===");
+                // ĐỌC appsettings.json từ thư mục gốc solution (cùng cấp với LTWNC)
+                // Khi chạy, BaseDirectory = ...\MVC_ADMIN\bin\Debug\
+                // → lên 1 cấp ".." → ...\MVC_ADMIN\
+                // → nhưng file appsettings.json nằm ở cấp cao hơn (LTWNC)
+                // → thực tế chỉ cần lên 1 cấp từ bin là tới thư mục chứa appsettings (theo bạn xác nhận)
+                string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "appsettings.json");
 
-                // ƯU TIÊN ĐỌC TỪ WEB.CONFIG (giống mvc_admin và mvc_student)
-                _connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"]?.ConnectionString;
+                // Chuẩn hóa đường dẫn để tránh lỗi
+                filePath = Path.GetFullPath(filePath);
 
-                System.Diagnostics.Debug.WriteLine("1. Đang thử đọc từ Web.config...");
-
-                if (!string.IsNullOrEmpty(_connectionString))
+                if (!File.Exists(filePath))
                 {
-                    System.Diagnostics.Debug.WriteLine($"   THÀNH CÔNG: Connection String từ Web.config.");
-                    System.Diagnostics.Debug.WriteLine($"   Giá trị: {_connectionString}");
-                    return;
+                    throw new FileNotFoundException($"Không tìm thấy file appsettings.json tại: {filePath}. Hãy kiểm tra lại vị trí file.");
                 }
 
-                // Fallback: đọc từ appsettings.json
-                System.Diagnostics.Debug.WriteLine($"2. Không tìm thấy trong Web.config. Thử từ appsettings.json...");
-                string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
-                System.Diagnostics.Debug.WriteLine($"   Đường dẫn: {filePath}");
-                System.Diagnostics.Debug.WriteLine($"   File tồn tại: {File.Exists(filePath)}");
+                string json = File.ReadAllText(filePath);
+                dynamic config = JsonConvert.DeserializeObject(json);
 
-                if (File.Exists(filePath))
-                {
-                    string json = File.ReadAllText(filePath);
-                    dynamic config = JsonConvert.DeserializeObject(json);
-                    _connectionString = config?.ConnectionStrings?.DefaultConnection;
-                    System.Diagnostics.Debug.WriteLine($"   Đọc từ JSON: {_connectionString}");
-                }
+                _connectionString = config?.ConnectionStrings?.DefaultConnection;
 
                 if (string.IsNullOrEmpty(_connectionString))
                 {
-                    throw new InvalidOperationException("KHÔNG TÌM THẤY CHUỐI KẾT NỐI.");
+                    throw new InvalidOperationException("Không tìm thấy 'DefaultConnection' trong appsettings.json");
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"=== LỖI KHỞI TẠO SERVICE (MVC_TEACHER) ===");
-                System.Diagnostics.Debug.WriteLine($"{ex.ToString()}");
-                throw;
+                throw new InvalidOperationException($"Lỗi đọc appsettings.json: {ex.Message}", ex);
             }
         }
 

@@ -2,13 +2,7 @@
     ViewBag.Title = Model.TenKhoaHoc;
     var quizzes = ViewBag.Quizzes as List<MVC_Student.Controllers.QuizDto>;
 }
-@if (ViewBag.DebugInfo != null)
-{
-    <div class="alert alert-warning">
-        <strong>DEBUG INFO (xóa sau khi fix xong):</strong>
-        <div style="font-size:12px; white-space: pre-line;">@Html.Raw(ViewBag.DebugInfo)</div>
-    </div>
-}
+
 <div class="container py-5">
     <div class="row">
         <div class="col-lg-8 mx-auto">
