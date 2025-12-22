@@ -567,6 +567,131 @@ BEGIN
     VALUES (@MaKetQua, @MaCauHoi, @TraLoi);
 END
 GO
+USE NenTangHocLieu;
+GO
+ALTER TABLE HocLieu ADD MaKhoaHoc INT NULL;
+ALTER TABLE HocLieu ADD CONSTRAINT FK_HocLieu_KhoaHoc
+    FOREIGN KEY (MaKhoaHoc) REFERENCES KhoaHoc(MaKhoaHoc) ON DELETE SET NULL;
+CREATE INDEX IX_HocLieu_MaKhoaHoc ON HocLieu(MaKhoaHoc);
+USE NenTangHocLieu;
+GO
+
+-- Thêm cột MaKhoaHoc nếu chưa có
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS 
+               WHERE TABLE_NAME = 'HocLieu' AND COLUMN_NAME = 'MaKhoaHoc')
+BEGIN
+    ALTER TABLE HocLieu ADD MaKhoaHoc INT NULL;
+    
+    -- Tạo foreign key (nếu xóa khóa học thì set null cho tài liệu)
+    ALTER TABLE HocLieu ADD CONSTRAINT FK_HocLieu_KhoaHoc 
+        FOREIGN KEY (MaKhoaHoc) REFERENCES KhoaHoc(MaKhoaHoc) ON DELETE SET NULL;
+    
+    -- Tạo index để tìm nhanh
+    CREATE INDEX IX_HocLieu_MaKhoaHoc ON HocLieu(MaKhoaHoc);
+    
+    PRINT 'Đã thêm cột MaKhoaHoc thành công';
+END
+ELSE
+BEGIN
+    PRINT 'Cột MaKhoaHoc đã tồn tại';
+END
+GO
+USE NenTangHocLieu;
+GO
+
+-- === THÊM CÁC CỘT CÒN THIẾU VÀO BẢNG KetQuaQuiz (NẾU CHƯA CÓ) ===
+
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS 
+               WHERE TABLE_NAME = 'KetQuaQuiz' AND COLUMN_NAME = 'TongDiem')
+BEGIN
+    ALTER TABLE KetQuaQuiz ADD TongDiem FLOAT NULL;
+    PRINT 'Đã thêm cột TongDiem';
+END
+ELSE
+    PRINT 'Cột TongDiem đã tồn tại';
+
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS 
+               WHERE TABLE_NAME = 'KetQuaQuiz' AND COLUMN_NAME = 'SoCauDung')
+BEGIN
+    ALTER TABLE KetQuaQuiz ADD SoCauDung INT NULL DEFAULT 0;
+    PRINT 'Đã thêm cột SoCauDung';
+END
+ELSE
+    PRINT 'Cột SoCauDung đã tồn tại';
+
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS 
+               WHERE TABLE_NAME = 'KetQuaQuiz' AND COLUMN_NAME = 'TongCau')
+BEGIN
+    ALTER TABLE KetQuaQuiz ADD TongCau INT NULL;
+    PRINT 'Đã thêm cột TongCau';
+END
+ELSE
+    PRINT 'Cột TongCau đã tồn tại';
+
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS 
+               WHERE TABLE_NAME = 'KetQuaQuiz' AND COLUMN_NAME = 'NgayNop')
+BEGIN
+    ALTER TABLE KetQuaQuiz ADD NgayNop DATETIME NULL DEFAULT GETDATE();
+    PRINT 'Đã thêm cột NgayNop';
+END
+ELSE
+    PRINT 'Cột NgayNop đã tồn tại';
+
+-- Thêm cột ThoiGianLam tính bằng giây (computed column - không cần lưu thủ công)
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS 
+               WHERE TABLE_NAME = 'KetQuaQuiz' AND COLUMN_NAME = 'ThoiGianLamGiay')
+BEGIN
+    ALTER TABLE KetQuaQuiz ADD ThoiGianLamGiay AS 
+        CASE 
+            WHEN ThoiGianBatDau IS NOT NULL AND ThoiGianKetThuc IS NOT NULL 
+            THEN DATEDIFF(SECOND, ThoiGianBatDau, ThoiGianKetThuc)
+            ELSE NULL 
+        END PERSISTED;  -- PERSISTED để có thể tạo index nếu cần
+    PRINT 'Đã thêm cột computed ThoiGianLamGiay (giây)';
+END
+ELSE
+    PRINT 'Cột ThoiGianLamGiay đã tồn tại';
+
+-- === TẠO INDEX ĐỂ TÌM NHANH ===
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_KetQuaQuiz_MaHocSinh' AND object_id = OBJECT_ID('KetQuaQuiz'))
+BEGIN
+    CREATE INDEX IX_KetQuaQuiz_MaHocSinh ON KetQuaQuiz(MaHocSinh);
+    PRINT 'Đã tạo index IX_KetQuaQuiz_MaHocSinh';
+END
+
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_KetQuaQuiz_MaQuiz' AND object_id = OBJECT_ID('KetQuaQuiz'))
+BEGIN
+    CREATE INDEX IX_KetQuaQuiz_MaQuiz ON KetQuaQuiz(MaQuiz);
+    PRINT 'Đã tạo index IX_KetQuaQuiz_MaQuiz';
+END
+
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_KetQuaQuiz_NgayNop' AND object_id = OBJECT_ID('KetQuaQuiz'))
+BEGIN
+    CREATE INDEX IX_KetQuaQuiz_NgayNop ON KetQuaQuiz(NgayNop DESC);
+    PRINT 'Đã tạo index IX_KetQuaQuiz_NgayNop';
+END
+
+PRINT '=== CẬP NHẬT BẢNG KetQuaQuiz HOÀN TẤT THÀNH CÔNG ===';
+GO
+USE NenTangHocLieu;
+GO
+
+-- Bảng lưu chi tiết trả lời từng câu của mỗi lần làm bài
+CREATE TABLE TraLoiChiTiet (
+    MaTraLoi INT IDENTITY(1,1) PRIMARY KEY,
+    MaKetQua INT NOT NULL,
+    MaCauHoi INT NOT NULL,
+    TraLoi NVARCHAR(MAX) NULL,  -- Lưu nội dung hoặc ID lựa chọn (ví dụ: "A" hoặc "1")
+    DungSai BIT NOT NULL,       -- TRUE nếu đúng, FALSE nếu sai
+    CONSTRAINT FK_TraLoiChiTiet_KetQua FOREIGN KEY (MaKetQua) REFERENCES KetQuaQuiz(MaKetQua) ON DELETE CASCADE,
+    CONSTRAINT FK_TraLoiChiTiet_CauHoi FOREIGN KEY (MaCauHoi) REFERENCES CauHoi(MaCauHoi) ON DELETE CASCADE
+);
+
+-- Index để tìm nhanh
+CREATE INDEX IX_TraLoiChiTiet_MaKetQua ON TraLoiChiTiet(MaKetQua);
+GO
+
+PRINT 'Tạo bảng TraLoiChiTiet thành công!';
 
 PRINT N'=== TẤT CẢ STORED PROCEDURES ĐÃ ĐƯỢC TẠO THÀNH CÔNG ===';
 PRINT N'=== TẠO DATABASE NenTangHocLieu HOÀN TẤT 100% ===';
