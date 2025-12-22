@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Web.Mvc;
+using MVC_Teacher.Models;
 
 namespace MVC_Teacher.Controllers
 {
@@ -18,14 +19,54 @@ namespace MVC_Teacher.Controllers
                     return RedirectToAction("Index", "Login");
 
                 ViewBag.Title = "Trang chủ";
-                ViewBag.UserName = Session["FullName"]?.ToString() ?? string.Empty;
-                ViewBag.UserRole = Session["Role"]?.ToString() ?? string.Empty;
 
-            // Thêm các ViewBag cho Dashboard stats
-            ViewBag.TotalClasses = 12;
-            ViewBag.TotalStudents = 154;
-            ViewBag.CompletionRate = 87;
-            ViewBag.AverageRating = 4.8;
+                // Ưu tiên lấy từ Session TeacherData
+                Teacher teacher = null;
+
+                if (Session["TeacherData"] != null)
+                {
+                    teacher = Session["TeacherData"] as Teacher;
+                }
+                else if (TempData["UpdatedTeacher"] != null)
+                {
+                    // Nếu vừa update từ Profile
+                    teacher = TempData["UpdatedTeacher"] as Teacher;
+                    Session["TeacherData"] = teacher;
+                }
+
+                if (teacher != null)
+                {
+                    // Cập nhật Session riêng lẻ từ Teacher object
+                    Session["FullName"] = teacher.FullName;
+                    Session["Email"] = teacher.Email;
+                    Session["Subject"] = teacher.Subject;
+                    Session["Role"] = teacher.Role;
+
+                    ViewBag.UserName = teacher.FullName;
+                    ViewBag.UserRole = teacher.Role;
+                    ViewBag.UserSubject = teacher.Subject;
+                    ViewBag.UserEmail = teacher.Email;
+                }
+                else
+                {
+                    // Fallback: lấy từ Session riêng lẻ
+                    ViewBag.UserName = Session["FullName"]?.ToString() ?? "Thầy/Cô";
+                    ViewBag.UserRole = Session["Role"]?.ToString() ?? "Giáo viên";
+                    ViewBag.UserSubject = Session["Subject"]?.ToString() ?? "Môn học";
+                    ViewBag.UserEmail = Session["Email"]?.ToString() ?? "email@example.com";
+                }
+
+                // Thêm các ViewBag cho Dashboard stats
+                ViewBag.TotalClasses = 12;
+                ViewBag.TotalStudents = 154;
+                ViewBag.CompletionRate = 87;
+                ViewBag.AverageRating = 4.8;
+
+                // Kiểm tra nếu vừa update từ Profile
+                if (TempData["ProfileUpdated"] != null)
+                {
+                    ViewBag.ProfileUpdated = true;
+                }
 
                 return View();
             }
@@ -36,6 +77,30 @@ namespace MVC_Teacher.Controllers
                 TempData["Error"] = "Đã xảy ra lỗi. Vui lòng thử lại sau.";
                 return View();
             }
+        }
+
+        // API để lấy thông tin Teacher hiện tại (cho JavaScript)
+        [HttpGet]
+        public JsonResult GetTeacherInfo()
+        {
+            var teacher = Session["TeacherData"] as Teacher;
+            if (teacher == null)
+            {
+                teacher = new Teacher
+                {
+                    FullName = Session["FullName"] as string ?? "Thầy/Cô",
+                    Subject = Session["Subject"] as string ?? "Môn học",
+                    Email = Session["Email"] as string ?? "email@example.com"
+                };
+            }
+
+            return Json(new
+            {
+                fullName = teacher.FullName,
+                subject = teacher.Subject,
+                email = teacher.Email,
+                role = teacher.Role
+            }, JsonRequestBehavior.AllowGet);
         }
 
         // GET: Home/About

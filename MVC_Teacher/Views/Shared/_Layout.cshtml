@@ -1062,54 +1062,54 @@
             </button>
 
             <!-- User Profile với Dropdown -->
-            <div class="user-profile-container">
-                <div class="user-profile" id="userProfileBtn">
-                    <div class="user-avatar">
-                        <span>GV</span>
-                    </div>
-                    <div class="user-info">
-                        <span class="user-name">Thầy Hiếu</span>
-                        <span class="user-role">Giáo viên Toán</span>
-                    </div>
-                    <i class="fas fa-chevron-down" style="font-size: 12px;"></i>
+            <!-- Tìm phần này trong _Layout.cshtml -->
+            <div class="user-profile" id="userProfileBtn">
+                <div class="user-avatar" id="userAvatar">
+                    <span id="avatarInitials">GV</span>
                 </div>
+                <div class="user-info">
+                    <span class="user-name" id="headerUserName">Thầy Hiếu</span>
+                    <span class="user-role" id="headerUserRole">Giáo viên Toán</span>
+                </div>
+                <i class="fas fa-chevron-down" style="font-size: 12px;"></i>
+            </div>
 
-                <!-- Dropdown Menu -->
-                <!-- Dropdown Menu -->
-                <div class="profile-dropdown" id="profileDropdown">
-                    <div class="dropdown-header">
-                        <div class="dropdown-user-info">
-                            <div class="dropdown-avatar">GV</div>
-                            <div class="dropdown-user-details">
-                                <div class="user-name">Thầy Hiếu</div>
-                                <div class="user-role">Giáo viên Toán</div>
-                            </div>
+            <!-- Dropdown Menu -->
+            <!-- Dropdown Menu -->
+            <div class="profile-dropdown" id="profileDropdown">
+                <div class="dropdown-header">
+                    <div class="dropdown-user-info">
+                        <div class="dropdown-avatar" id="dropdownAvatar">GV</div>
+                        <div class="dropdown-user-details">
+                            <div class="user-name" id="dropdownUserName">Thầy Hiếu</div>
+                            <div class="user-role" id="dropdownUserRole">Giáo viên Toán</div>
                         </div>
                     </div>
-                    <div class="dropdown-menu">
-                        <div class="dropdown-item" onclick="editProfile()">
-                            <i class="fas fa-user-edit"></i>
-                            <span>Chỉnh sửa thông tin</span>
-                        </div>
+                </div>
+                <div class="dropdown-menu">
+                    <div class="dropdown-item" onclick="editProfile()">
+                        <i class="fas fa-user-edit"></i>
+                        <span>Chỉnh sửa thông tin</span>
+                    </div>
 
-                        <!-- 🔴 THÊM MỤC MỚI: KHÓA HỌC CỦA TÔI -->
-                        <div class="dropdown-item">
-                            <i class="fas fa-book"></i>
-                            <span>
-                                <a href="@Url.Action("MyCourses", "KhoaHoc")" style="color:inherit; text-decoration:none;">
-                                    Khóa học của tôi
-                                </a>
-                            </span>
-                        </div>
+                    <!-- 🔴 THÊM MỤC MỚI: KHÓA HỌC CỦA TÔI -->
+                    <div class="dropdown-item">
+                        <i class="fas fa-book"></i>
+                        <span>
+                            <a href="@Url.Action("MyCourses", "KhoaHoc")" style="color:inherit; text-decoration:none;">
+                                Khóa học của tôi
+                            </a>
+                        </span>
+                    </div>
 
-                        <div class="dropdown-divider"></div>
-                        <div class="dropdown-item" onclick="logout()">
-                            <i class="fas fa-sign-out-alt"></i>
-                            <span>Đăng xuất</span>
-                        </div>
+                    <div class="dropdown-divider"></div>
+                    <div class="dropdown-item" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Đăng xuất</span>
                     </div>
                 </div>
             </div>
+        </div>
         </div>
     </header>
 
@@ -1534,7 +1534,59 @@
                 }, 2000);
             }
         });
-    </script>
+            // ... các function hiện tại ...
+
+    // Hàm cập nhật thông tin user trong header
+    function updateHeaderUserInfo() {
+        // Gọi API lấy thông tin mới nhất
+        fetch('/Home/GetTeacherInfo')
+            .then(response => response.json())
+            .then(data => {
+                // Cập nhật avatar
+                const avatarElements = document.querySelectorAll('.user-avatar, .dropdown-avatar');
+                avatarElements.forEach(element => {
+                    if (element && data.fullName && data.fullName.length > 0) {
+                        element.innerHTML = data.fullName.substring(0, 1).toUpperCase();
+                    }
+                });
+                
+                // Cập nhật tên
+                const nameElements = document.querySelectorAll('.user-name');
+                nameElements.forEach(element => {
+                    if (element && data.fullName) {
+                        element.textContent = data.fullName;
+                    }
+                });
+                
+                // Cập nhật role/subject
+                const roleElements = document.querySelectorAll('.user-role');
+                roleElements.forEach(element => {
+                    if (element && data.subject) {
+                        element.textContent = data.subject;
+                    }
+                });
+                
+                console.log('Header đã được cập nhật');
+            })
+            .catch(error => console.error('Lỗi cập nhật header:', error));
+    }
+    
+    // Tự động cập nhật header khi load trang
+    document.addEventListener('DOMContentLoaded', function() {
+        // Cập nhật lần đầu
+        updateHeaderUserInfo();
+        
+        // Cập nhật mỗi 60 giây
+        setInterval(updateHeaderUserInfo, 60000);
+    });
+    
+    // Lắng nghe thông báo cập nhật profile
+    window.addEventListener('storage', function(event) {
+        if (event.key === 'profileUpdated' && event.newValue === 'true') {
+            updateHeaderUserInfo();
+        }
+    });
+</script>
 
     @RenderSection("scripts", required: false)
 </body>
