@@ -1,38 +1,458 @@
 ﻿@{
     Layout = "~/Views/Shared/_LoginLayout.cshtml";
-    ViewBag.Title = "Đăng nhập";
+    ViewBag.Title = "Đăng nhập Giáo viên";
 }
 
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card mt-5 shadow">
-                <div class="card-header bg-primary text-white text-center">
-                    <h4>Đăng nhập hệ thống HocLieu</h4>
+<style>
+    /* Khung chính */
+    .login-box {
+        background: white;
+        border-radius: 15px;
+        padding: 40px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        border: 2px solid #3b82f6;
+        position: relative;
+        margin: 0 auto;
+    }
+
+        /* Góc trang trí */
+        .login-box::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #3b82f6, #8b5cf6, #3b82f6);
+            border-radius: 17px;
+            z-index: -1;
+        }
+
+    /* Header với khung */
+    .login-header {
+        text-align: center;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #e5e7eb;
+    }
+
+    /* Khung cho input */
+    .input-box {
+        border: 2px solid #d1d5db;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 20px;
+        background: white;
+        position: relative;
+    }
+
+        .input-box:focus-within {
+            border-color: #3b82f6;
+        }
+
+    /* Khung checkbox */
+    .checkbox-box {
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+        background: #f9fafb;
+    }
+
+    /* Khung nút đăng nhập */
+    .login-btn-box {
+        border: 2px solid #3b82f6;
+        border-radius: 10px;
+        margin: 25px 0;
+        overflow: hidden;
+    }
+
+    /* Khung social */
+    .social-box {
+        border: 1px dashed #9ca3af;
+        border-radius: 10px;
+        padding: 20px;
+        margin: 25px 0;
+        background: #f9fafb;
+    }
+
+    /* Khung footer */
+    .footer-box {
+        border-top: 2px solid #e5e7eb;
+        padding: 20px 0;
+        margin: 25px 0;
+    }
+
+    /* Khung bảo mật */
+    .security-box {
+        border: 2px solid #dbeafe;
+        border-radius: 10px;
+        padding: 20px;
+        background: #eff6ff;
+        margin-top: 25px;
+    }
+
+    /* Khung tính năng */
+    .features-box {
+        border: 2px solid #e0e7ff;
+        border-radius: 10px;
+        padding: 20px;
+        background: #f8fafc;
+        margin: 30px 0;
+    }
+
+    /* Tiêu đề khung */
+    .box-title {
+        display: inline-block;
+        background: #3b82f6;
+        color: white;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+    }
+
+    /* Input field styling - SỬA LẠI */
+    .form-control {
+        border: none;
+        padding: 0;
+        box-shadow: none;
+        width: 100%;
+        height: 24px;
+    }
+
+        .form-control:focus {
+            box-shadow: none;
+            outline: none;
+        }
+
+    .password-wrapper {
+        position: relative;
+        width: 100%;
+    }
+
+    /* Nút hiển thị mật khẩu - SỬA LẠI VỊ TRÍ */
+    .password-toggle-btn {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: #6b7280;
+        cursor: pointer;
+        padding: 5px 8px;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        z-index: 10;
+        transition: all 0.2s;
+    }
+
+        .password-toggle-btn:hover {
+            background-color: #f3f4f6;
+            color: #4b5563;
+        }
+
+        .password-toggle-btn:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+        }
+
+    .email-input-wrapper {
+        position: relative;
+    }
+
+        .email-input-wrapper i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+        }
+
+    /* Đảm bảo input password có padding cho nút */
+    .password-input {
+        padding-right: 45px !important;
+        width: 100%;
+    }
+
+    /* Fix cho input trong khung */
+    .input-box input {
+        width: 100%;
+        padding: 0;
+        border: none;
+        background: transparent;
+    }
+
+        .input-box input:focus {
+            outline: none;
+        }
+</style>
+
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="login-box">
+            <!-- Header -->
+            <div class="login-header">
+                <div class="teacher-icon mb-3">
+                    <i class="fas fa-chalkboard-teacher fa-3x text-primary"></i>
                 </div>
-                <div class="card-body">
-                    @if (ViewBag.Error != null)
-                    {
-                        <div class="alert alert-danger">@ViewBag.Error</div>
-                    }
-                    <form method="post">
-                        @Html.AntiForgeryToken()
-                        <div class="form-group mb-3">
-                            <label>Email</label>
-                            <input type="email" name="email" class="form-control" required />
+                <h3 class="teacher-title">Đăng nhập Giáo viên</h3>
+                <p class="teacher-subtitle">Hệ thống quản lý học liệu HocLieu</p>
+            </div>
+
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    @ViewBag.Error
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            <form method="post" id="teacherLoginForm">
+                @Html.AntiForgeryToken()
+
+                <!-- Khung Email -->
+                <div class="mb-4">
+                    <div class="box-title">EMAIL ĐĂNG NHẬP</div>
+                    <div class="input-box">
+                        <div class="email-input-wrapper">
+                            <input type="email"
+                                   name="email"
+                                   id="email"
+                                   class="form-control"
+                                   placeholder="Nhập email của bạn"
+                                   required
+                                   value="@ViewBag.Email">
+                            <i class="fas fa-envelope"></i>
                         </div>
-                        <div class="form-group mb-3">
-                            <label>Mật khẩu</label>
-                            <input type="password" name="password" class="form-control" required />
+                    </div>
+                </div>
+
+                <!-- Khung Mật khẩu - ĐÃ SỬA VỊ TRÍ NÚT HIỆN/ẨN -->
+                <div class="mb-4">
+                    <div class="box-title">MẬT KHẨU</div>
+                    <div class="input-box">
+                        <div class="password-wrapper">
+                            <input type="password"
+                                   name="password"
+                                   id="password"
+                                   class="form-control password-input"
+                                   placeholder="Nhập mật khẩu"
+                                   required>
+                            <button type="button" class="password-toggle-btn" id="passwordToggle">
+                                <i class="fas fa-eye"></i>
+                            </button>
                         </div>
-                        <button type="submit" class="btn btn-primary btn-block">Đăng nhập</button>
-                    </form>
-                    <hr />
-                    <p class="text-center">
-                        Chưa có tài khoản? <a href="/SignUp">Đăng ký ngay</a>
+                    </div>
+                </div>
+
+                <!-- Khung Checkbox -->
+                <div class="checkbox-box">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="rememberMe" name="rememberMe">
+                            <label class="form-check-label fw-medium" for="rememberMe">
+                                Ghi nhớ đăng nhập
+                            </label>
+                        </div>
+                        <a href="/Account/ForgotPassword" class="text-decoration-none text-primary fw-medium">
+                            <i class="fas fa-key me-1"></i>Quên mật khẩu?
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Khung Nút Đăng nhập -->
+                <div class="login-btn-box">
+                    <button type="submit" class="btn btn-primary w-100 py-3 fw-bold" id="loginBtn">
+                        <i class="fas fa-sign-in-alt me-2"></i>ĐĂNG NHẬP
+                    </button>
+                </div>
+
+                <!-- Khung Social Login -->
+                <div class="social-box">
+                    <p class="text-center text-muted mb-3">Hoặc đăng nhập với</p>
+                    <div class="d-flex gap-3">
+                        <button type="button" class="btn btn-outline-primary flex-fill">
+                            <i class="fab fa-google me-2"></i>Google
+                        </button>
+                        <button type="button" class="btn btn-outline-primary flex-fill">
+                            <i class="fab fa-microsoft me-2"></i>Microsoft
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Khung Đăng ký -->
+                <div class="footer-box">
+                    <p class="text-center mb-3">
+                        <span class="text-muted">Chưa có tài khoản giáo viên?</span>
+                        <a href="/SignUp/Index" class="text-decoration-none fw-bold text-primary ms-1">
+                            <i class="fas fa-user-plus me-1"></i>Đăng ký ngay
+                        </a>
+                    </p>
+                    <div class="text-center">
+                        <a href="/Home" class="text-decoration-none text-muted me-3">
+                            <i class="fas fa-home me-1"></i>Về trang chủ
+                        </a>
+                        <span class="text-muted">•</span>
+                        <a href="/Account/Support" class="text-decoration-none text-muted ms-3">
+                            <i class="fas fa-headset me-1"></i>Hỗ trợ
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Khung Bảo mật -->
+                <div class="security-box">
+                    <p class="mb-2">
+                        <i class="fas fa-shield-alt me-2 text-primary"></i>
+                        <strong>Truy cập an toàn • Dành riêng cho giáo viên</strong>
+                    </p>
+                    <p class="mb-0 text-muted small">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Vui lòng sử dụng email được cấp bởi nhà trường
                     </p>
                 </div>
+            </form>
+
+            <!-- Khung Tính năng -->
+            <div class="features-box">
+                <div class="row text-center">
+                    <div class="col-4">
+                        <i class="fas fa-book fa-2x text-primary mb-2"></i>
+                        <p class="mb-0 fw-medium">Quản lý học liệu</p>
+                    </div>
+                    <div class="col-4">
+                        <i class="fas fa-users fa-2x text-primary mb-2"></i>
+                        <p class="mb-0 fw-medium">Quản lý lớp học</p>
+                    </div>
+                    <div class="col-4">
+                        <i class="fas fa-chart-line fa-2x text-primary mb-2"></i>
+                        <p class="mb-0 fw-medium">Báo cáo học tập</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Copyright -->
+            <div class="text-center mt-4">
+                <small class="text-muted">© @DateTime.Now.Year HocLieu - Phiên bản dành cho Giáo viên</small>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    // GIẢI PHÁP ĐƠN GIẢN NHẤT - LUÔN HOẠT ĐỘNG
+    document.addEventListener('DOMContentLoaded', function () {
+        console.log("DOM loaded - Setting up password toggle");
+
+        const passwordToggle = document.getElementById('passwordToggle');
+        const passwordInput = document.getElementById('password');
+
+        if (!passwordToggle || !passwordInput) {
+            console.error("Missing elements for password toggle");
+            return;
+        }
+
+        console.log("✓ Found password toggle elements");
+
+        // Đảm bảo nút có đúng HTML
+        passwordToggle.innerHTML = '<i class="fas fa-eye"></i>';
+        passwordToggle.title = 'Hiện mật khẩu';
+
+        // Xóa tất cả event listeners cũ
+        const newToggle = passwordToggle.cloneNode(true);
+        passwordToggle.parentNode.replaceChild(newToggle, passwordToggle);
+
+        // Thêm event listener đơn giản
+        newToggle.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            console.log("Password toggle clicked");
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                this.innerHTML = '<i class="fas fa-eye-slash"></i>';
+                this.title = 'Ẩn mật khẩu';
+                console.log("Password shown");
+            } else {
+                passwordInput.type = 'password';
+                this.innerHTML = '<i class="fas fa-eye"></i>';
+                this.title = 'Hiện mật khẩu';
+                console.log("Password hidden");
+            }
+
+            // Focus lại vào input
+            passwordInput.focus();
+        });
+
+        console.log("✓ Password toggle setup completed");
+
+        // Test function
+        window.testPassword = function () {
+            console.log("Testing password toggle...");
+            newToggle.click();
+        };
+    });
+
+    // Backup với jQuery (nếu cần)
+    $(document).ready(function () {
+        console.log("jQuery ready - Double-checking password toggle");
+
+        // Kiểm tra lại và thêm backup
+        setTimeout(function () {
+            const toggleBtn = $('#passwordToggle');
+            const passwordInput = $('#password');
+
+            if (toggleBtn.length && passwordInput.length) {
+                console.log("✓ jQuery also found the elements");
+
+                // Thêm backup event handler
+                toggleBtn.off('click.toggle').on('click.toggle', function (e) {
+                    e.preventDefault();
+
+                    if (passwordInput.attr('type') === 'password') {
+                        passwordInput.attr('type', 'text');
+                        $(this).html('<i class="fas fa-eye-slash"></i>');
+                        $(this).attr('title', 'Ẩn mật khẩu');
+                    } else {
+                        passwordInput.attr('type', 'password');
+                        $(this).html('<i class="fas fa-eye"></i>');
+                        $(this).attr('title', 'Hiện mật khẩu');
+                    }
+                });
+            }
+        }, 500);
+    });
+
+    // GIẢI PHÁP CUỐI CÙNG - Event delegation (luôn hoạt động)
+    document.addEventListener('click', function (e) {
+        // Kiểm tra nếu click vào nút toggle hoặc icon bên trong
+        if (e.target &&
+            (e.target.id === 'passwordToggle' ||
+                e.target.closest('#passwordToggle'))) {
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            const passwordInput = document.getElementById('password');
+            if (!passwordInput) return;
+
+            const toggleBtn = e.target.closest('#passwordToggle') || e.target;
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleBtn.innerHTML = '<i class="fas fa-eye-slash"></i>';
+                toggleBtn.title = 'Ẩn mật khẩu';
+            } else {
+                passwordInput.type = 'password';
+                toggleBtn.innerHTML = '<i class="fas fa-eye"></i>';
+                toggleBtn.title = 'Hiện mật khẩu';
+            }
+
+            passwordInput.focus();
+        }
+    });
+</script>

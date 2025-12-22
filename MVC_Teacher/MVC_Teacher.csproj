@@ -137,7 +137,10 @@
     <Compile Include="Helpers\PasswordHasher.cs" />
     <Compile Include="Models\CauHoiDetailDto.cs" />
     <Compile Include="Models\CourseDetailDto.cs" />
+    <Compile Include="Models\Category.cs" />
+    <Compile Include="Models\DangKyKhoaHoc.cs" />
     <Compile Include="Models\HocLieuViewModel.cs" />
+    <Compile Include="Models\KhoaHoc.cs" />
     <Compile Include="Models\QuizCreateViewModel.cs" />
     <Compile Include="Models\QuizDeleteViewModel.cs" />
     <Compile Include="Models\QuizDetailViewModel.cs" />
@@ -178,6 +181,13 @@
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="wwwroot\images\courses\phantichthietkehdt.jpg" />
     <Content Include="appsettings.json" />
+    <Content Include="appsettings.Development.json">
+      <DependentUpon>appsettings.json</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />

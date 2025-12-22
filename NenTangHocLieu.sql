@@ -162,7 +162,7 @@ CREATE TABLE BinhLuan (
 GO
 
 -- ==============================
--- BẢNG QUIZ
+-- DỮ LIỆU MẪU (CHẠY SAU KHI ĐÃ TẠO XONG TẤT CẢ BẢNG)
 -- ==============================
 CREATE TABLE Quiz (
     MaQuiz INT IDENTITY(1,1) PRIMARY KEY,
@@ -263,34 +263,7 @@ VALUES
 (5, N'SV Hoàng E', N'sv2@example.com', N'123456', 3, N'Nam', N'Huế');
 SET IDENTITY_INSERT NguoiDung OFF;
 
--- Category
-INSERT INTO Category (CategoryName, Slug, Description, IsActive)
-VALUES
-(N'Lập trình Web', 'lap-trinh-web', N'HTML, CSS, JavaScript, ASP.NET', 1),
-(N'Lập trình Mobile', 'lap-trinh-mobile', N'Android, iOS, Flutter', 1),
-(N'Cơ sở dữ liệu', 'co-so-du-lieu', N'SQL Server, MySQL, MongoDB', 1),
-(N'Trí tuệ nhân tạo', 'tri-tue-nhan-tao', N'Machine Learning, AI', 1),
-(N'Thiết kế đồ họa', 'thiet-ke-do-hoa', N'Photoshop, Illustrator', 0);
-
--- KhoaHoc
-INSERT INTO KhoaHoc (TenKhoaHoc, Slug, MoTa, MaGiaoVien, TrangThaiDuyet, NgayGuiDuyet)
-VALUES
-(N'Lập trình C# cơ bản', N'lap-trinh-csharp-co-ban', N'Khóa học cho người mới bắt đầu', 2, N'ChoDuyet', GETDATE()),
-(N'SQL Server nền tảng', N'sql-server-nen-tang', N'Học từ cơ bản đến thực hành', 2, N'Draft', NULL);
-
--- Duyệt khóa học
-UPDATE KhoaHoc
-SET TrangThaiDuyet = N'DaDuyet',
-    NgayDuyet = GETDATE(),
-    NguoiDuyetId = 1,
-    LyDoTuChoi = NULL
-WHERE MaKhoaHoc = 1;
-
--- DangKyKhoaHoc
-INSERT INTO DangKyKhoaHoc (MaKhoaHoc, MaHocSinh)
-VALUES (1, 4);
-
--- HocLieu
+-- BÂY GIỜ MỚI INSERT HỌC LIỆU (sau khi các bảng cha đã có dữ liệu)
 SET IDENTITY_INSERT HocLieu ON;
 INSERT INTO HocLieu (MaHocLieu, TieuDe, MoTa, DuongDanTep, LoaiTep, KichThuocTep, DoKho, MaChuDe, MaNguoiDung, MaMonHoc, MaLopHoc, DaDuyet, TrangThaiDuyet) 
 VALUES
@@ -301,9 +274,8 @@ VALUES
 (5, N'HTML cơ bản', NULL, N'/files/html.pdf', N'PDF', 204800, N'Dễ', 5, 3, 3, 1, 1, N'Đã duyệt');
 SET IDENTITY_INSERT HocLieu OFF;
 
--- BinhLuan
-INSERT INTO BinhLuan (MaHocLieu, MaNguoiDung, NoiDung, DanhGia, MaBinhLuanCha) 
-VALUES
+-- BÌNH LUẬN (sau khi có Học liệu)
+INSERT INTO BinhLuan (MaHocLieu, MaNguoiDung, NoiDung, DanhGia, MaBinhLuanCha) VALUES
 (1, 4, N'Rất dễ hiểu ạ!', 5, NULL),
 (1, 5, N'Giảng hay quá thầy ơi', 5, NULL),
 (2, 4, N'Video chất lượng cao', 4, NULL),
@@ -322,12 +294,19 @@ WHERE EXISTS (
 );
 GO
 
-PRINT N'=== NHẬP DỮ LIỆU MẪU THÀNH CÔNG ===';
+PRINT N'=== TẠO DATABASE NenTangHocLieu THÀNH CÔNG 100% ===';
+USE NenTangHocLieu;
 GO
 
--- ==============================
--- STORED PROCEDURES
--- ==============================
+-- XÓA PROC NẾU ĐÃ TỒN TẠI
+IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'psDeleteHocLieu') DROP PROC psDeleteHocLieu;
+IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'psLoginNguoiDung') DROP PROC psLoginNguoiDung;
+IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'psInsertHocLieu') DROP PROC psInsertHocLieu;
+IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'psUpdateHocLieu') DROP PROC psUpdateHocLieu;
+IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'psGetMonHoc') DROP PROC psGetMonHoc;
+IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'psGetHocLieu') DROP PROC psGetHocLieu;
+IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'psUpdateNguoiDung') DROP PROC psUpdateNguoiDung;
+GO
 
 -- 1. Xóa học liệu
 CREATE PROC psDeleteHocLieu 
@@ -343,19 +322,18 @@ BEGIN
 END
 GO
 
--- 2. Đăng nhập (chỉ Admin)
-CREATE PROC psLoginNguoiDung
-    @Email NVARCHAR(100),
-    @MatKhau NVARCHAR(255)
+-- 2. ĐĂNG NHẬP
+CREATE PROC psLoginNguoiDung (@Email NVARCHAR(100), @MatKhau NVARCHAR(255))
 AS
 BEGIN
-    SELECT MaNguoiDung, HoTen, Email, MaVaiTro,
-           TenVaiTro = (SELECT TenVaiTro FROM VaiTro WHERE VaiTro.MaVaiTro = NguoiDung.MaVaiTro)
-    FROM NguoiDung
-    WHERE Email = @Email
-      AND MatKhau = @MatKhau
-      AND MaVaiTro = 1
-      AND TrangThai = 1;
+    BEGIN TRAN
+        SELECT MaNguoiDung, HoTen, Email, MaVaiTro, TenVaiTro = (SELECT TenVaiTro FROM VaiTro WHERE VaiTro.MaVaiTro = NguoiDung.MaVaiTro)
+        FROM NguoiDung 
+        WHERE Email = @Email AND MatKhau = @MatKhau;
+    IF (@@ERROR <> 0)
+        ROLLBACK TRAN
+    ELSE
+        COMMIT TRAN
 END
 GO
 
@@ -690,8 +668,4 @@ CREATE TABLE TraLoiChiTiet (
 CREATE INDEX IX_TraLoiChiTiet_MaKetQua ON TraLoiChiTiet(MaKetQua);
 GO
 
-PRINT 'Tạo bảng TraLoiChiTiet thành công!';
-
-PRINT N'=== TẤT CẢ STORED PROCEDURES ĐÃ ĐƯỢC TẠO THÀNH CÔNG ===';
-PRINT N'=== TẠO DATABASE NenTangHocLieu HOÀN TẤT 100% ===';
-GO
+PRINT N'=== TẤT CẢ STORED PROCEDURE ĐÃ ĐƯỢC TẠO THÀNH CÔNG! ===';
