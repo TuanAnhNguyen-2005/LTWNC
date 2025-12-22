@@ -17,3 +17,5 @@ packages/
 appsettings.json
 appsettings.*.json
 appsettings.local.json
+/MVC_ADMIN/obj/Debug/DesignTimeResolveAssemblyReferencesInput.cache
+/MVC_Teacher/obj/Debug/DesignTimeResolveAssemblyReferencesInput.cache
