@@ -271,43 +271,33 @@ namespace RestfullAPI_NTHL.Controllers
                 bool dungSai = false;
                 double diemCauHoi = cauHoi.Diem;
 
-                if (cauHoi.LoaiCauHoi == "SingleChoice")
+                if (loai == "SingleChoice")
                 {
-                    if (int.TryParse(traLoi, out int maLuaChonChon))
+                    var dapAnDung = cauHoi.LuaChons.FirstOrDefault(lc => lc.LaDapAnDung)?.NoiDung?.Trim();
+                    if (!string.IsNullOrEmpty(dapAnDung) && string.Equals(traLoi, dapAnDung, StringComparison.OrdinalIgnoreCase))
                     {
-                        var dapAnDung = cauHoi.LuaChons.FirstOrDefault(lc => lc.LaDapAnDung);
-                        if (dapAnDung != null && dapAnDung.MaLuaChon == maLuaChonChon)
-                        {
-                            dungSai = true;
-                            diem += diemCauHoi;
-                            soCauDung++;
-                        }
+                        dungSai = true;
+                        diem += cauHoi.Diem;
+                        soCauDung++;
                     }
                 }
                 else if (cauHoi.LoaiCauHoi == "MultipleChoice")
                 {
-                    var maChonList = traLoi.Split(',')
-                        .Select(s => int.TryParse(s.Trim(), out int id) ? id : 0)
-                        .Where(id => id > 0)
-                        .OrderBy(id => id)
-                        .ToList();
+                    // Giả định dapAnDung là comma-separated từ tất cả LuaChon đúng
+                    var dapAnDungList = cauHoi.LuaChons.Where(lc => lc.LaDapAnDung).Select(lc => lc.NoiDung?.Trim()).OrderBy(s => s).ToList();
+                    var traLoiList = traLoi.Split(',').Select(s => s.Trim()).OrderBy(s => s).ToList();
 
-                    var maDungList = cauHoi.LuaChons
-                        .Where(lc => lc.LaDapAnDung)
-                        .Select(lc => lc.MaLuaChon)
-                        .OrderBy(id => id)
-                        .ToList();
-
-                    if (maChonList.SequenceEqual(maDungList))
+                    if (dapAnDungList.SequenceEqual(traLoiList, StringComparer.OrdinalIgnoreCase))
                     {
                         dungSai = true;
-                        diem += diemCauHoi;
+                        diem += cauHoi.Diem;
                         soCauDung++;
                     }
                 }
                 else if (cauHoi.LoaiCauHoi == "Essay")
                 {
-                    dungSai = false; // Chấm thủ công
+                    // Câu mở: mặc định sai, giáo viên chấm thủ công sau
+                    dungSai = false; // Có thể thêm logic AI chấm nếu cần
                 }
 
                 // Lưu chi tiết trả lời
@@ -389,28 +379,48 @@ namespace RestfullAPI_NTHL.Controllers
             {
                 traLois.TryGetValue(ch.MaCauHoi, out var tl);
 
-                // Xử lý đáp án đúng dựa trên loại câu hỏi
+                // Chuẩn hóa loại câu hỏi nếu bên Teacher đang dùng TrueFalse / ShortAnswer
+                var loai = (ch.LoaiCauHoi ?? "").Trim();
+                if (loai.Equals("TrueFalse", StringComparison.OrdinalIgnoreCase)) loai = "SingleChoice";
+                if (loai.Equals("ShortAnswer", StringComparison.OrdinalIgnoreCase)) loai = "Essay";
+
+                // ===== ĐÁP ÁN ĐÚNG (hiển thị theo NoiDung) =====
                 string dapAn = "Không có đáp án đúng";
-                if (ch.LoaiCauHoi == "SingleChoice" || ch.LoaiCauHoi == "MultipleChoice")
+                if (loai == "SingleChoice" || loai == "MultipleChoice")
                 {
                     var luaChonDung = ch.LuaChons.FirstOrDefault(lc => lc.LaDapAnDung);
                     if (luaChonDung != null)
                         dapAn = luaChonDung.NoiDung;
                 }
-                else if (ch.LoaiCauHoi == "Essay")
+                else if (loai == "Essay")
                 {
                     dapAn = "Câu hỏi mở - chấm thủ công";
+                }
+
+                // ===== TRẢ LỜI CỦA BẠN: ID -> NoiDung để hiển thị đúng =====
+                string traLoiHienThi = tl?.TraLoi ?? "[Chưa trả lời]";
+
+                if (loai == "SingleChoice" || loai == "MultipleChoice")
+                {
+                    // tl.TraLoi đang là MaLuaChon (vd: "5") => đổi sang NoiDung
+                    if (tl != null && int.TryParse(tl.TraLoi, out int maLuaChonChon))
+                    {
+                        var luaChonChon = ch.LuaChons.FirstOrDefault(lc => lc.MaLuaChon == maLuaChonChon);
+                        if (luaChonChon != null)
+                            traLoiHienThi = luaChonChon.NoiDung;
+                    }
                 }
 
                 return new ChiTietCauHoiDto
                 {
                     NoiDung = ch.NoiDung,
                     Diem = ch.Diem,
-                    TraLoi = tl?.TraLoi ?? "[Chưa trả lời]",
+                    TraLoi = traLoiHienThi,
                     DapAn = dapAn,
                     DungSai = tl?.DungSai ?? false
                 };
             }).ToList();
+
 
             // Tính thời gian làm bài
             TimeSpan thoiGianLam = TimeSpan.Zero;
