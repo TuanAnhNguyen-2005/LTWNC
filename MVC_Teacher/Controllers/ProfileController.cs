@@ -1,32 +1,78 @@
-﻿// Controllers/ProfileController.cs
-using System;
-using System.Linq;
+﻿using System;
 using System.Web.Mvc;
 using MVC_Teacher.Models;
-using MVC_Teacher.Services;
-using MVC_Teacher.Helpers;
 
 namespace MVC_Teacher.Controllers
 {
-    [Authorize]
     public class ProfileController : Controller
     {
-        private readonly UserDataService _userService = new UserDataService();
-
         // GET: Profile
         public ActionResult Index()
         {
-            var email = User.Identity.Name;
-            var teacher = _userService.GetTeacherByEmail(email);
-
-            if (teacher == null)
+            try
             {
-                return RedirectToAction("Index", "Login");
+                // Ưu tiên lấy từ Session
+                Teacher teacher = null;
+
+                // Kiểm tra Session có TeacherData không
+                if (Session["TeacherData"] != null)
+                {
+                    teacher = Session["TeacherData"] as Teacher;
+                }
+                else if (Session["FullName"] != null)
+                {
+                    // Nếu có Session riêng lẻ, tạo Teacher từ đó
+                    teacher = new Teacher
+                    {
+                        TeacherId = Session["UserId"] != null ? (int)Session["UserId"] : 1,
+                        FullName = Session["FullName"]?.ToString() ?? "Nguyễn Văn A",
+                        Email = Session["Email"]?.ToString() ?? "teacher@example.com",
+                        PhoneNumber = "0912345678",
+                        Subject = Session["Subject"]?.ToString() ?? "Toán",
+                        Role = Session["Role"]?.ToString() ?? "Giáo viên",
+                        IsActive = true,
+                        IsVerified = true,
+                        CreatedDate = DateTime.Now.AddMonths(-3),
+                        LastLoginDate = DateTime.Now.AddHours(-2)
+                    };
+
+                    // Lưu vào Session TeacherData để lần sau dùng
+                    Session["TeacherData"] = teacher;
+                }
+                else
+                {
+                    // Tạo dữ liệu test mới
+                    teacher = new Teacher
+                    {
+                        TeacherId = 1,
+                        FullName = "Nguyễn Văn A",
+                        Email = "teacher@example.com",
+                        PhoneNumber = "0912345678",
+                        Subject = "Toán",
+                        Role = "Giáo viên",
+                        IsActive = true,
+                        IsVerified = true,
+                        CreatedDate = DateTime.Now.AddMonths(-3),
+                        LastLoginDate = DateTime.Now.AddHours(-2)
+                    };
+
+                    // Lưu vào Session
+                    Session["TeacherData"] = teacher;
+                    Session["UserId"] = teacher.TeacherId;
+                    Session["FullName"] = teacher.FullName;
+                    Session["Email"] = teacher.Email;
+                    Session["Subject"] = teacher.Subject;
+                    Session["Role"] = teacher.Role;
+                }
+
+                ViewBag.LoginCount = 15;
+                return View(teacher);
             }
-
-            ViewBag.LoginCount = _userService.GetLoginCountForTeacher(teacher.TeacherId);
-
-            return View(teacher);
+            catch (Exception ex)
+            {
+                ViewBag.Error = ex.Message;
+                return View(new Teacher());
+            }
         }
 
         // POST: Profile/UpdateProfile
@@ -34,75 +80,67 @@ namespace MVC_Teacher.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult UpdateProfile(Teacher model)
         {
-            try
+            if (ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
+                try
                 {
-                    return View("Index", model);
-                }
+                    // Lấy Teacher hiện tại từ Session
+                    Teacher currentTeacher = Session["TeacherData"] as Teacher ?? new Teacher();
 
-                var email = User.Identity.Name;
-                var teacher = _userService.GetTeacherByEmail(email);
+                    // Cập nhật thông tin
+                    currentTeacher.TeacherId = model.TeacherId;
+                    currentTeacher.FullName = model.FullName;
+                    currentTeacher.Email = model.Email;
+                    currentTeacher.PhoneNumber = model.PhoneNumber;
+                    currentTeacher.Subject = model.Subject;
+                    currentTeacher.Role = model.Role;
 
-                if (teacher == null)
-                {
-                    TempData["ErrorMessage"] = "Không tìm thấy thông tin giáo viên!";
+                    // Lưu vào Session (QUAN TRỌNG: cả object và từng property)
+                    Session["TeacherData"] = currentTeacher;
+                    Session["FullName"] = currentTeacher.FullName;
+                    Session["Email"] = currentTeacher.Email;
+                    Session["Subject"] = currentTeacher.Subject;
+                    Session["Role"] = currentTeacher.Role;
+
+                    // Lưu vào TempData để Home có thể nhận
+                    TempData["UpdatedTeacher"] = currentTeacher;
+                    TempData["ProfileUpdated"] = true;
+
+                    TempData["SuccessMessage"] = "Cập nhật thông tin thành công!";
                     return RedirectToAction("Index");
                 }
-
-                teacher.FullName = model.FullName;
-                teacher.PhoneNumber = model.PhoneNumber;
-                teacher.Subject = model.Subject;
-
-                _userService.UpdateTeacher(teacher);
-
-                // Update session
-                Session["FullName"] = teacher.FullName;
-                Session["Subject"] = teacher.Subject;
-
-                TempData["SuccessMessage"] = "Cập nhật thông tin thành công!";
-                return RedirectToAction("Index");
+                catch (Exception ex)
+                {
+                    TempData["ErrorMessage"] = "Lỗi: " + ex.Message;
+                    return View("Index", model);
+                }
             }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Update profile error: {ex.Message}");
-                TempData["ErrorMessage"] = "Đã xảy ra lỗi khi cập nhật thông tin!";
-                return RedirectToAction("Index");
-            }
+
+            return View("Index", model);
         }
 
-        // POST: Profile/ChangePassword
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult ChangePassword(string currentPassword, string newPassword)
+        // API để Home gọi lấy thông tin mới
+        [HttpGet]
+        public JsonResult GetCurrentTeacher()
         {
-            try
+            var teacher = Session["TeacherData"] as Teacher;
+            if (teacher == null)
             {
-                var email = User.Identity.Name;
-                var teacher = _userService.GetTeacherByEmail(email);
-
-                if (teacher == null)
+                teacher = new Teacher
                 {
-                    return Json(new { success = false, message = "Không tìm thấy tài khoản!" });
-                }
-
-                // Verify current password
-                if (!PasswordHasher.VerifyPassword(currentPassword, teacher.PasswordHash))
-                {
-                    return Json(new { success = false, message = "Mật khẩu hiện tại không đúng!" });
-                }
-
-                // Update password
-                teacher.PasswordHash = PasswordHasher.HashPassword(newPassword);
-                _userService.UpdateTeacher(teacher);
-
-                return Json(new { success = true, message = "Đổi mật khẩu thành công!" });
+                    FullName = Session["FullName"] as string ?? "Thầy/Cô",
+                    Subject = Session["Subject"] as string ?? "Môn học",
+                    Email = Session["Email"] as string ?? "email@example.com"
+                };
             }
-            catch (Exception ex)
+
+            return Json(new
             {
-                System.Diagnostics.Debug.WriteLine($"Change password error: {ex.Message}");
-                return Json(new { success = false, message = "Đã xảy ra lỗi khi đổi mật khẩu!" });
-            }
+                fullName = teacher.FullName,
+                subject = teacher.Subject,
+                email = teacher.Email,
+                role = teacher.Role
+            }, JsonRequestBehavior.AllowGet);
         }
     }
 }

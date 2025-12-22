@@ -352,12 +352,68 @@ namespace RestfullAPI_NTHL.Controllers
                     NgayNop = kq.NgayNop ?? DateTime.Now,
                     ThoiGianLam = kq.ThoiGianKetThuc != null && kq.ThoiGianBatDau != null
                         ? (kq.ThoiGianKetThuc.Value - kq.ThoiGianBatDau.Value)
-                        : TimeSpan.Zero
+                        : TimeSpan.Zero,
+                    MaKetQua = kq.MaKetQua,
+
                 })
                 .ToListAsync();
 
             return Ok(results);
         }
+
+        // GET: api/Quiz/diem/chitiet/{maKetQua}
+        [HttpGet("diem/chitiet/{maKetQua:int}")]
+        public async Task<ActionResult<QuizDiemChiTietDto>> GetDiemChiTietByMaKetQua(int maKetQua)
+        {
+            var ketQua = await _db.KetQuaQuizzes
+                .Include(kq => kq.Quiz)
+                    .ThenInclude(q => q.CauHois)
+                        .ThenInclude(ch => ch.LuaChons)
+                .FirstOrDefaultAsync(kq => kq.MaKetQua == maKetQua);
+
+            if (ketQua == null)
+                return NotFound("Không tìm thấy kết quả bài thi");
+
+            var traLois = await _db.TraLoiChiTiets
+                .Where(tl => tl.MaKetQua == maKetQua)
+                .ToDictionaryAsync(tl => tl.MaCauHoi);
+
+            var chiTietCauHoi = ketQua.Quiz.CauHois.Select(ch =>
+            {
+                traLois.TryGetValue(ch.MaCauHoi, out var tl);
+
+                string dapAn = "Không có đáp án";
+                var dapAnDungs = ch.LuaChons.Where(lc => lc.LaDapAnDung).Select(lc => lc.NoiDung).ToList();
+                dapAn = dapAnDungs.Any() ? string.Join(", ", dapAnDungs) : "Không có đáp án đúng";
+
+                return new ChiTietCauHoiDto
+                {
+                    NoiDung = ch.NoiDung,
+                    Diem = ch.Diem,
+                    TraLoi = tl?.TraLoi ?? "[Chưa trả lời]",
+                    DapAn = dapAn,
+                    DungSai = tl?.DungSai ?? false
+                };
+            }).ToList();
+
+            TimeSpan thoiGianLam = TimeSpan.Zero;
+            if (ketQua.ThoiGianBatDau != null && ketQua.ThoiGianKetThuc != null)
+                thoiGianLam = ketQua.ThoiGianKetThuc.Value - ketQua.ThoiGianBatDau.Value;
+
+            return Ok(new QuizDiemChiTietDto
+            {
+                MaQuiz = ketQua.MaQuiz,
+                TenQuiz = ketQua.Quiz.TenQuiz,
+                Diem = ketQua.Diem ?? 0,
+                TongDiem = ketQua.TongDiem ?? 0,
+                SoCauDung = ketQua.SoCauDung,
+                TongCau = ketQua.TongCau,
+                ThoiGianLam = thoiGianLam,
+                NgayNop = ketQua.NgayNop ?? DateTime.Now,
+                ChiTietCauHoi = chiTietCauHoi
+            });
+        }
+
 
         // GET: api/Quiz/diem/{maHocSinh}/{maQuiz} - Chi tiết điểm chính xác từng câu
         [HttpGet("diem/{maHocSinh:int}/{maQuiz:int}")]
@@ -399,19 +455,41 @@ namespace RestfullAPI_NTHL.Controllers
                     dapAn = "Câu hỏi mở - chấm thủ công";
                 }
 
-                // ===== TRẢ LỜI CỦA BẠN: ID -> NoiDung để hiển thị đúng =====
+                //TRẢ LỜI CỦA BẠN: ID -> NoiDung để hiển thị đúng
                 string traLoiHienThi = tl?.TraLoi ?? "[Chưa trả lời]";
 
                 if (loai == "SingleChoice" || loai == "MultipleChoice")
                 {
-                    // tl.TraLoi đang là MaLuaChon (vd: "5") => đổi sang NoiDung
-                    if (tl != null && int.TryParse(tl.TraLoi, out int maLuaChonChon))
+                    var raw = (tl?.TraLoi ?? "").Trim();
+
+                    if (!string.IsNullOrWhiteSpace(raw))
                     {
-                        var luaChonChon = ch.LuaChons.FirstOrDefault(lc => lc.MaLuaChon == maLuaChonChon);
-                        if (luaChonChon != null)
-                            traLoiHienThi = luaChonChon.NoiDung;
+                        // thử tách nhiều đáp án
+                        var parts = raw.Split(new[] { ',', ';', '|' }, StringSplitOptions.RemoveEmptyEntries)
+                                       .Select(x => x.Trim())
+                                       .ToList();
+
+                        bool allNumeric = parts.All(p => int.TryParse(p, out _));
+
+                        if (allNumeric)
+                        {
+                            var ids = parts.Select(int.Parse).ToList();
+                            var texts = ch.LuaChons
+                                          .Where(lc => ids.Contains(lc.MaLuaChon))
+                                          .Select(lc => lc.NoiDung)
+                                          .ToList();
+
+                            if (texts.Any())
+                                traLoiHienThi = string.Join(", ", texts);
+                        }
+                        else
+                        {
+                            // đã là text -> giữ nguyên
+                            traLoiHienThi = raw;
+                        }
                     }
                 }
+
 
                 return new ChiTietCauHoiDto
                 {
